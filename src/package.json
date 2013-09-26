@@ -1,0 +1,8 @@
+{
+  "name": "ICOM5016",
+  "description": "ebay like app server",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "3.x"
+  }
+}
