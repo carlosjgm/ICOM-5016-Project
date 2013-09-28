@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+		<head>
+		<title>log in</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	</head>
+	
+	<body>
+		<h1>Login Page</h1>
+		<form id='login-form' action='http://localhost:8888/login/' method='post'>
+			<li><label for="username"> username: <input id="username" name="username" type="text"/></label></li>
+			<li><label for="password"> password: <input id="password" name="password" type="password"/></label></li>
+			<script>document.write("<input name='URL' value='http://" + window.location.host + "/ICOM5016/browse.html' style='display: none' />");</script>
+			<input type="submit" value="Login" /><br />
+		</form>
+		
+		<p><i>Did you forget username/password?</i></p>
+		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
+			<label for='resetemail'> email: <input id="reset" name="resetemail" type="email"/></label> 
+			<input type='submit' value='Reset'/>
+		</form>
+		
+		
+		<hr><p><strong>Not a member? Register:</strong></p>
+		<form id='registration-form' action='http://localhost:8888/register/' method='post'>
+			<li><label for="newusername"> username: <input id="newusername" name="newusername" type="text"/></label></li>
+			<li><label for="newpassword"> password: <input id="newpassword" name="newpassword" type="password"/></label></li>
+			<li><label for="newemail"> email: <input id="email" name="newemail" type="email"/></label></li>
+			<!--<script>document.write("<input name='URL' value='http://" + window.location.host + "/ICOM5016/index.html' style='display: none' />");</script>-->
+		
+			<input type="submit" value="Register" />
+		</form>
+	
+	</body>
+	
+</html>
