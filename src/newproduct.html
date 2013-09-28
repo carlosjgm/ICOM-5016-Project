@@ -17,7 +17,7 @@
 			<li><label for="dimensions"> dimensions: <input id="dimensions" name="dimensions" type="text"/></label></li>
 			<li><label for="bid"> starting bid price: <input id="bid" name="bid" type="number"/></label></li>
 			<script>
-				document.write("<input name='URL' value='http://" + window.location.host + "/ICOM5016/browse.html' style='display: none' />");
+				document.write("<input name='URL' value='" + window.location.href.replace("newproduct.html","browse.html") + "' style='display: none' />");
 				document.write("<input name='seller' value='" + username + "' style='display: none' />");
 			</script>
 		</ul>
