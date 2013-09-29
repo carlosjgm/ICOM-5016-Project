@@ -234,16 +234,16 @@ app.post("/login", function(req, res){
 			}
 		}
 		if (target == -1){
-			res.statusCode = 400;
-			res.send("Error 400: Username/password entered not valid.");			
+			res.statusCode = 404;
+			res.send("Error 404: Username/password entered not valid.");			
 		}	
 		else if(userList[target].password == req.body.password) {	
 			res.statusCode = 200;
-			res.redirect(req.body.URL);
+			res.json(true);
 		}
 		else{
-			res.statusCode = 400;
-			res.send("Error 400: Username/password entered not valid.");
+			res.statusCode = 404;
+			res.send("Error 404: Username/password entered not valid.");
 		}
 	}
 });
