@@ -14,7 +14,7 @@ $(document).on('pagebeforeshow', "#home", function( event, ui ) {
 	var thing;
 	for (var i=0; i < len; ++i){
 		thing = thingList[i];
-		list.append("<li><a href=\"#\">" + 
+		list.append("<li><a href=\"#"+ thing.id +"\">" + 
 			"<h2>" + thing.name + " " + "</h2>" +
 			"<p><strong> Model: " + thing.model + "</strong></p>" +
 			"<p><strong> Brand: " + thing.brand + "</strong></p>" + 
