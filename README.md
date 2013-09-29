@@ -1,9 +1,8 @@
 <h1>ICOM-5016 fall 2013 mobile app project</h1>
 
 <h3>Instructions:</h3>
-Node.js is required to run this application. Run on Node.js the file server.js located in the src folder <i>(node server.js)</i>.<br />
-Open browse.html located in the src folder.<br />
-Read <a href="details.md">details.md</a> for more details.<br />
+Node.js is required to run this application. Run server.js on the Node.js terminal.<br />
+Open index.html located in the src folder.<br /><h3>Updates:</h3>Sept/28: Added some functionality to files in test(query). Requires Node.js to browse.<br />
 
 <h3>Group Members:</h3>
 Susana Galicea <br>

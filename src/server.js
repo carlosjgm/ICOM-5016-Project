@@ -4,33 +4,40 @@ var app = express();
 
 //Initialize server data****************************************************************************************************
 //products-----------------------------------------------------------------------------------------
-var products = require('./products');
+var products = require('./appjs/products');
 var Product = products.Product;
 
+
+//Product(name, category, instantprice, description, model, photo, brand, dimensions, seller, nextbidprice)
 var productList = new Array(
-	new Product("shirt", "clothes:men", 19.99, "blue medium shirt", "sleeveless","","nike","medium","carlosjgm",4.99),
-	new Product("hdtv", "electronics:tv", 499.99, "30 inches hd tv", "r450a","","Sony","30 inches","carlosjgm", 199.99)
+	new Product("Awesome Toothbrush", "Hygiene", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
+	new Product("Some Crappy Cologne", "Hygiene", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "", "Avon", "2'x4'x3'", "susyspider", 0.99),
+	new Product("5 Slices of Bread", "Food", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
+	new Product("Broken Heart Pinata", "Decoration", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
+	new Product("Muddy Shoes", "Shoes", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
 );
+
+//users---------------------------------------------------------------------------------------------
+var users = require('./appjs/users');
+var User = users.User;
+
+//User(username, password, email)
+var userList = new Array(
+	new User("carlosjgm", "123", "carlosjgm@gmail.com"),
+	new User("susyspider", "cool", "susy@spider.com"),
+	new User("user", "user", "user@icom5016.com"),
+	new User("admin", "admin", "admin@icom5016.com")
+);
+
 
 var productNextId = 0;
  
 for (var i=0; i < productList.length; ++i){
 	productList[i].id = productNextId++;
+	userList[1].selling.push(i);
 }
 
-//users---------------------------------------------------------------------------------------------
-var users = require('./users');
-var User = users.User;
-
-var userList = new Array(
-	new User("carlosjgm", "123", "carlosjgm@gmail.com"),
-	new User("user", "user", "user@icom5016.com"),
-	new User("admin", "admin", "admin@icom5016.com")
-);
-
 var userNextId = 0;
-userList[0].selling.push(0);
-userList[0].selling.push(1);
 for (var i=0; i < userList.length; ++i){
 	userList[i].id = userNextId++;
 }
@@ -45,6 +52,21 @@ app.use(function(req, res, next){
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 	next();
 });
+
+// Authenticator
+function authorized(user, pass) {
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == user)
+			if(userList[i].password == pass){
+				return true;
+			}
+			else
+				return false;
+		
+	}
+	return false;
+};
+
 
 //REST API for products**************************************************************************************************************************
 
@@ -85,35 +107,39 @@ app.get('/product/:id', function(req, res){
 //new product-------------------------------------------------
 app.post('/newproduct', function(req, res) {
 	console.log("Add new product request received.");
-  	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
-  	|| req.body.description=="" || req.body.model == "" 
-  	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="" || req.body.bid=="") {
-		res.statusCode = 400;
-		res.send('Error 400: Product form is missing fields.');
-	}
-	else if(req.body.instantprice < req.body.bid){
-		res.statusCode = 400;
-		res.send("Product instant price must be greater than bid price.");
-	}
+	if(!authorized(req.body.username, req.body.password))
+		res.send("Unauthorized");
 	else{
-		var newProduct = new Product(req.body.name, req.body.category, req.body.instantprice, req.body.description, req.body.model,
-			req.body.photo,	req.body.brand, req.body.dimensions, req.body.seller, req.body.bid);
+	  	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
+	  	|| req.body.description=="" || req.body.model == "" 
+	  	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="" || req.body.bid=="") {
+			res.statusCode = 400;
+			res.send('Error 400: Product form is missing fields.');
+		}
+		else if(req.body.instantprice < req.body.bid){
+			res.statusCode = 400;
+			res.send("Product instant price must be greater than bid price.");
+		}
+		else{
+			var newProduct = new Product(req.body.name, req.body.category, req.body.instantprice, req.body.description, req.body.model,
+				req.body.photo,	req.body.brand, req.body.dimensions, req.body.seller, req.body.bid);
+				
+			newProduct.id = productNextId++;
+			newProduct.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
 			
-		newProduct.id = productNextId++;
-		newProduct.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
-		
-		productList.push(newProduct);
-		
-		//add new product to selling list of seller
-		var target;
-		for(var i=0; i < userList.length; i++)
-			if(userList[i].username == req.body.seller){
-				userList[i].selling.push(productNextId - 1);
-				break;
-			}
+			productList.push(newProduct);
 			
-		res.statusCode = 200;
-		res.redirect(req.body.URL);
+			//add new product to selling list of seller
+			var target;
+			for(var i=0; i < userList.length; i++)
+				if(userList[i].username == req.body.seller){
+					userList[i].selling.push(productNextId - 1);
+					break;
+				}
+				
+			res.statusCode = 200;
+			res.redirect(req.body.URL);
+		}
 	}
 });
 
@@ -265,7 +291,7 @@ app.post("/register", function(req, res){
 			userList.push(newUser);
 			
 			res.statusCode = 200;
-			res.json(true);
+			res.redirect(req.body.URL);
 		}
 	}
 });
@@ -403,4 +429,4 @@ app.post("/bid/:id", function(req, res){
 });
 
 console.log("Server started. Listening on port 8888.");
-app.listen(process.env.PORT || 8888);
+app.listen(8888);
