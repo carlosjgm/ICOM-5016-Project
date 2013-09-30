@@ -1,0 +1,218 @@
+<!DOCTYPE html> 
+<html> 
+	
+<head> 
+	<title>Ebay-like App</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="css/jquery.mobile-1.3.1.css" />
+	<script src="js/jquery-1.10.2.js"></script>
+	<script src="js/jquery.mobile-1.3.1.js"></script>
+	<script src="appjs/app.js"></script>
+</head> 
+
+<body> 
+
+<!--login page -->
+<div id="login" data-role="page">
+	<div data-role="header">
+		<a href="#browse" data-role="button" data-icon="home" >Browse</a>
+		<h1>Login</h1>
+	</div>
+	<p hidden id="invalid"></p>
+	<div data-role="content">	
+		<form id='login-form'>
+			<ul data-role="listview" data-inset="true" data-filter="false">
+				<li><input id="username" name="username" type="text" placeholder="Username"/></li>
+				<li><input id="password" name="password" type="password" placeholder="Password"/></li>
+			</ul>
+			<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
+			<input type="button" data-theme='b' onclick="login()" value="Login" /><br />
+		</form>
+		<a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
+		<a href="#register">Register</a>
+	</div>
+</div>
+
+<!--reset password page -->
+<div id="reset" data-role="page">
+	<div data-role="header">
+		<h1>Reset</h1>
+	</div>
+	<div data-role="content">
+		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
+			<input id="reset" name="resetemail" type="email" placeholder="Email"/> 
+			<input type='submit' value='Reset'/><br />
+		</form>
+	</div>
+</div>
+		
+<!--register user page-->
+<div id="register" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#login" data-icon="back" data-iconpos="notext">Back</a>
+		<h2>Ebay - Register</h2>
+	</div>
+	
+	<div data-role="content">
+		<form id='registration-form'>
+			<input id="newusername" name="newusername" type="text" placeholder="Username" />
+			<input id="newpassword" name="newpassword" type="password" placeholder="Password" /><br />
+			<label for="select-country" class="select">Country/Region:</label>
+			<select name="select-country" id="select-country">
+				<option value="us">United States</option>
+				<option value="uk">United Kingdom</option>
+				<option value="australia">Australia</option>
+				<option value="everywhere-else">Everywhere else</option>
+			</select>
+					
+			<label for="fname">First Name:</label>
+			<input type="text" name="name" id="fname" data-mini="true" />
+			
+			<label for="lname">Last Name:</label>
+			<input type="text" name="lname" id="lname" data-mini="true" />
+			
+			<label for="address1">Street Address:</label>
+			<input type="text" name="address1" id="address1" data-mini="true" />
+			<label for="address2" class="ui-hidden-accessible">Street Address 2:</label>
+			<input type="text" name="address2" id="address2" data-mini="true" />
+			
+			<label for="city">City:</label>
+			<input type="text" name="city" id="city" data-mini="true" />
+			
+			<label for="select-state" class="select">State:</label>
+			<select name="select-state" id="select-state">
+				<option value="fl">Florida</option>
+				<option value="ca">California</option>
+				<option value="ny">New York</option>
+				<option value="tx">Texas</option>
+				<option value="md">Maryland</option>
+				<option value="ee">Everywhere else</option>
+			</select>
+			
+			<label for="phone-num">Phone number:</label>
+			<input type="number" name="phone-num" id="phone-num" data-mini="true" maxlength="12" placeholder="787-555-5555"/>
+			
+			<label for="email">Email:</label>
+			<input type="email" name="email" id="email" data-mini="true" placeholder="username@site.com"/>
+		</form>
+		<a data-role="button" onclick="register()" data-theme="b">Submit</a>
+	</div>
+</div>
+
+<!--update card information-->
+<div id="cCard" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#browse" data-icon="delete" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<h2>Credit Card Info</h2>
+	</div>
+		
+	<div data-role="content">
+		<form id='card-form'>
+			<fieldset data-role="controlgroup" data-type="horizontal">
+				<legend>Card type:</legend>
+				<input type="radio" name="radio-choice" id="radio-choice-1" value="Visa" checked="checked" />
+				<label for="radio-choice-1">Visa</label>
+				
+				<input type="radio" name="radio-choice" id="radio-choice-2" value="Master Card" />
+				<label for="radio-choice-2">Master Card</label>
+				
+				<input type="radio" name="radio-choice" id="radio-choice-3" value="American Express" />
+				<label for="radio-choice-3">American Express</label>
+				
+				<input type="radio" name="radio-choice" id="radio-choice-4" value="Godzilla" />
+				<label for="radio-choice-4">Godzilla</label>
+			</fieldset>
+			
+			<label for="card-num">Card number:</label>
+			<input type="text" name="card-num" id="card-num" data-mini="true" maxlength="19" placeholder="0000-0000-0000-0000"/>
+			<label for="ccv">CCV:</label>
+			<input type="text" name="ccv" id="card-num" data-mini="true" maxlength="3" placeholder="123"/>
+			
+			<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup" data-type="horizontal">
+					<legend>Expiration date:</legend>
+					<label for="select-choice-month">Month</label>
+					<select name="select-choice-month" id="select-choice-month">
+						<option>Month</option>
+						<option value="jan">Jan</option>
+						<option value="feb">Feb</option>
+						<option value="mar">Mar</option>
+						<option value="apr">Apr</option>
+						<option value="may">May</option>
+						<option value="jun">Jun</option>
+						<option value="jul">Jul</option>
+						<option value="aug">Aug</option>
+						<option value="sep">Sep</option>
+						<option value="oct">Oct</option>
+						<option value="nov">Nov</option>
+						<option value="dec">Dec</option>
+					</select>
+					
+					<label for="select-choice-day">Day</label>
+					<select name="select-choice-day" id="select-choice-day">
+						<option>Day</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+					</select>
+					
+					<label for="select-choice-year">Year</label>
+					<select name="select-choice-year" id="select-choice-year">
+						<option>Year</option>
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+					</select>
+				</fieldset>
+			</div>
+		</form>
+		<a data-role="button" data-theme="b" onclick="updCard()">Add card</a>
+	</div>
+</div>
+
+<!--browse page -->
+<div id="browse" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+    	<a href="#categories" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+    	<a id="browse-pid"></a>
+    	<script>profilebutton("#browse-pid");</script>
+    	<h4>Browse</h4>
+	</div>
+	<!--list of products being sold-->
+	<div data-role="content">
+		<ul id="product-list" data-role="listview" data-inset="true">
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>
