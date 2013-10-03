@@ -24,14 +24,13 @@ var User = users.User;
 //User(username, password, email)
 var userList = new Array(
 	new User("carlosjgm", "123", "carlosjgm@gmail.com"),
-	new User("susyspider", "cool", "susy@spider.com"),
+	new User("susyspider", "456", "susy@spider.com"),
 	new User("user", "user", "user@icom5016.com"),
 	new User("admin", "admin", "admin@icom5016.com")
 );
 
 
 var productNextId = 0;
- 
 for (var i=0; i < productList.length; ++i){
 	productList[i].id = productNextId++;
 	userList[1].selling.push(i);
@@ -425,6 +424,11 @@ app.post("/bid/:id", function(req, res){
 			}
 		}
 	}
+	
+});
+
+//return sales report
+app.get("/sales", function(req,res){
 	
 });
 

@@ -2,7 +2,7 @@
 
 <h3>Instructions:</h3>
 Node.js is required to run this application. Run server.js on the Node.js terminal.<br />
-Open index.html located in the src folder.<br /><h3>Updates:</h3>Sept/28: Added some functionality to files in test(query). Requires Node.js to browse.<br />
+Open index.html located in the src folder.<br />
 
 <h3>Group Members:</h3>
 Susana Galicea <br>

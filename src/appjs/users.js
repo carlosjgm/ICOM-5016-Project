@@ -11,6 +11,8 @@ function User(username, password, email){
 	this.credicard = new Array();
 	this.address = new Array();
 	this.telephone = new Array();
+	this.rating = new Array();
+	this.sales = new Array();
 	}
 
 exports.User = User;

@@ -29,8 +29,8 @@ $(document).on('pagebeforeshow', "#browse", function( event, ui ) {
 function profilebutton(buttonid){
 	var user = localStorage.getItem("username");
 	if(user != null)
-		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#account-panel' data-role='button' data-icon='bars' data-mini='true'"
-			+ "data-inline='true'>" + user + "</a>");	
+			$(buttonid).replaceWith("<a id='" + buttonid + "' href='#account-panel' data-role='button' data-icon='bars' data-mini='true'"
+				+ "data-inline='true'>" + user + "</a>");	
 	else
 		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#login' data-role='button' data-icon='check' data-iconpos='right' data-mini='true' data-inline='true'>Login</a>");
 };
@@ -97,19 +97,69 @@ function register(){
 //updates card information
 //submits card-form
 //goes to #profile if successful
+//TODO
 function  updCard(){
 	$.mobile.changePage("#browse", {reloadPage : true});
 };
 
 //buy item id (add to shopping cart)
 //goes to #cart
+//TODO
 function buy(id){
 	
 };
 
 //bid on item id
 //goes to #bidding
+//TODO
 function bid(id){
+	
+};
+
+//shows sales report
+//submits sales-form and lists the summary on #sales-summary
+//TODO
+function submitSales(){
+	$.mobile.loading("show");
+	var form = $("#sales-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	var logdatajson = JSON.stringify(logdata);
+	$.ajax({
+		url : "http://localhost:8888/sales" ,
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			localStorage.setItem("username", document.getElementById("username").value);
+			localStorage.setItem("password", document.getElementById("password").value);
+			alert("Login Successful!");
+			$.mobile.loading("hide");
+			$.mobile.changePage("#browse", {reloadPage : true});
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			if (data.status == 404){
+				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>Invalid username/password. Please try again.</p>");
+				alert("Invalid username/password. Please try again.");
+			}
+			else if(data.status == 400){
+				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>The form has missing fields.</p>");
+				alert("The form has missing fields.");
+			}
+			else {
+				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>Internal Error. Please try again.</p>");
+				alert("Internal Error.");		
+			}
+		}
+	});
+	
+};
+
+//replaces #sales-summary with a list of sales by category
+//TODO
+function salesCategories(category){
 	
 };
 

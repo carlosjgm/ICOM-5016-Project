@@ -22,7 +22,9 @@
 	<div data-role="content">	
 		<form id='login-form'>
 			<ul data-role="listview" data-inset="true" data-filter="false">
+				<label for="username" class="ui-hidden-accessible">Username:</label>
 				<li><input id="username" name="username" type="text" placeholder="Username"/></li>
+				<label for="password" class="ui-hidden-accessible">Password:</label>
 				<li><input id="password" name="password" type="password" placeholder="Password"/></li>
 			</ul>
 			<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
@@ -55,7 +57,9 @@
 	
 	<div data-role="content">
 		<form id='registration-form'>
+			<label for="newusername" class="ui-hidden-accessible">Username:</label>
 			<input id="newusername" name="newusername" type="text" placeholder="Username" />
+			<label for="newpassword" class="ui-hidden-accessible">Password:</label>
 			<input id="newpassword" name="newpassword" type="password" placeholder="Password" /><br />
 			<label for="select-country" class="select">Country/Region:</label>
 			<select name="select-country" id="select-country">
@@ -343,6 +347,251 @@
 		</ul>
 	</div>
 </div>
+
+<!--administrator page-->
+<div id="admin" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<h2>Admin</h2>
+	</div>
+		
+	<div data-role="content">
+		
+	</div>
+</div>
+	
+
+<!--sales report-->
+<div id="sales" data-role="page">
+	<div data-role="panel" id="sales-panel" data-position="left" data-display="reveal" data-theme="a">
+		<h3>Sales by Category</h3>
+		<div data-role="collapsible-set">
+			<ul data-role="listview">
+				<li><a onclick="salesCategories('all')">All</a></li>
+			</ul>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Books</h4>
+				<ul data-role="listview">
+					<li><a onclick="salesCategories('books-children')">Children</a></li>
+					<li><a onclick="salesCategories('books-fiction')">Fiction</a></li>
+					<li><a onclick="salesCategories('books-technology')">Technology</a></li>
+					<li><a onclick="salesCategories('books-business')">Business</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Electronics</h4>
+				<ul data-role="listview">
+					<li><a onclick="salesCategories('electronics-tv')">TV</a></li>
+					<li><a onclick="salesCategories('electronics-audio')">Audio</a></li>
+					<li><a onclick="salesCategories('electronics-phones')">Phones</a></li>
+					<li><a onclick="salesCategories('electronics-cameras')">Cameras</a></li>
+					<li><a onclick="salesCategories('electronics-video')">Video</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Computers</h4>
+				<ul data-role="listview">
+					<li><a onclick="salesCategories('computers-laptops')">Laptops</a></li>
+					<li><a onclick="salesCategories('computers-desktops')">Desktops</a></li>
+					<li><a onclick="salesCategories('computers-tablets')">Tablets</a></li>
+					<li><a onclick="salesCategories('computers-printers')">Printers</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Clothing</h4>
+				<ul id="custom-listview" data-role="listview">
+					<li class="custom-li-first"><a onclick="salesCategories('clothing-children')">Children</a></li>
+					<li class="custom-li">
+						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+								<h4>Men</h4>
+								<ul data-role="listview">
+									<li><a onclick="salesCategories('clothing-men-shirts')">Shirts</a></li>
+									<li><a onclick="salesCategories('clothing-men-pants')">Pants</a></li>
+									<li><a onclick="salesCategories('clothing-men-dresses')">Dresses</a></li>
+								</ul>
+							</div>
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+								<h4>Women</h4>
+								<ul data-role="listview">
+									<li><a onclick="salesCategories('clothing-women-shirts')">Shirts</a></li>
+									<li><a onclick="salesCategories('clothing-women-pants')">Pants</a></li>
+									<li><a onclick="salesCategories('clothing-women-dresses')">Dresses</a></li>
+								</ul>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Shoes</h4>
+				<ul data-role="listview">
+					<li><a onclick="salesCategories('shoes-children')">Children</a></li>
+					<li><a onclick="salesCategories('shoes-women')">Women</a></li>
+					<li><a onclick="salesCategories('shoes-men')">Men</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Sports</h4>
+				<ul id="custom-listview" data-role="listview">
+					<li class="custom-li">
+						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" data-inset="false">
+								<h4>Bicycles</h4>
+								<ul data-role="listview">
+									<li><a onclick="salesCategories('sports-bicycles-frames')">Frames</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-wheels')">Wheels</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-helmet')">Helmet</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-parts')">Parts</a></li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-fishing')">Fishing</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-baseball')">Baseball</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-golf')">Golf</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-baskeball')">Basketball</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<h2>Sales Report</h2>
+		<a id="sales-pid"></a>
+		<script>profilebutton("#sales-pid");</script>
+	</div>
+	
+	<div data-role="content">
+		<div data-role="fieldcontain">
+			<form id="sales-form">			
+				<fieldset data-role="controlgroup" data-type="horizontal">
+					<legend>From</legend>
+					<label for="from-sales-month">Month</label>
+					<select name="from-sales-month" id="from-sales-month">
+						<option>Month</option>
+						<option value="jan">Jan</option>
+						<option value="feb">Feb</option>
+						<option value="mar">Mar</option>
+						<option value="apr">Apr</option>
+						<option value="may">May</option>
+						<option value="jun">Jun</option>
+						<option value="jul">Jul</option>
+						<option value="aug">Aug</option>
+						<option value="sep">Sep</option>
+						<option value="oct">Oct</option>
+						<option value="nov">Nov</option>
+						<option value="dec">Dec</option>
+					</select>
+					
+					<label for="from-sales-day">Day</label>
+					<select name="from-sales-day" id="from-sales-day">
+						<option>Day</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+					</select>
+					
+					<label for="from-sales-year" class="ui-hidden-accessible">Year</label>
+					<input type="number" name="from-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+				</fieldset>
+				
+				<fieldset data-role="controlgroup" data-type="horizontal">
+					<legend>To</legend>
+					<label for="to-sales-month" class="ui-hidden-accessible">Month</label>
+					<select name="to-sales-month" id="to-sales-month">
+						<option>Month</option>
+						<option value="jan">Jan</option>
+						<option value="feb">Feb</option>
+						<option value="mar">Mar</option>
+						<option value="apr">Apr</option>
+						<option value="may">May</option>
+						<option value="jun">Jun</option>
+						<option value="jul">Jul</option>
+						<option value="aug">Aug</option>
+						<option value="sep">Sep</option>
+						<option value="oct">Oct</option>
+						<option value="nov">Nov</option>
+						<option value="dec">Dec</option>
+					</select>
+					
+					<label for="to-sales-day" class="ui-hidden-accessible">Day</label>
+					<select name="to-sales-day" id="to-sales-day">
+						<option>Day</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+					</select>
+					
+					<label for="to-sales-year" class="ui-hidden-accessible">Year</label>
+					<input type="number" name="to-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+				</fieldset>
+			</form>
+			<a data-role="button" onclick="submitSales()" data-theme="b">Submit</a>
+				
+				
+		</div>
+		<a id="sales-summary"></a>
+	</div>
+</div>
+	
 
 </body>
 </html>
