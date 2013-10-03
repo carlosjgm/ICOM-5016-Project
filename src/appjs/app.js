@@ -29,8 +29,8 @@ $(document).on('pagebeforeshow', "#browse", function( event, ui ) {
 function profilebutton(buttonid){
 	var user = localStorage.getItem("username");
 	if(user != null)
-		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#profile/:" + user + "' data-role='button' data-icon='info' data-mini='true'"
-			+ "data-inline='true' onclick='logout()'>" + user + "</a>");	
+		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#account-panel' data-role='button' data-icon='bars' data-mini='true'"
+			+ "data-inline='true'>" + user + "</a>");	
 	else
 		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#login' data-role='button' data-icon='check' data-iconpos='right' data-mini='true' data-inline='true'>Login</a>");
 };
