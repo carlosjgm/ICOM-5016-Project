@@ -201,8 +201,99 @@
 
 <!--browse page -->
 <div id="browse" data-role="page">
+	<!--left panel-->
+	<div data-role="panel" id="category-panel" data-position="left" data-display="reveal" data-theme="a">
+				<h3>Search by Category</h3>
+				<div data-role="collapsible-set">
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+						<h4>Books</h4>
+						<ul data-role="listview">
+							<li><a href="#">Children</a></li>
+							<li><a href="#">Fiction</a></li>
+							<li><a href="#">Technology</a></li>
+							<li><a href="#">Business</a></li>
+						</ul>
+					</div>
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+						<h4>Electronics</h4>
+						<ul data-role="listview">
+							<li><a href="#">TV</a></li>
+							<li><a href="#">Audio</a></li>
+							<li><a href="#">Phones</a></li>
+							<li><a href="#">Cameras</a></li>
+							<li><a href="#">Video</a></li>
+						</ul>
+					</div>
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+						<h4>Computers</h4>
+						<ul data-role="listview">
+							<li><a href="#">Laptops</a></li>
+							<li><a href="#">Desktops</a></li>
+							<li><a href="#">Tablets</a></li>
+							<li><a href="#">Printers</a></li>
+						</ul>
+					</div>
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+						<h4>Clothing</h4>
+						<ul id="custom-listview" data-role="listview">
+							<li class="custom-li-first"><a href="#">Children</a></li>
+							<li class="custom-li">
+								<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+									<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+										<h4>Men</h4>
+										<ul data-role="listview">
+											<li><a href="#">Shirts</a></li>
+											<li><a href="#">Pants</a></li>
+											<li><a href="#">Dresses</a></li>
+										</ul>
+									</div>
+									<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+										<h4>Women</h4>
+										<ul data-role="listview">
+											<li><a href="#">Shirts</a></li>
+											<li><a href="#">Pants</a></li>
+											<li><a href="#">Dresses</a></li>
+										</ul>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div><!--end left panel-->
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="b" data-inset="true">
+						<h4>Shoes</h4>
+						<ul data-role="listview">
+							<li><a href="#">Children</a></li>
+							<li><a href="#">Women</a></li>
+							<li><a href="#">Men</a></li>
+						</ul>
+					</div>
+					<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="b" data-inset="true">
+						<h4>Sports</h4>
+						<ul id="custom-listview" data-role="listview">
+							<li class="custom-li">
+								<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+									<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" data-inset="false">
+										<h4>Bicycles</h4>
+										<ul data-role="listview">
+											<li><a href="#">Frames</a></li>
+											<li><a href="#">Wheels</a></li>
+											<li><a href="#">Helmet</a></li>
+											<li><a href="#">Parts</a></li>
+										</ul>
+									</div>
+								</div>
+							</li>
+							<li class="custom-li-first"><a href="#">Fishing</a></li>
+							<li class="custom-li-first"><a href="#">Basebal</a></li>
+							<li class="custom-li-first"><a href="#">Golf</a></li>
+							<li class="custom-li-first"><a href="#">Basketball</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
 	<div data-role="header" data-theme="a" data-position="fixed">
-    	<a href="#categories" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+    	<a href="#category-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
     	<a id="browse-pid"></a>
     	<script>profilebutton("#browse-pid");</script>
     	<h4>Browse</h4>

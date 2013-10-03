@@ -13,6 +13,31 @@
 /* Swatches */
 /* A
 -----------------------------------------------------------------------------------------------------------*/
+
+/*-- START -- Custom CSS for category panel*/
+.custom-collapsible
+{
+	margin: 0 !important;
+}
+
+.custom-collapsible h4 a
+{
+	border-radius: 0 !important;
+	border-width: 0 !important;
+	border-bottom-width: 1px !important;
+}
+
+.custom-li
+{
+	padding: 0 !important
+}
+
+.custom-li-first
+{
+	border-top-width: 0 !important;
+}
+/*-- END -- Custom CSS for category panel*/
+
 .ui-bar-a {
 	border: 1px solid 		#333 /*{a-bar-border}*/;
 	background: 			#111 /*{a-bar-background-color}*/;
