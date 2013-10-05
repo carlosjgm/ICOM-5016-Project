@@ -10,11 +10,11 @@ var Product = products.Product;
 
 //Product(name, category, instantprice, description, model, photo, brand, dimensions, seller, nextbidprice)
 var productList = new Array(
-	new Product("Awesome Toothbrush", "Hygiene", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
-	new Product("Some Crappy Cologne", "Hygiene", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "", "Avon", "2'x4'x3'", "susyspider", 0.99),
-	new Product("5 Slices of Bread", "Food", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
-	new Product("Broken Heart Pinata", "Decoration", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
-	new Product("Muddy Shoes", "Shoes", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
+	new Product("Awesome Toothbrush", "sports-bicycle-parts", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
+	new Product("Some Crappy Cologne", "sports-fishing", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "", "Avon", "2'x4'x3'", "susyspider", 0.99),
+	new Product("5 Slices of Bread", "shoes-children", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
+	new Product("Broken Heart Pinata", "sports-bicycle-frames", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
+	new Product("Muddy Shoes", "shoes-women", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
 );
 
 //users---------------------------------------------------------------------------------------------
@@ -25,6 +25,7 @@ var User = users.User;
 var userList = new Array(
 	new User("carlosjgm", "123", "carlosjgm@gmail.com"),
 	new User("susyspider", "456", "susy@spider.com"),
+	new User("randaniel", "789", "randaniel@me.com"),
 	new User("user", "user", "user@icom5016.com"),
 	new User("admin", "admin", "admin@icom5016.com")
 );
@@ -41,6 +42,21 @@ for (var i=0; i < userList.length; ++i){
 	userList[i].id = userNextId++;
 }
 
+//sales
+var sales = require('./appjs/sales');
+var Sale = sales.Sale;
+
+//Sale(name, category, revenue, seller, buyer, date, photo)
+var salesList = new Array(
+	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg'),
+	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "user", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
+);
+
+var saleNextId = 0;
+for (var i=0; i < salesList.length; ++i){
+	salesList[i].id = saleNextId++;
+	userList[1].sales.push(i);
+}
 
 //server configuration----------------------------------------------------------------------------------
 app.use(express.bodyParser());
@@ -427,10 +443,56 @@ app.post("/bid/:id", function(req, res){
 	
 });
 
-//return sales report
-app.get("/sales", function(req,res){
+//return sales report based on date and category
+app.post("/sales", function(req,res){
+	var fromDate = new Date(req.body.fromDate);
+	var toDate = new Date(req.body.toDate);
 	
+	console.log("Sales report. Category: " + req.body.category + ". From: " + fromDate.toDateString()
+					+ ". To: " + toDate.toDateString());
+					
+	if(fromDate.getFullYear=="" || toDate.getFullYear==""){
+		res.statusCode = 400;
+		res.send("Incorrect year format");
+	}
+	
+	else{
+		if(req.body['category']==null)
+			req.body['category']='all';
+			
+		var templist = new Array(), result = new Array();
+		var sale, temp, totalrevenue=0;
+		
+		//search by category
+		if(req.body.category != 'all'){
+			for(var i=0;i<salesList.length;i++){
+				sale = salesList[i];
+				if(sale.category == req.body['category'])
+					templist.push(sale);
+			}
+		}
+		else
+			templist = salesList;
+			
+		//search by date
+		for(var i=0;i<templist.length;i++){
+			sale = templist[i];
+			console.log(sale);
+			if(checkSalesDate(fromDate,toDate,sale.date)){
+				totalrevenue += sale.revenue;
+				result.push(sale);
+			}
+		}	
+			
+		res.statusCode = 200;
+		res.json({"sales":result,"totalRevenue":totalrevenue,"totalSales":result.length});
+	}
 });
+
+//returns true if item date is between fromDate and toDate
+function checkSalesDate(fromDate,toDate,saleDate){
+	return fromDate <= saleDate && toDate >= saleDate;
+};
 
 console.log("Server started. Listening on port 8888.");
 app.listen(8888);

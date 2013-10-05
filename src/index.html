@@ -313,7 +313,7 @@
 				<h4>My Sales</h4>
 				<ul data-role="listview">
 					<li><a href="#">Catalog</a></li>
-					<li><a href="#">Sales Report</a></li>
+					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
@@ -338,7 +338,7 @@
 	<div data-role="header" data-theme="a" data-position="fixed">
     	<a href="#category-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
     	<a id="browse-pid"></a>
-    	<script>profilebutton("#browse-pid");</script>
+    	<script>profilebutton("#browse-pid","account-panel");</script>
     	<h4>Browse</h4>
 	</div>
 	<!--list of products being sold-->
@@ -363,7 +363,7 @@
 
 <!--sales report-->
 <div id="sales" data-role="page">
-	<div data-role="panel" id="sales-panel" data-position="left" data-display="reveal" data-theme="a">
+	<div data-role="panel" id="sales-grid" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Sales by Category</h3>
 		<div data-role="collapsible-set">
 			<ul data-role="listview">
@@ -456,11 +456,49 @@
 		</div>
 	</div>
 	
+	<!-- right Panel -->
+	<div data-role="panel" id="sales-account-panel" data-position="right" data-display="reveal" data-theme="a">
+			
+		<div data-role="button" data-theme="a">
+			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
+			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
+			Fulano DeTal<br/>
+			Rating %</p>
+		</div>
+		
+		<div data-role="collapsible-set">
+			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
+				<h4>My Sales</h4>
+				<ul data-role="listview">
+					<li><a href="#">Catalog</a></li>
+					<li><a href="#sales">Sales Report</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
+			</div>
+		</div>
+			
+		<div data-role="controlgroup">
+			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
+			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
+			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
+			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+		</div>
+		
+		<div data-role="controlgroup">
+			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
+		</div>
+		
+	</div>
+	<!-- end right panel -->
+	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<a href="#sales-grid" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
 		<h2>Sales Report</h2>
 		<a id="sales-pid"></a>
-		<script>profilebutton("#sales-pid");</script>
+		<script>profilebutton("#sales-pid","sales-account-panel");</script>
 	</div>
 	
 	<div data-role="content">
@@ -470,24 +508,22 @@
 					<legend>From</legend>
 					<label for="from-sales-month">Month</label>
 					<select name="from-sales-month" id="from-sales-month">
-						<option>Month</option>
-						<option value="jan">Jan</option>
-						<option value="feb">Feb</option>
-						<option value="mar">Mar</option>
-						<option value="apr">Apr</option>
-						<option value="may">May</option>
-						<option value="jun">Jun</option>
-						<option value="jul">Jul</option>
-						<option value="aug">Aug</option>
-						<option value="sep">Sep</option>
-						<option value="oct">Oct</option>
-						<option value="nov">Nov</option>
-						<option value="dec">Dec</option>
+						<option value="0">Jan</option>
+						<option value="1">Feb</option>
+						<option value="2">Mar</option>
+						<option value="3">Apr</option>
+						<option value="4">May</option>
+						<option value="5">Jun</option>
+						<option value="6">Jul</option>
+						<option value="7">Aug</option>
+						<option value="8">Sep</option>
+						<option value="9">Oct</option>
+						<option value="10">Nov</option>
+						<option value="11">Dec</option>
 					</select>
 					
 					<label for="from-sales-day">Day</label>
 					<select name="from-sales-day" id="from-sales-day">
-						<option>Day</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="3">3</option>
@@ -529,24 +565,22 @@
 					<legend>To</legend>
 					<label for="to-sales-month" class="ui-hidden-accessible">Month</label>
 					<select name="to-sales-month" id="to-sales-month">
-						<option>Month</option>
-						<option value="jan">Jan</option>
-						<option value="feb">Feb</option>
-						<option value="mar">Mar</option>
-						<option value="apr">Apr</option>
-						<option value="may">May</option>
-						<option value="jun">Jun</option>
-						<option value="jul">Jul</option>
-						<option value="aug">Aug</option>
-						<option value="sep">Sep</option>
-						<option value="oct">Oct</option>
-						<option value="nov">Nov</option>
-						<option value="dec">Dec</option>
+						<option value="0">Jan</option>
+						<option value="1">Feb</option>
+						<option value="2">Mar</option>
+						<option value="3">Apr</option>
+						<option value="4">May</option>
+						<option value="5">Jun</option>
+						<option value="6">Jul</option>
+						<option value="7">Aug</option>
+						<option value="8">Sep</option>
+						<option value="9">Oct</option>
+						<option value="10">Nov</option>
+						<option value="11">Dec</option>
 					</select>
 					
 					<label for="to-sales-day" class="ui-hidden-accessible">Day</label>
 					<select name="to-sales-day" id="to-sales-day">
-						<option>Day</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="3">3</option>
@@ -585,10 +619,10 @@
 				</fieldset>
 			</form>
 			<a data-role="button" onclick="submitSales()" data-theme="b">Submit</a>
-				
-				
+					
 		</div>
-		<a id="sales-summary"></a>
+		<ul id="sales-list-header" data-role="listview" data-inset="true"></ul>
+		<ul id="sales-list" data-role="listview" data-filter="true" data-inset="true"></ul>
 	</div>
 </div>
 	
