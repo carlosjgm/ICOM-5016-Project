@@ -51,7 +51,7 @@
 <!--register user page-->
 <div id="register" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#login" data-icon="back" data-iconpos="notext">Back</a>
+		<a href="#login" data-icon="back">Back</a>
 		<h2>Register</h2>
 	</div>
 	<p hidden id="register-invalid"></p>
@@ -134,7 +134,7 @@
 <!--update card information-->
 <div id="cCard" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="delete" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a href="#browse" data-icon="delete" data-mini="true" data-inline="true">Back</a>
 		<h2>Credit Card Info</h2>
 	</div>
 		
@@ -330,13 +330,18 @@
 
 	<!-- right Panel -->
 	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
+		<div data-role="collapsible-set">	
+			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
+				<script>document.write(localStorage.getItem("username"))</script><br/>
+				Fulano DeTal<br/>
+				Rating %
+				</h4>
+				<ul data-role="listview">
+					<li>Info goes here (e.g. Address and Credit Card)</li>
+				</ul>
+			</div>
 		</div>
 		
 		<div data-role="collapsible-set">
@@ -353,7 +358,6 @@
 		</div>
 			
 		<div data-role="controlgroup">
-			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
 			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
@@ -367,7 +371,7 @@
 	<!-- end right panel -->
 
 	<div data-role="header" data-theme="a" data-position="fixed">
-    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
     	<a id="browse-pid"></a>
     	<script>profilebutton("#browse-pid","#browse-account-panel");</script>
     	<h4>Browse</h4>
@@ -381,47 +385,9 @@
 </div>
 
 <!--product page-->
-<div id="product" data-role="page">
-	<!-- right Panel -->
-	<div data-role="panel" id="product-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
-		</div>
-		
-		<div data-role="collapsible-set">
-			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
-				<h4>My Sales</h4>
-				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
-					<li><a href="#sales">Sales Report</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
-			</div>
-		</div>
-			
-		<div data-role="controlgroup">
-			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
-			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
-			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
-		</div>
-		
-		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
-		</div>
-		
-	</div>
-	<!-- end right panel -->
-	
+<div id="product" data-role="page">	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a data-rel="back" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h4>Product Page</h4>
 		<a id="product-pid"></a>
     	<script>profilebutton("#product-pid","#product-account-panel");</script>
@@ -450,7 +416,7 @@
 <!--account settings page-->
 <div id="account-settings" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a data-rel="back" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>My Account Settings</h2>
 	</div>
 	<div data-role="content">
@@ -467,7 +433,7 @@
 <!--administrator page-->
 <div id="admin" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a href="#browse" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Admin</h2>
 	</div>
 		
@@ -576,45 +542,11 @@
 		</div>
 	</div>
 	
-	<!-- right Panel -->
-	<div data-role="panel" id="sales-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
-		</div>
-		
-		<div data-role="collapsible-set">
-			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
-				<h4>My Sales</h4>
-				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
-					<li><a href="#sales">Sales Report</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
-			</div>
-		</div>
-			
-		<div data-role="controlgroup">
-			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
-			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
-		</div>
-		
-		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
-		</div>
-		
-	</div>
-<!-- end right panel -->
+	
+
 <!-- Sales Report -->	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Sales Report</h2>
 		<a id="sales-pid"></a>
 		<script>profilebutton("#sales-pid","#sales-account-panel");</script>
@@ -679,7 +611,7 @@
 							</select>
 							
 							<label for="from-sales-year" class="ui-hidden-accessible">Year</label>
-								<select name="year">
+								<select name="from-sales-year">
 									<option>2013</option><option>2012</option><option>2011</option><option>2010</option><option>2009</option><option>2008</option><option>2007</option><option>2006</option><option>2005</option><option>2004</option><option>2003</option><option>2002</option><option>2001</option><option>2000</option>
 									<option>1999</option><option>1998</option><option>1997</option><option>1996</option><option>1995</option><option>1994</option><option>1993</option><option>1992</option><option>1991</option><option>1990</option><option>1989</option><option>1988</option><option>1987</option><option>1986</option>
 									<option>1985</option><option>1984</option><option>1983</option><option>1982</option><option>1981</option><option>1980</option><option>1979</option><option>1978</option><option>1978</option><option>1977</option><option>1976</option><option>1975</option><option>1974</option><option>1973</option>
