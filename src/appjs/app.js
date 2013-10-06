@@ -1,34 +1,15 @@
 //load the complete product list to the browse page
-$(document).on('pagebeforeshow', "#browse", function( event, ui ) {
-	$.ajax({
-		url : "http://localhost:8888/browse",
-		contentType: "application/json",
-		success : function(data, textStatus, jqXHR){
-			var productList = data.products;
-			var list = $("#product-list");
-			list.empty();
-			var product;
-			for (var i=0; i < productList.length; ++i){
-				product = productList[i];
-				list.append("<li><a href='#product'><img src='" + product.photo + "' />"
-					+ "<h3>" + product.name + "</h3>"
-					+ "<p> Brand: " + product.brand + "</p>"
-					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
-					+ "</p></a></li>");
-					
-			}
-			list.listview("refresh");	
-		},
-		error: function(data, textStatus, jqXHR){
-			console.log("textStatus: " + textStatus);
-			alert("Data not found!");
-		}
-	});
+$(document).on('pagebeforeshow', "#browse", function() {
+	browseCategories('all');
 });
 
 //load today's sales list
-$(document).on('pagebeforeshow', "#sales", function( event, ui ) {
+$(document).on('pagebeforeshow', "#sales", function() {
 	salesCategories('all');
+});
+
+$(document).on('pagebeforeshow', "#product", function() {
+	$("#product").trigger("create");
 });
 
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
@@ -85,8 +66,8 @@ function logout(){
 
 //register new user and save username/password in local storage if successful
 //submits registration-form
-//goes to #cCard if successful
-//use express-mailer to send email 
+//goes to #browse if successful
+//TODO use express-mailer to send email 
 function register(){
 	$.mobile.loading("show");
 	var form = $("#registration-form");
@@ -112,8 +93,6 @@ function register(){
 			alert(data.responseText);			
 		}
 	});
-	
-	
 };
 
 //updates card information
@@ -132,10 +111,72 @@ function buy(id){
 };
 
 //bid on item id
-//goes to #bidding
+function placebid(id){
+	var bid = document.getElementById("offerbid").value;
+	var data = JSON.stringify({"bid":bid});
+	$.ajax({
+			url : "http://localhost:8888/bid/" + id ,
+			method: 'post',
+			data : data,
+			contentType: "application/json",
+			dataType: "json",
+			success : function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert("Bid accepted.");				
+				loadProductPage(id);
+			},
+			error: function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert(data.responseText);
+			}
+		});	
+};
+
+//loads product page
+//fills #product-content and goes to #product
+function loadProductPage(id){
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/product/" + id ,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var product = data.product;
+			var content = $("#product-content");
+			content.empty();
+			content.append("<img src='" + product.photo + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
+			content.append("<div style='text-align: left;'>" + product.name + "</div>");
+			content.append("<div id='item-info' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.seller + "</a></div>");
+			content.append("<div id='item-info' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div>");
+			content.append("<div data-theme='a' style='line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;' data-inline='true'>"
+				+ "<a data-role='button' href='#' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right'>Buy now</a>"
+				+ "<a data-role='button' href='#' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>"
+				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
+			var popup = $("#my-bid");
+			popup.empty();
+			popup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder='$ " + product.nextbidprice + "'/>");
+			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Place bid</a>");
+			var desc = $("#product-description");
+			desc.empty();
+			desc.append("<div data-role='collapsible' data-collapsed='true'>"
+					+ "<h4>Product Description</h4>"
+					+ product.description + "</div>"
+					+ "<li>Model: " + product.model + "</li>"	
+					+ "<li>Brand: " + product.brand + "</li>"
+					+ "<li>Product Dimensions: " + product.dimensions + "</li>");
+			$.mobile.loading("hide");
+			$.mobile.changePage("#product");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
+//loads seller page
 //TODO
-function bid(id){
-	
+function loadSellerPage(sellername){
+	alert(sellername + "'s Page.");
 };
 
 //shows sales report
@@ -145,7 +186,7 @@ function submitSales(){
 	$.mobile.loading("show");
 	
 	if(localStorage.getItem("salesInitialized")==undefined){
-		localStorage.setItem("category",'all');
+		localStorage.setItem("salesCategory",'all');
 		localStorage.setItem("salesInitialized",true);
 	}
 	
@@ -165,7 +206,7 @@ function submitSales(){
 		localStorage.setItem("fromDate",fromDate);
 		localStorage.setItem("toDate",toDate);
 		
-		var jsonData = JSON.stringify({"category":localStorage.getItem("category"),"fromDate":fromDate,"toDate":toDate});	
+		var jsonData = JSON.stringify({"category":localStorage.getItem("salesCategory"),"fromDate":fromDate,"toDate":toDate});	
 		$.ajax({
 			url : "http://localhost:8888/sales" ,
 			method: 'post',
@@ -175,10 +216,12 @@ function submitSales(){
 			success : function(data, textStatus, jqXHR){
 				var salesList = data.sales;
 				var list = $("#sales-list");
+				var header = $("#sales-list-header");
 				list.empty();
-				list.append("<li><h1>Category: " + localStorage.getItem("category") + ", From: " + (new Date(fromDate)).toDateString() 
-						+ ", To: " + (new Date(toDate)).toDateString() + "</h1> Total Revenue: $" + data.totalRevenue 
-						+ ", Total sales: "	+ data.totalSales + "</li>");
+				header.empty();
+				header.append("<li><h3>Category: " + localStorage.getItem("salesCategory") + ", From: " + fromDate.toDateString() 
+					+ ", To: " + toDate.toDateString() + "</h3> Total Revenue: $" + data.totalRevenue 
+					+ ", Total sales: "	+ data.totalSales + "</li>");
 				var sale;
 				for (var i=0; i < salesList.length; ++i){
 					sale = salesList[i];
@@ -186,6 +229,7 @@ function submitSales(){
 						", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
 				}
 				$.mobile.loading("hide");
+				header.listview("refresh");
 				list.listview("refresh");		
 			},
 			error: function(data, textStatus, jqXHR){
@@ -198,7 +242,6 @@ function submitSales(){
 
 //replaces #sales-list with a list of sales from category
 //stores category in localvariable
-//join salescategories and submitsales, save 
 function salesCategories(category){
 	$.mobile.loading("show");
 	if(localStorage.getItem("salesInitialized")==undefined){
@@ -211,7 +254,7 @@ function salesCategories(category){
 		localStorage.setItem("salesInitialized",true);
 	}
 	
-	localStorage.setItem("category", category);
+	localStorage.setItem("salesCategory", category);
 	var fromDate = localStorage.getItem("fromDate");
 	var toDate = localStorage.getItem("toDate");
 	var jsonData = JSON.stringify({"category":category,"fromDate":fromDate,"toDate":toDate});
@@ -237,6 +280,7 @@ function salesCategories(category){
 					", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
 			}
 			$.mobile.loading("hide");
+			header.listview("refresh");
 			list.listview("refresh");		
 		},
 		error: function(data, textStatus, jqXHR){
@@ -244,6 +288,39 @@ function salesCategories(category){
 			alert("Data not found.");			
 		}
 	});
+};
+
+//replaces #product-list with a list of products from category
+//stores category in localvariable
+function browseCategories(category){
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/browse/" + category ,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var productList = data.products;
+			var list = $("#product-list");
+			list.empty();
+			list.append("<li data-role='list-divider'>"+category+"</li>");
+			var product;
+			for (var i=0; i < productList.length; ++i){
+				product = productList[i];
+				list.append("<li><a onclick='loadProductPage(" + product.id + ")'><img src='" + product.photo + "' />"
+					+ "<h3>" + product.name + "</h3>"
+					+ "<p> Brand: " + product.brand + "</p>"
+					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
+					+ "</p></a></li>");
+					
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			console.log("textStatus: " + textStatus);
+			$.mobile.loading("hide");
+			alert("Data not found!");			
+		}
+	});	
 };
 
 //convert the form data to json format

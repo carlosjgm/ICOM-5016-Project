@@ -31,6 +31,10 @@ var userList = new Array(
 	new User("admin", "admin", "admin@icom5016.com")
 );
 
+var userNextId = 0;
+for (var i=0; i < userList.length; ++i){
+	userList[i].id = userNextId++;
+}
 
 var productNextId = 0;
 for (var i=0; i < productList.length; ++i){
@@ -38,10 +42,17 @@ for (var i=0; i < productList.length; ++i){
 	userList[1].selling.push(i);
 }
 
-var userNextId = 0;
-for (var i=0; i < userList.length; ++i){
-	userList[i].id = userNextId++;
-}
+var creditCards = require('./appjs/creditcard');
+var creditCard = creditCards.creditCard;
+
+//creditCard(holdername, carnum, ccv, expday, expmonth, expyear)
+var cCardList = new Array(
+	new creditCard("Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
+	new creditCard("Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
+	new creditCard("Randy Soto", "7890789078907890", "789", "7", "7", "2014")
+);
+for (var i=0;i<cCardList.length;i++)
+	userList[i].creditcard.push(cCardList[i]);
 
 //sales
 var sales = require('./appjs/sales');
@@ -50,7 +61,7 @@ var Sale = sales.Sale;
 //Sale(name, category, revenue, seller, buyer, date, photo)
 var salesList = new Array(
 	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg'),
-	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "user", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
+	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "susyspider", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
 );
 
 var saleNextId = 0;
@@ -58,13 +69,6 @@ for (var i=0; i < salesList.length; ++i){
 	salesList[i].id = saleNextId++;
 	userList[1].sales.push(i);
 }
-
-//uid, holdername, carnum, ccv, expday, expmonth, expyear
-var cCardList = new Array(
-	new User("1", "Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
-	new User("2", "Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
-	new User("3", "Randy Soto", "7890789078907890", "789", "7", "7", "2014")
-);
 
 //server configuration----------------------------------------------------------------------------------
 app.use(express.bodyParser());
@@ -93,18 +97,33 @@ function authorized(user, pass) {
 
 //REST API for products**************************************************************************************************************************
 
-//get all products------------------------------------------------------
-app.get('/browse', function(req, res){
-	console.log("Get all products request received.");
-	res.json({"products" : productList});
+//browse product by category------------------------------------------------------
+app.get('/browse/:category', function(req, res){
+	console.log("Get " + req.params.category + " products request received.");
+	
+	var templist = new Array();
+	var product;
+	
+	//search by category
+	if(req.params.category != 'all'){
+		for(var i=0;i<productList.length;i++){
+			product = productList[i];
+			if(product.category == req.params.category)
+				templist.push(product);
+		}
+	}
+	else
+		templist = productList;
+		
+	res.json({"products" : templist});
 });
 
 //get product by id-----------------------------------------------------
 app.get('/product/:id', function(req, res){
-	console.log("Get product " + req.params.id + "request received.");
+	console.log("Get product " + req.params.id + " request received.");
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
-		res.send('Error 404: No such product found.');
+		res.send('No such product found.');
 	}
 	else{
 		var id = req.params.id;
@@ -117,12 +136,12 @@ app.get('/product/:id', function(req, res){
 		}
 		if(target == -1){
 			res.statusCode = 404;
-			res.send('Error 404: No such product found.');
+			res.send('No such product found.');
 		}
 		else{
-			var product = productList[req.params.id];
+			var product = productList[target];
 			res.statusCode = 200;
-			res.json(product);	
+			res.json({"product":product});	
 		}
 	}	
 });
@@ -381,12 +400,16 @@ app.get("/user/:username", function(req, res){
 //user product methods****************************************************************************8
 //bid on item-------------------------------------------------------------
 app.post("/bid/:id", function(req, res){
-	console.log("Bid on item " + req.params.id);
+	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
 	
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
-		res.send('Error 404: No such product found.');
+		res.send('No such product found.');
 	}
+	
+	else if(req.body.bid == undefined || isNaN(req.body.bid))
+		res.send(400,"Please enter a valid bid value.");
+		
 	else{
 		//find item being bidded on
 		var id = req.params.id;
@@ -400,13 +423,15 @@ app.post("/bid/:id", function(req, res){
 		
 		if(target == -1){
 			res.statusCode = 404;
-			res.send('Error 404: No such product found.');
+			res.send('No such product found.');
 		}
 		else if(productList[target].nextbidprice >= req.body.bid){
-			console.log("request bid price: " + req.body.bid);
 			res.statusCode = 400;
-			res.send('Error 400: Bid price must be higher than $' + productList[target].nextbidprice + '.');
+			res.send('Bid price must be higher than $' + productList[target].nextbidprice + '.');
 		}
+		else if(productList[target].instantprice <= req.body.bid)
+			res.send(400, 'Bid price must be lower than the instant price $' + productList[target].instantprice);
+			
 		else{
 			var item = productList[target];
 			
@@ -434,7 +459,7 @@ app.post("/bid/:id", function(req, res){
 					}
 				}
 				res.statusCode = 200;
-				res.send('New bid accepted.');
+				res.json(true);
 			}
 			//previous bidder, update bid
 			else{
@@ -451,7 +476,7 @@ app.post("/bid/:id", function(req, res){
 							}				
 				}
 				res.statusCode = 200;
-				res.send('Bid updated.');
+				res.json(true);
 			}
 		}
 	}
@@ -492,7 +517,6 @@ app.post("/sales", function(req,res){
 		//search by date
 		for(var i=0;i<templist.length;i++){
 			sale = templist[i];
-			console.log(sale);
 			if(checkSalesDate(fromDate,toDate,sale.date)){
 				totalrevenue += sale.revenue;
 				result.push(sale);

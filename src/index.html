@@ -51,7 +51,7 @@
 <!--register user page-->
 <div id="register" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#login" data-icon="back" data-iconpos="notext">Back</a>
+		<a href="#login" data-icon="back" >Back</a>
 		<h2>Register</h2>
 	</div>
 	<p hidden id="register-invalid"></p>
@@ -134,7 +134,7 @@
 <!--update card information-->
 <div id="cCard" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="delete" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="delete" data-mini="true" data-inline="true">Back</a>
 		<h2>Credit Card Info</h2>
 	</div>
 		
@@ -237,54 +237,57 @@
 	<div data-role="panel" id="browse-panel" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Search by Category</h3>
 		<div data-role="collapsible-set">
+			<ul data-role="listview">
+				<li><a onclick="browseCategories('all')">All</a></li>
+			</ul>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Books</h4>
 				<ul data-role="listview">
-					<li><a href="#">Children</a></li>
-					<li><a href="#">Fiction</a></li>
-					<li><a href="#">Technology</a></li>
-					<li><a href="#">Business</a></li>
+					<li><a onclick="browseCategories('books-children')">Children</a></li>
+					<li><a onclick="browseCategories('books-fiction')">Fiction</a></li>
+					<li><a onclick="browseCategories('books-technology')">Technology</a></li>
+					<li><a onclick="browseCategories('books-business')">Business</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Electronics</h4>
 				<ul data-role="listview">
-					<li><a href="#">TV</a></li>
-					<li><a href="#">Audio</a></li>
-					<li><a href="#">Phones</a></li>
-					<li><a href="#">Cameras</a></li>
-					<li><a href="#">Video</a></li>
+					<li><a onclick="browseCategories('electronics-tv')">TV</a></li>
+					<li><a onclick="browseCategories('electronics-audio')">Audio</a></li>
+					<li><a onclick="browseCategories('electronics-phones')">Phones</a></li>
+					<li><a onclick="browseCategories('electronics-cameras')">Cameras</a></li>
+					<li><a onclick="browseCategories('electronics-video')">Video</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Computers</h4>
 				<ul data-role="listview">
-					<li><a href="#">Laptops</a></li>
-					<li><a href="#">Desktops</a></li>
-					<li><a href="#">Tablets</a></li>
-					<li><a href="#">Printers</a></li>
+					<li><a onclick="browseCategories('computers-laptops')">Laptops</a></li>
+					<li><a onclick="browseCategories('computers-desktops')">Desktops</a></li>
+					<li><a onclick="browseCategories('computers-tablets')">Tablets</a></li>
+					<li><a onclick="browseCategories('computers-printers')">Printers</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Clothing</h4>
 				<ul id="custom-listview" data-role="listview">
-					<li class="custom-li-first"><a href="#">Children</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('clothing-children')">Children</a></li>
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Men</h4>
 								<ul data-role="listview">
-									<li><a href="#">Shirts</a></li>
-									<li><a href="#">Pants</a></li>
-									<li><a href="#">Dresses</a></li>
+									<li><a onclick="browseCategories('clothing-men-shirts')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-men-pants')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-men-dresses')">Dresses</a></li>
 								</ul>
 							</div>
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Women</h4>
 								<ul data-role="listview">
-									<li><a href="#">Shirts</a></li>
-									<li><a href="#">Pants</a></li>
-									<li><a href="#">Dresses</a></li>
+									<li><a onclick="browseCategories('clothing-women-shirts')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-women-pants')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-women-dresses')">Dresses</a></li>
 								</ul>
 							</div>
 						</div>
@@ -294,9 +297,9 @@
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Shoes</h4>
 				<ul data-role="listview">
-					<li><a href="#">Children</a></li>
-					<li><a href="#">Women</a></li>
-					<li><a href="#">Men</a></li>
+					<li><a onclick="browseCategories('shoes-children')">Children</a></li>
+					<li><a onclick="browseCategories('shoes-women')">Women</a></li>
+					<li><a onclick="browseCategories('shoes-men')">Men</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
@@ -304,21 +307,21 @@
 				<ul id="custom-listview" data-role="listview">
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" data-inset="false">
 								<h4>Bicycles</h4>
 								<ul data-role="listview">
-									<li><a href="#">Frames</a></li>
-									<li><a href="#">Wheels</a></li>
-									<li><a href="#">Helmet</a></li>
-									<li><a href="#">Parts</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-frames')">Frames</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-wheels')">Wheels</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-helmet')">Helmet</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-parts')">Parts</a></li>
 								</ul>
 							</div>
 						</div>
 					</li>
-					<li class="custom-li-first"><a href="#">Fishing</a></li>
-					<li class="custom-li-first"><a href="#">Basebal</a></li>
-					<li class="custom-li-first"><a href="#">Golf</a></li>
-					<li class="custom-li-first"><a href="#">Basketball</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-fishing')">Fishing</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baseball')">Baseball</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-golf')">Golf</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baskeball')">Basketball</a></li>
 				</ul>
 			</div>
 		</div>
@@ -327,13 +330,18 @@
 
 	<!-- right Panel -->
 	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" href="#seller" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
+		<div data-role="collapsible-set">	
+			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
+				<script>document.write(localStorage.getItem("username"))</script><br/>
+				Fulano DeTal<br/>
+				Rating %
+				</h4>
+				<ul data-role="listview">
+					<li>Info goes here (e.g. Address and Credit Card)</li>
+				</ul>
+			</div>
 		</div>
 		
 		<div data-role="collapsible-set">
@@ -350,7 +358,6 @@
 		</div>
 			
 		<div data-role="controlgroup">
-			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
 			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
@@ -364,7 +371,7 @@
 	<!-- end right panel -->
 
 	<div data-role="header" data-theme="a" data-position="fixed">
-    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
     	<a id="browse-pid"></a>
     	<script>profilebutton("#browse-pid","#browse-account-panel");</script>
     	<h4>Browse</h4>
@@ -381,13 +388,18 @@
 <div id="product" data-role="page">
 	<!-- right Panel -->
 	<div data-role="panel" id="product-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
+		<div data-role="collapsible-set">	
+			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
+				<script>document.write(localStorage.getItem("username"))</script><br/>
+				Fulano DeTal<br/>
+				Rating %
+				</h4>
+				<ul data-role="listview">
+					<li>Info goes here (e.g. Address and Credit Card)</li>
+				</ul>
+			</div>
 		</div>
 		
 		<div data-role="collapsible-set">
@@ -404,10 +416,9 @@
 		</div>
 			
 		<div data-role="controlgroup">
-			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
 		</div>
 		
 		<div data-role="controlgroup">
@@ -416,30 +427,23 @@
 		
 	</div>
 	<!-- end right panel -->
-	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h4>Product Page</h4>
 		<a id="product-pid"></a>
     	<script>profilebutton("#product-pid","#product-account-panel");</script>
 	</div>
 	<div data-role="content">
 		<div data-role="button" data-theme="a" style="line-height: 1.5; width: 100%; height: 130px;" data-inline="true">
-			<img src="http://umbrella-eqal.s3.amazonaws.com/s3photo/UEcPP9gpg8btrld88dUjZzFk.jpeg" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<div style="text-align: left;">Product Name</div>
-			<div id="item-info" style="text-align: left;" href="#">Seller</div>
-			<div id="item-info" data-mini="true" style="text-align: left;" href="#">Starting bid: $0.00</div>
-			<div data-theme="a" style="line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;" data-inline="true">
-				<a data-role="button" href="#" data-theme="e" data-icon="arrow-r" data-mini="true" data-iconpos="right">Buy now</a>
-				<a data-role="button" href="#" data-theme="b" data-icon="plus" data-mini="true" data-iconpos="right">Add to cart</a>
-				<div data-role="collapsible" href="#" data-theme="c" data-collapsed-icon="arrow-r" and data-expanded-icon="arrow-d" data-mini="true" data-iconpos="right">
-					<h4>Place Bid</h4>
-					<div data-theme="c" data-content-theme="c"><input type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/></div>
-				</div>
-			</div>
+			<a id="product-content"></a>
 		</div>
-				
+		
+		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<h3>Place Bid?</h3>
+			<a id="my-bid"></a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
+		</div>
+
 		<ul data-role="listview" data-inset="true">
 			<div data-role="collapsible" data-collapsed="true">
 				<h4>Item Description</h4>
@@ -456,13 +460,14 @@
 			<li>Brand: product.brand</li>
 			<li>Product Dimensions: X" x Y" x Z"</li>
 		</ul>
+		<ul id="product-description" data-role="listview" data-inset="true"></ul>
 	</div>
-</div>
+</div><!--end product page-->
 
 <!--account settings page-->
 <div id="account-settings" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>My Account Settings</h2>
 	</div>
 	<div data-role="content">
@@ -479,7 +484,7 @@
 <!--administrator page-->
 <div id="admin" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a href="#browse" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Admin</h2>
 	</div>
 		
@@ -508,8 +513,8 @@
 		</div>
 	</div>
 </div>
-
-<!--sales report-->
+	
+<!-- Sales by Category -->
 <div id="sales" data-role="page">
 	<div data-role="panel" id="sales-panel" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Sales by Category</h3>
@@ -604,49 +609,11 @@
 		</div>
 	</div>
 	
-	<!-- right Panel -->
-	<div data-role="panel" id="sales-account-panel" data-position="right" data-display="reveal" data-theme="a">
-			
-		<div data-role="button" data-theme="a">
-			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Fulano DeTal<br/>
-			Rating %</p>
-		</div>
-		
-		<div data-role="collapsible-set">
-			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
-				<h4>My Sales</h4>
-				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
-					<li><a href="#sales">Sales Report</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
-			</div>
-		</div>
-			
-		<div data-role="controlgroup">
-			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
-			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
-			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
-		</div>
-		
-		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
-		</div>
-		
-	</div>
-	<!-- end right panel -->
-	
+<!-- Sales Report -->
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
 		<h2>Sales Report</h2>
-		<a id="sales-pid"></a>
-		<script>profilebutton("#sales-pid","#sales-account-panel");</script>
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 	</div>
 	
 	<div data-role="content">
@@ -708,7 +675,16 @@
 							</select>
 							
 							<label for="from-sales-year" class="ui-hidden-accessible">Year</label>
-							<input type="number" name="from-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+							<select name="from-sales-year">
+								<option>2013</option><option>2012</option><option>2011</option><option>2010</option><option>2009</option><option>2008</option><option>2007</option><option>2006</option><option>2005</option><option>2004</option><option>2003</option><option>2002</option><option>2001</option><option>2000</option>
+								<option>1999</option><option>1998</option><option>1997</option><option>1996</option><option>1995</option><option>1994</option><option>1993</option><option>1992</option><option>1991</option><option>1990</option><option>1989</option><option>1988</option><option>1987</option><option>1986</option>
+								<option>1985</option><option>1984</option><option>1983</option><option>1982</option><option>1981</option><option>1980</option><option>1979</option><option>1978</option><option>1978</option><option>1977</option><option>1976</option><option>1975</option><option>1974</option><option>1973</option>
+								<option>1972</option><option>1971</option><option>1970</option><option>1969</option><option>1968</option><option>1967</option><option>1966</option><option>1965</option><option>1964</option><option>1963</option><option>1962</option><option>1961</option><option>1960</option><option>1959</option>
+								<option>1958</option><option>1957</option><option>1956</option><option>1955</option><option>1954</option><option>1953</option><option>1952</option><option>1951</option><option>1950</option><option>1949</option><option>1948</option><option>1947</option><option>1946</option><option>1945</option>
+								<option>1944</option><option>1943</option><option>1942</option><option>1941</option><option>1940</option><option>1939</option><option>1938</option><option>1937</option><option>1936</option><option>1935</option><option>1934</option><option>1933</option><option>1932</option><option>1931</option>
+								<option>1930</option><option>1929</option><option>1928</option><option>1927</option><option>1926</option><option>1925</option><option>1924</option><option>1923</option><option>1922</option><option>1921</option><option>1920</option><option>1919</option><option>1918</option><option>1917</option>
+								<option>1916</option><option>1915</option><option>1914</option><option>1913</option><option>1912</option><option>1911</option><option>1909</option><option>1908</option><option>1907</option><option>1906</option><option>1905</option><option>1904</option><option>1903</option><option>1902</option>
+							</select>
 						</fieldset>
 					</li>
 					<li data-role="fieldcontain">	
@@ -766,7 +742,16 @@
 							</select>
 							
 							<label for="to-sales-year" class="ui-hidden-accessible">Year</label>
-							<input type="number" name="to-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+							<select name="to-sales-year">
+								<option>2013</option><option>2012</option><option>2011</option><option>2010</option><option>2009</option><option>2008</option><option>2007</option><option>2006</option><option>2005</option><option>2004</option><option>2003</option><option>2002</option><option>2001</option><option>2000</option>
+								<option>1999</option><option>1998</option><option>1997</option><option>1996</option><option>1995</option><option>1994</option><option>1993</option><option>1992</option><option>1991</option><option>1990</option><option>1989</option><option>1988</option><option>1987</option><option>1986</option>
+								<option>1985</option><option>1984</option><option>1983</option><option>1982</option><option>1981</option><option>1980</option><option>1979</option><option>1978</option><option>1978</option><option>1977</option><option>1976</option><option>1975</option><option>1974</option><option>1973</option>
+								<option>1972</option><option>1971</option><option>1970</option><option>1969</option><option>1968</option><option>1967</option><option>1966</option><option>1965</option><option>1964</option><option>1963</option><option>1962</option><option>1961</option><option>1960</option><option>1959</option>
+								<option>1958</option><option>1957</option><option>1956</option><option>1955</option><option>1954</option><option>1953</option><option>1952</option><option>1951</option><option>1950</option><option>1949</option><option>1948</option><option>1947</option><option>1946</option><option>1945</option>
+								<option>1944</option><option>1943</option><option>1942</option><option>1941</option><option>1940</option><option>1939</option><option>1938</option><option>1937</option><option>1936</option><option>1935</option><option>1934</option><option>1933</option><option>1932</option><option>1931</option>
+								<option>1930</option><option>1929</option><option>1928</option><option>1927</option><option>1926</option><option>1925</option><option>1924</option><option>1923</option><option>1922</option><option>1921</option><option>1920</option><option>1919</option><option>1918</option><option>1917</option>
+								<option>1916</option><option>1915</option><option>1914</option><option>1913</option><option>1912</option><option>1911</option><option>1909</option><option>1908</option><option>1907</option><option>1906</option><option>1905</option><option>1904</option><option>1903</option><option>1902</option>
+							</select>
 						</fieldset>
 					</li> 
 					<li class="ui-body ui-body-b">
