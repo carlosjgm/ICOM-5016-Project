@@ -42,7 +42,7 @@
 	</div>
 	<div data-role="content">
 		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
-			<input id="reset" name="resetemail" type="email" placeholder="Email"/> 
+			<input id="resetemail" name="resetemail" type="email" placeholder="Email"/> 
 			<input type='submit' value='Reset'/><br />
 		</form>
 	</div>
@@ -52,54 +52,82 @@
 <div id="register" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
 		<a href="#login" data-icon="back" data-iconpos="notext">Back</a>
-		<h2>Ebay - Register</h2>
+		<h2>Register</h2>
 	</div>
-	
+	<p hidden id="register-invalid"></p>
 	<div data-role="content">
-		<form id='registration-form'>
-			<label for="newusername" class="ui-hidden-accessible">Username:</label>
-			<input id="newusername" name="newusername" type="text" placeholder="Username" />
-			<label for="newpassword" class="ui-hidden-accessible">Password:</label>
-			<input id="newpassword" name="newpassword" type="password" placeholder="Password" /><br />
-			<label for="select-country" class="select">Country/Region:</label>
-			<select name="select-country" id="select-country">
-				<option value="us">United States</option>
-				<option value="uk">United Kingdom</option>
-				<option value="australia">Australia</option>
-				<option value="everywhere-else">Everywhere else</option>
-			</select>
-					
-			<label for="fname">First Name:</label>
-			<input type="text" name="name" id="fname" data-mini="true" />
-			
-			<label for="lname">Last Name:</label>
-			<input type="text" name="lname" id="lname" data-mini="true" />
-			
-			<label for="address1">Street Address:</label>
-			<input type="text" name="address1" id="address1" data-mini="true" />
-			<label for="address2" class="ui-hidden-accessible">Street Address 2:</label>
-			<input type="text" name="address2" id="address2" data-mini="true" />
-			
-			<label for="city">City:</label>
-			<input type="text" name="city" id="city" data-mini="true" />
-			
-			<label for="select-state" class="select">State:</label>
-			<select name="select-state" id="select-state">
-				<option value="fl">Florida</option>
-				<option value="ca">California</option>
-				<option value="ny">New York</option>
-				<option value="tx">Texas</option>
-				<option value="md">Maryland</option>
-				<option value="ee">Everywhere else</option>
-			</select>
-			
-			<label for="phone-num">Phone number:</label>
-			<input type="number" name="phone-num" id="phone-num" data-mini="true" maxlength="12" placeholder="787-555-5555"/>
-			
-			<label for="email">Email:</label>
-			<input type="email" name="email" id="email" data-mini="true" placeholder="username@site.com"/>
-		</form>
-		<a data-role="button" onclick="register()" data-theme="b">Submit</a>
+		<div class="content-primary">
+			<form id='registration-form'>
+				<ul data-role="listview">
+					<li data-role="fieldcontain">
+						<label for="newusername">Username:</label>
+						<input id="newusername" name="newusername" type="text" placeholder="Username" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newpassword">Password:</label>
+						<input id="newpassword" name="newpassword" type="password" placeholder="Password" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newemail">Email:</label>
+						<input id="newemail" name="newemail"  type="email" placeholder="username@site.com" />
+					</li>
+					<li data-role="fieldcontain">		
+						<label for="newfname">First Name:</label>
+						<input id="newfname" name="newfname" type="text" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newlname">Last Name:</label>
+						<input id="newlname" name="newlname" type="text" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newselectcountry" class="select">Country/Region:</label>
+						<select name="newselectcountry" id="newselectcountry">
+							<option value="us">United States</option>
+							<option value="uk">United Kingdom</option>
+							<option value="australia">Australia</option>
+							<option value="everywhere-else">Everywhere else</option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newaddress1">Street Address 1:</label>
+						<input type="text" name="newddress1" id="newaddress1" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newaddress2">Street Address 2:</label>
+						<input type="text" name="newaddress2" id="newaddress2" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newcity">City:</label>
+						<input type="text" name="newcity" id="newcity" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newzipcode">Zipcode:</label>
+						<input type="number" name="newzipcode" id="newzipcode" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newselectstate" class="select">State:</label>
+						<select name="newselectstate" id="newselectstate">
+							<option value="fl">Florida</option>
+							<option value="ca">California</option>
+							<option value="ny">New York</option>
+							<option value="tx">Texas</option>
+							<option value="md">Maryland</option>
+							<option value="ee">Everywhere else</option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newphonenum">Phone number:</label>
+						<input type="number" name="newphonenum" id="newphonenum" data-mini="true" maxlength="12" placeholder="787-555-5555"/>
+					</li>
+								
+					<li class="ui-body ui-body-b">
+						<fieldset class="ui-grid-a">
+							<a data-role="button" onclick="register()" data-theme="b">Submit</a>
+						</fieldset>
+					</li>
+				</ul>
+			</form>
+		</div>
 	</div>
 </div>
 
@@ -206,7 +234,7 @@
 <!--browse page -->
 <div id="browse" data-role="page">
 	<!--left panel-->
-	<div data-role="panel" id="category-panel" data-position="left" data-display="reveal" data-theme="a">
+	<div data-role="panel" id="browse-panel" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Search by Category</h3>
 		<div data-role="collapsible-set">
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
@@ -298,7 +326,7 @@
 	<!--end left panel-->
 
 	<!-- right Panel -->
-	<div data-role="panel" id="account-panel" data-position="right" data-display="reveal" data-theme="a">
+	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
 			
 		<div data-role="button" data-theme="a">
 			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
@@ -336,25 +364,64 @@
 	<!-- end right panel -->
 
 	<div data-role="header" data-theme="a" data-position="fixed">
-    	<a href="#category-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
     	<a id="browse-pid"></a>
-    	<script>profilebutton("#browse-pid","account-panel");</script>
+    	<script>profilebutton("#browse-pid","#browse-account-panel");</script>
     	<h4>Browse</h4>
 	</div>
 	<!--list of products being sold-->
 	<div data-role="content">
-		<ul id="product-list" data-role="listview" data-filter="true" data-inset="true">
-		</ul>
+		<div class="content-primary">
+			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+		</div>
 	</div>
 </div>
 
 <!--product page-->
 <div id="product" data-role="page">
+	<!-- right Panel -->
+	<div data-role="panel" id="product-account-panel" data-position="right" data-display="reveal" data-theme="a">
+			
+		<div data-role="button" data-theme="a">
+			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
+			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
+			Fulano DeTal<br/>
+			Rating %</p>
+		</div>
+		
+		<div data-role="collapsible-set">
+			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
+				<h4>My Sales</h4>
+				<ul data-role="listview">
+					<li><a href="#">Catalog</a></li>
+					<li><a href="#sales">Sales Report</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
+			</div>
+		</div>
+			
+		<div data-role="controlgroup">
+			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
+			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
+			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
+			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+		</div>
+		
+		<div data-role="controlgroup">
+			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
+		</div>
+		
+	</div>
+	<!-- end right panel -->
+	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#category-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
 		<h4>Product Page</h4>
-		<a id="browse-pid"></a>
-    	<script>profilebutton("#browse-pid");</script>
+		<a id="product-pid"></a>
+    	<script>profilebutton("#product-pid","#product-account-panel");</script>
 	</div>
 	<div data-role="content">
 		<div data-role="button" data-theme="a" style="line-height: 1.5; width: 100%; height: 130px;" data-inline="true">
@@ -407,7 +474,7 @@
 
 <!--sales report-->
 <div id="sales" data-role="page">
-	<div data-role="panel" id="sales-grid" data-position="left" data-display="reveal" data-theme="a">
+	<div data-role="panel" id="sales-panel" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Sales by Category</h3>
 		<div data-role="collapsible-set">
 			<ul data-role="listview">
@@ -539,131 +606,139 @@
 	<!-- end right panel -->
 	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#sales-grid" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
+		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-iconpos="notext" data-inline="true">Categories</a>
 		<h2>Sales Report</h2>
 		<a id="sales-pid"></a>
-		<script>profilebutton("#sales-pid","sales-account-panel");</script>
+		<script>profilebutton("#sales-pid","#sales-account-panel");</script>
 	</div>
 	
 	<div data-role="content">
-		<div data-role="fieldcontain">
-			<form id="sales-form">			
-				<fieldset data-role="controlgroup" data-type="horizontal">
-					<legend>From</legend>
-					<label for="from-sales-month">Month</label>
-					<select name="from-sales-month" id="from-sales-month">
-						<option value="0">Jan</option>
-						<option value="1">Feb</option>
-						<option value="2">Mar</option>
-						<option value="3">Apr</option>
-						<option value="4">May</option>
-						<option value="5">Jun</option>
-						<option value="6">Jul</option>
-						<option value="7">Aug</option>
-						<option value="8">Sep</option>
-						<option value="9">Oct</option>
-						<option value="10">Nov</option>
-						<option value="11">Dec</option>
-					</select>
-					
-					<label for="from-sales-day">Day</label>
-					<select name="from-sales-day" id="from-sales-day">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-						<option value="6">6</option>
-						<option value="7">7</option>
-						<option value="8">8</option>
-						<option value="9">9</option>
-						<option value="10">10</option>
-						<option value="11">11</option>
-						<option value="12">12</option>
-						<option value="13">13</option>
-						<option value="14">14</option>
-						<option value="15">15</option>
-						<option value="16">16</option>
-						<option value="17">17</option>
-						<option value="18">18</option>
-						<option value="19">19</option>
-						<option value="20">20</option>
-						<option value="21">21</option>
-						<option value="22">22</option>
-						<option value="23">23</option>
-						<option value="24">24</option>
-						<option value="25">25</option>
-						<option value="26">26</option>
-						<option value="27">27</option>
-						<option value="28">28</option>
-						<option value="29">29</option>
-						<option value="30">30</option>
-						<option value="31">31</option>
-					</select>
-					
-					<label for="from-sales-year" class="ui-hidden-accessible">Year</label>
-					<input type="number" name="from-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
-				</fieldset>
-				
-				<fieldset data-role="controlgroup" data-type="horizontal">
-					<legend>To</legend>
-					<label for="to-sales-month" class="ui-hidden-accessible">Month</label>
-					<select name="to-sales-month" id="to-sales-month">
-						<option value="0">Jan</option>
-						<option value="1">Feb</option>
-						<option value="2">Mar</option>
-						<option value="3">Apr</option>
-						<option value="4">May</option>
-						<option value="5">Jun</option>
-						<option value="6">Jul</option>
-						<option value="7">Aug</option>
-						<option value="8">Sep</option>
-						<option value="9">Oct</option>
-						<option value="10">Nov</option>
-						<option value="11">Dec</option>
-					</select>
-					
-					<label for="to-sales-day" class="ui-hidden-accessible">Day</label>
-					<select name="to-sales-day" id="to-sales-day">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-						<option value="6">6</option>
-						<option value="7">7</option>
-						<option value="8">8</option>
-						<option value="9">9</option>
-						<option value="10">10</option>
-						<option value="11">11</option>
-						<option value="12">12</option>
-						<option value="13">13</option>
-						<option value="14">14</option>
-						<option value="15">15</option>
-						<option value="16">16</option>
-						<option value="17">17</option>
-						<option value="18">18</option>
-						<option value="19">19</option>
-						<option value="20">20</option>
-						<option value="21">21</option>
-						<option value="22">22</option>
-						<option value="23">23</option>
-						<option value="24">24</option>
-						<option value="25">25</option>
-						<option value="26">26</option>
-						<option value="27">27</option>
-						<option value="28">28</option>
-						<option value="29">29</option>
-						<option value="30">30</option>
-						<option value="31">31</option>
-					</select>
-					
-					<label for="to-sales-year" class="ui-hidden-accessible">Year</label>
-					<input type="number" name="to-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
-				</fieldset>
-			</form>
-			<a data-role="button" onclick="submitSales()" data-theme="b">Submit</a>
-					
+		<div class="content-primary">
+			<form id="sales-form">
+				<ul data-role="listview">
+					<li data-role="fieldcontain">
+						<fieldset data-role="controlgroup" data-type="horizontal">
+							<legend>From</legend>
+							<label for="from-sales-month">Month</label>
+							<select name="from-sales-month" id="from-sales-month">
+								<option value="0">Jan</option>
+								<option value="1">Feb</option>
+								<option value="2">Mar</option>
+								<option value="3">Apr</option>
+								<option value="4">May</option>
+								<option value="5">Jun</option>
+								<option value="6">Jul</option>
+								<option value="7">Aug</option>
+								<option value="8">Sep</option>
+								<option value="9">Oct</option>
+								<option value="10">Nov</option>
+								<option value="11">Dec</option>
+							</select>
+							
+							<label for="from-sales-day">Day</label>
+							<select name="from-sales-day" id="from-sales-day">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+							</select>
+							
+							<label for="from-sales-year" class="ui-hidden-accessible">Year</label>
+							<input type="number" name="from-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+						</fieldset>
+					</li>
+					<li data-role="fieldcontain">	
+						<fieldset data-role="controlgroup" data-type="horizontal">
+							<legend>To</legend>
+							<label for="to-sales-month" class="ui-hidden-accessible">Month</label>
+							<select name="to-sales-month" id="to-sales-month">
+								<option value="0">Jan</option>
+								<option value="1">Feb</option>
+								<option value="2">Mar</option>
+								<option value="3">Apr</option>
+								<option value="4">May</option>
+								<option value="5">Jun</option>
+								<option value="6">Jul</option>
+								<option value="7">Aug</option>
+								<option value="8">Sep</option>
+								<option value="9">Oct</option>
+								<option value="10">Nov</option>
+								<option value="11">Dec</option>
+							</select>
+							
+							<label for="to-sales-day" class="ui-hidden-accessible">Day</label>
+							<select name="to-sales-day" id="to-sales-day">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+							</select>
+							
+							<label for="to-sales-year" class="ui-hidden-accessible">Year</label>
+							<input type="number" name="to-sales-year" data-mini="true" maxlength="4" placeholder="yyyy"/>
+						</fieldset>
+					</li> 
+					<li class="ui-body ui-body-b">
+						<fieldset class="ui-grid-a">
+							<a data-role="button" onclick="submitSales()" data-theme="b">Submit</a>
+						</fieldset> 
+					</li>
+				</ul> 
+			</form>		
 		</div>
 		<ul id="sales-list-header" data-role="listview" data-inset="true"></ul>
 		<ul id="sales-list" data-role="listview" data-filter="true" data-inset="true"></ul>

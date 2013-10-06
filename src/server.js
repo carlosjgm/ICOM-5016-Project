@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 
-
 //Initialize server data****************************************************************************************************
 //products-----------------------------------------------------------------------------------------
 var products = require('./appjs/products');
@@ -10,16 +9,18 @@ var Product = products.Product;
 
 //Product(name, category, instantprice, description, model, photo, brand, dimensions, seller, nextbidprice)
 var productList = new Array(
-	new Product("Awesome Toothbrush", "sports-bicycle-parts", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
-	new Product("Some Crappy Cologne", "sports-fishing", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "", "Avon", "2'x4'x3'", "susyspider", 0.99),
-	new Product("5 Slices of Bread", "shoes-children", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
-	new Product("Broken Heart Pinata", "sports-bicycle-frames", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
-	new Product("Muddy Shoes", "shoes-women", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
+	new Product("Awesome Toothbrush", "sports-bicycle-parts", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "http://diyhealth.com/wp-content/uploads/2013/04/used-toothbrush_64.jpg", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
+	new Product("Some Crappy Cologne", "sports-fishing", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "http://thatgirlything.files.wordpress.com/2011/09/pherlure_pheromone_perfume.jpg", "Avon", "2'x4'x3'", "susyspider", 0.99),
+	new Product("5 Slices of Bread", "shoes-children", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "http://us.123rf.com/400wm/400/400/lodka/lodka0908/lodka090800017/5629798-five-slices-of-rye-bread-on-a-white-plate.jpg", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
+	new Product("Broken Heart Pinata", "sports-bicycle-frames", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "http://images.fineartamerica.com/images-medium-large/my-heart-is-a-pinata-amy-s-turner.jpg", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
+	new Product("Muddy Shoes", "shoes-women", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "http://www.crossfitwillcounty.biz/files/2013/02/muddy-shoes_132039153.jpg", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
 );
 
 //users---------------------------------------------------------------------------------------------
 var users = require('./appjs/users');
 var User = users.User;
+var addresses = require('./appjs/address');
+var Address = addresses.Address;
 
 //User(username, password, email)
 var userList = new Array(
@@ -208,7 +209,7 @@ app.del('/product/:id', function(req, res) {
 	console.log("Delete product " + req.params.id + "request received.");
 	if(productList.length <= req.params.id || req.params.id < 0) {
 		res.statusCode = 404;
-		res.send('Error 404: No such product found');
+		res.send('No such product found');
 	}
 	else{
 		var id = req.params.id;
@@ -221,7 +222,7 @@ app.del('/product/:id', function(req, res) {
 		}
 		if (target == -1){
 			res.statusCode = 404;
-			res.send("Error 404: No such product found.");			
+			res.send("No such product found.");			
 		}	
 		else {	
 			var removed = productList.splice(req.params.id, 1);
@@ -238,7 +239,7 @@ app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
   	if(req.body.username == "" || req.bodypassword == ""){
 		res.statusCode = 400;
-		res.send('Error 400: The form has missing fields.');
+		res.send('The form has missing fields.');
 	}
 	else{
 		var target = -1;
@@ -250,7 +251,7 @@ app.post("/login", function(req, res){
 		}
 		if (target == -1){
 			res.statusCode = 404;
-			res.send("Error 404: Username/password entered not valid.");			
+			res.send("Username/password entered not valid.");			
 		}	
 		else if(userList[target].password == req.body.password) {	
 			res.statusCode = 200;
@@ -258,7 +259,7 @@ app.post("/login", function(req, res){
 		}
 		else{
 			res.statusCode = 404;
-			res.send("Error 404: Username/password entered not valid.");
+			res.send("Username/password entered not valid.");
 		}
 	}
 });
@@ -296,17 +297,24 @@ app.post("/register", function(req, res){
 		}
 		
 		else{
-			var newUser = {
-			id : userNextId++,
-			username : req.body.newusername,
-			password : req.body.newpassword,
-			email : req.body.newemail
-			};
+			var newUser = new User(req.body.newusername, req.body.newpassword, req.body.newemail);
+			newUser.id = userNextId++;
+			newUser.fname = req.body.newfname;
+			newUser.lname = req.body.newlname;
+			newUser.email = req.body.newemail;
+			newUser.address.push(new Address(
+				req.body.newaddress1,
+				req.body.newaddress2,
+				req.body.newcity,
+				req.body.newselectcountry,
+				req.body.newzipcode,
+				req.body.newselectstate));
+			newUser.telephone = req.body.newphonenum;
 			
 			userList.push(newUser);
 			
 			res.statusCode = 200;
-			res.redirect(req.body.URL);
+			res.json(true);
 		}
 	}
 });

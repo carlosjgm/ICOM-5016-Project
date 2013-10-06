@@ -10,11 +10,12 @@ $(document).on('pagebeforeshow', "#browse", function( event, ui ) {
 			var product;
 			for (var i=0; i < productList.length; ++i){
 				product = productList[i];
-				list.append("<li><h2><a href='#product'>" + product.name + "</a></h2><p><strong> Brand: " + product.brand + "</strong></p>" + 
-					"<p>" + product.description + "</p>" +
-					"<p class=\"ui-li-aside\"><button>Buy: $" + product.instantprice + "</button>" +
-					"<br /><button>Bid: $" + product.nextbidprice + "</button></p>" +
-					"</li>");
+				list.append("<li><a href='#product'><img src='" + product.photo + "' />"
+					+ "<h3>" + product.name + "</h3>"
+					+ "<p> Brand: " + product.brand + "</p>"
+					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
+					+ "</p></a></li>");
+					
 			}
 			list.listview("refresh");	
 		},
@@ -34,7 +35,7 @@ $(document).on('pagebeforeshow', "#sales", function( event, ui ) {
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
 	if(user != null)
-			$(buttonid).replaceWith("<a id='" + buttonid + "' href='#" + pagepanel + "' data-role='button' data-icon='bars' data-mini='true'"
+			$(buttonid).replaceWith("<a id='" + buttonid + "' href='" + pagepanel + "' data-role='button' data-icon='bars' data-mini='true'"
 				+ "data-inline='true'>" + user + "</a>");	
 	else
 		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#login' data-role='button' data-icon='check' data-iconpos='right' data-mini='true' data-inline='true'>Login</a>");
@@ -61,18 +62,8 @@ function login(){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			if (data.status == 404){
-				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>Invalid username/password. Please try again.</p>");
-				alert("Invalid username/password. Please try again.");
-			}
-			else if(data.status == 400){
-				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>The form has missing fields.</p>");
-				alert("The form has missing fields.");
-			}
-			else {
-				$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>Internal Error. Please try again.</p>");
-				alert("Internal Error.");		
-			}
+			$("#invalid").replaceWith("<br /><p id='invalid' style='color:red'>"+data.responseText+"</p>");
+			alert(data.responseText);
 		}
 	});
 	
@@ -97,7 +88,32 @@ function logout(){
 //goes to #cCard if successful
 //use express-mailer to send email 
 function register(){
-	$.mobile.changePage("#cCard");
+	$.mobile.loading("show");
+	var form = $("#registration-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	var logdatajson = JSON.stringify(logdata);
+	
+	$.ajax({
+		url : "http://localhost:8888/register" ,
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			localStorage.setItem("username", document.getElementById("newusername").value);
+			localStorage.setItem("password", document.getElementById("newpassword").value);
+			$.mobile.loading("hide");
+			$.mobile.changePage("#browse", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$("#register-invalid").replaceWith("<br /><p id='invalid' style='color:red'>"+data.responseText+"</p>");
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+	
+	
 };
 
 //updates card information
