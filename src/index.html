@@ -421,53 +421,28 @@
 	<!-- end right panel -->
 	
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
 		<h4>Product Page</h4>
 		<a id="product-pid"></a>
     	<script>profilebutton("#product-pid","#product-account-panel");</script>
 	</div>
 	<div data-role="content">
 		<div data-role="button" data-theme="a" style="line-height: 1.5; width: 100%; height: 130px;" data-inline="true">
-			<img src="http://umbrella-eqal.s3.amazonaws.com/s3photo/UEcPP9gpg8btrld88dUjZzFk.jpeg" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<div style="text-align: left;">Product Name</div>
-			<div id="item-info" style="text-align: left;" href="#">Seller</div>
-			<div id="item-info" data-mini="true" style="text-align: left;" href="#">Starting bid: $0.00</div>
-			<div data-theme="a" style="line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;" data-inline="true">
-				<a data-role="button" href="#" data-theme="e" data-icon="arrow-r" data-mini="true" data-iconpos="right">Buy now</a>
-				<a data-role="button" href="#" data-theme="b" data-icon="plus" data-mini="true" data-iconpos="right">Add to cart</a>
-				<!--<div data-role="collapsible" data-theme="c" data-collapsed-icon="arrow-r" and data-expanded-icon="arrow-d" data-mini="true" data-iconpos="right">
-					<h4>Place Bid</h4>
-					<div data-theme="c" data-content-theme="c">
-						<input id="my-bid" type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/>
-					</div> 
-				</div>-->
-				<a data-role="button" href="#bidpopup" data-theme="c" data-icon="arrow-r" data-mini="true" data-iconpos="right" data-rel="popup" data-position-to="window" data-transition="pop">Place bid</a>
-			</div>
+			<a id="product-content"></a>
 		</div>
 		
 		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 			<h3>Place Bid?</h3>
-			<input id="my-bid" type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/>
-			<a onclick="placebid(1)" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Place bid</a>
+			<a id="my-bid"></a>
 			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
 		</div>
 				
 		<ul data-role="listview" data-inset="true">
 			<div data-role="collapsible" data-collapsed="true">
-				<h4>Item Description</h4>
-				<div>
-					Sed quis nunc sapien. In volutpat porta orci. Nam accumsan metus at metus faucibus, sit amet lacinia mi tristique. 
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tristique tempor justo non facilisis. Sed convallis 
-						 mi orci, sed lobortis risus ullamcorper blandit. Pellentesque vitae odio gravida, dictum elit eu, eleifend ante. 
-						 Integer ac fringilla ante. Aenean a sapien elementum, molestie nisi et, ultrices risus. Donec nulla est, mollis 
-						 tincidunt varius nec, posuere sed urna. Donec semper justo vitae mauris ullamcorper sollicitudin. 
-						 Phasellus quis arcu ut mi feugiat ullamcorper.
-				</div>
+				<h4>Product Description</h4>
+				<div id="product-description"></div>
 			</div> 
-			<li>Model: product.model</li>
-			<li>Brand: product.brand</li>
-			<li>Product Dimensions: X" x Y" x Z"</li>
+			<li id="product-extended"></li>
 		</ul>
 	</div>
 </div>

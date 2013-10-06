@@ -120,10 +120,10 @@ app.get('/browse/:category', function(req, res){
 
 //get product by id-----------------------------------------------------
 app.get('/product/:id', function(req, res){
-	console.log("Get product " + req.params.id + "request received.");
+	console.log("Get product " + req.params.id + " request received.");
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
-		res.send('Error 404: No such product found.');
+		res.send('No such product found.');
 	}
 	else{
 		var id = req.params.id;
@@ -136,12 +136,12 @@ app.get('/product/:id', function(req, res){
 		}
 		if(target == -1){
 			res.statusCode = 404;
-			res.send('Error 404: No such product found.');
+			res.send('No such product found.');
 		}
 		else{
-			var product = productList[req.params.id];
+			var product = productList[target];
 			res.statusCode = 200;
-			res.json(product);	
+			res.json({"product":product});	
 		}
 	}	
 });
@@ -400,12 +400,16 @@ app.get("/user/:username", function(req, res){
 //user product methods****************************************************************************8
 //bid on item-------------------------------------------------------------
 app.post("/bid/:id", function(req, res){
-	console.log("Bid on item " + req.params.id);
+	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
 	
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
 		res.send('No such product found.');
 	}
+	
+	else if(req.body.bid == undefined || isNaN(req.body.bid))
+		res.send(400,"Please enter a valid bid value.");
+		
 	else{
 		//find item being bidded on
 		var id = req.params.id;
@@ -425,6 +429,9 @@ app.post("/bid/:id", function(req, res){
 			res.statusCode = 400;
 			res.send('Bid price must be higher than $' + productList[target].nextbidprice + '.');
 		}
+		else if(productList[target].instantprice <= req.body.bid)
+			res.send(400, 'Bid price must be lower than the instant price $' + productList[target].instantprice);
+			
 		else{
 			var item = productList[target];
 			

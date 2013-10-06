@@ -108,8 +108,7 @@ function buy(id){
 
 //bid on item id
 function placebid(id){
-	alert("Item ID: "+id +", Bid: $" + document.getElementById("my-bid").value);
-	var bid = document.getElementById("my-bid").value;
+	var bid = document.getElementById("offerbid").value;
 	var data = JSON.stringify({"bid":bid, "id":id});
 	$.ajax({
 			url : "http://localhost:8888/bid/" + id ,
@@ -119,7 +118,6 @@ function placebid(id){
 			dataType: "json",
 			success : function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
-				loadProductPage(id);
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
@@ -129,9 +127,50 @@ function placebid(id){
 };
 
 //loads product page
-//TODO
+//fills #product-content and goes to #product
 function loadProductPage(id){
-	
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/product/" + id ,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var product = data.product;
+			var content = $("#product-content");
+			content.empty();
+			content.append("<img src='" + product.photo + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
+			content.append("<div style='text-align: left;'>" + product.name + "</div>");
+			content.append("<div id='item-info' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.seller + "</a></div>");
+			content.append("<div id='item-info' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div>");
+			content.append("<div data-theme='a' style='line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;' data-inline='true'>"
+				+ "<a data-role='button' href='#' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right'>Buy now</a>"
+				+ "<a data-role='button' href='#' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>"
+				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
+			var popup = $("#my-bid");
+			popup.empty();
+			popup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder='$ " + product.nextbidprice + "'/>");
+			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Place bid</a>");
+			var desc = $("#product-description");
+			desc.empty();
+			desc.append(product.description);
+			var ext = $("#product-extended");
+			ext.empty();
+			ext.replaceWith("<li id='product-extended'>Model: " + product.model + "</li>"	
+				+ "<li>Brand: " + product.brand + "</li>"
+				+ "<li>Product Dimensions: " + product.dimensions + "</li>");
+			$.mobile.loading("hide");
+			$.mobile.changePage("#product");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
+//loads seller page
+//TODO
+function loadSellerPage(sellername){
+	alert(sellername + "'s Page.");
 };
 
 //shows sales report
@@ -249,7 +288,6 @@ function salesCategories(category){
 //stores category in localvariable
 function browseCategories(category){
 	$.mobile.loading("show");
-	//localStorage.setItem("browseCategory", category);
 	$.ajax({
 		url : "http://localhost:8888/browse/" + category ,
 		method: 'get',
@@ -261,7 +299,7 @@ function browseCategories(category){
 			var product;
 			for (var i=0; i < productList.length; ++i){
 				product = productList[i];
-				list.append("<li><a href='#product'><img src='" + product.photo + "' />"
+				list.append("<li><a onclick='loadProductPage(" + product.id + ")'><img src='" + product.photo + "' />"
 					+ "<h3>" + product.name + "</h3>"
 					+ "<p> Brand: " + product.brand + "</p>"
 					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice

@@ -1,5 +1,5 @@
 function Product(name, category, instantprice, description, model, photo, brand, dimensions, seller, nextbidprice){
-	this.id = "";
+	this.id;
 	this.name = name;
 	this.category = category;	
 	this.instantprice = instantprice;
