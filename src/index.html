@@ -407,7 +407,7 @@
 			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
 		</div>
 		
 		<div data-role="controlgroup">
@@ -433,11 +433,21 @@
 			<div data-theme="a" style="line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;" data-inline="true">
 				<a data-role="button" href="#" data-theme="e" data-icon="arrow-r" data-mini="true" data-iconpos="right">Buy now</a>
 				<a data-role="button" href="#" data-theme="b" data-icon="plus" data-mini="true" data-iconpos="right">Add to cart</a>
-				<div data-role="collapsible" href="#" data-theme="c" data-collapsed-icon="arrow-r" and data-expanded-icon="arrow-d" data-mini="true" data-iconpos="right">
+				<!--<div data-role="collapsible" data-theme="c" data-collapsed-icon="arrow-r" and data-expanded-icon="arrow-d" data-mini="true" data-iconpos="right">
 					<h4>Place Bid</h4>
-					<div data-theme="c" data-content-theme="c"><input type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/></div>
-				</div>
+					<div data-theme="c" data-content-theme="c">
+						<input id="my-bid" type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/>
+					</div> 
+				</div>-->
+				<a data-role="button" href="#bidpopup" data-theme="c" data-icon="arrow-r" data-mini="true" data-iconpos="right" data-rel="popup" data-position-to="window" data-transition="pop">Place bid</a>
 			</div>
+		</div>
+		
+		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<h3>Place Bid?</h3>
+			<input id="my-bid" type="number" name="my-bid" data-mini="true" placeholder="$ 00.00"/>
+			<a onclick="placebid(1)" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Place bid</a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
 		</div>
 				
 		<ul data-role="listview" data-inset="true">
@@ -462,7 +472,7 @@
 <!--account settings page-->
 <div id="account-settings" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<a data-rel="back" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
 		<h2>My Account Settings</h2>
 	</div>
 	<div data-role="content">
@@ -492,7 +502,7 @@
 <div id="seller" data-role="page">
 	
 </div>
-
+	
 <!--sales report-->
 <div id="sales" data-role="page">
 	<div data-role="panel" id="sales-panel" data-position="left" data-display="reveal" data-theme="a">
@@ -616,7 +626,7 @@
 			<!--a href="#login" data-role="button" data-theme="a">Log in</a-->
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
 		</div>
 		
 		<div data-role="controlgroup">

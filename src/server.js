@@ -31,6 +31,10 @@ var userList = new Array(
 	new User("admin", "admin", "admin@icom5016.com")
 );
 
+var userNextId = 0;
+for (var i=0; i < userList.length; ++i){
+	userList[i].id = userNextId++;
+}
 
 var productNextId = 0;
 for (var i=0; i < productList.length; ++i){
@@ -38,10 +42,17 @@ for (var i=0; i < productList.length; ++i){
 	userList[1].selling.push(i);
 }
 
-var userNextId = 0;
-for (var i=0; i < userList.length; ++i){
-	userList[i].id = userNextId++;
-}
+var creditCards = require('./appjs/creditcard');
+var creditCard = creditCards.creditCard;
+
+//creditCard(holdername, carnum, ccv, expday, expmonth, expyear)
+var cCardList = new Array(
+	new creditCard("Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
+	new creditCard("Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
+	new creditCard("Randy Soto", "7890789078907890", "789", "7", "7", "2014")
+);
+for (var i=0;i<cCardList.length;i++)
+	userList[i].creditcard.push(cCardList[i]);
 
 //sales
 var sales = require('./appjs/sales');
@@ -58,13 +69,6 @@ for (var i=0; i < salesList.length; ++i){
 	salesList[i].id = saleNextId++;
 	userList[1].sales.push(i);
 }
-
-//uid, holdername, carnum, ccv, expday, expmonth, expyear
-var cCardList = new Array(
-	new User("1", "Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
-	new User("2", "Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
-	new User("3", "Randy Soto", "7890789078907890", "789", "7", "7", "2014")
-);
 
 //server configuration----------------------------------------------------------------------------------
 app.use(express.bodyParser());
@@ -385,7 +389,7 @@ app.post("/bid/:id", function(req, res){
 	
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
-		res.send('Error 404: No such product found.');
+		res.send('No such product found.');
 	}
 	else{
 		//find item being bidded on
@@ -400,12 +404,11 @@ app.post("/bid/:id", function(req, res){
 		
 		if(target == -1){
 			res.statusCode = 404;
-			res.send('Error 404: No such product found.');
+			res.send('No such product found.');
 		}
 		else if(productList[target].nextbidprice >= req.body.bid){
-			console.log("request bid price: " + req.body.bid);
 			res.statusCode = 400;
-			res.send('Error 400: Bid price must be higher than $' + productList[target].nextbidprice + '.');
+			res.send('Bid price must be higher than $' + productList[target].nextbidprice + '.');
 		}
 		else{
 			var item = productList[target];

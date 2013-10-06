@@ -1,5 +1,4 @@
-function creditCard(uid, holdername, carnum, ccv, expday, expmonth, expyear){
-	this.uid = ""; //user associated with the ccard, foreign key from table 'users'
+function creditCard(holdername, carnum, ccv, expday, expmonth, expyear){
 	this.holdername; //credit card holder name
 	this.carnum;
 	this.ccv;
@@ -7,3 +6,5 @@ function creditCard(uid, holdername, carnum, ccv, expday, expmonth, expyear){
 	this.expmonth;
 	this.expyear;
 };
+
+exports.creditCard = creditCard;

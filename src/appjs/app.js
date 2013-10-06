@@ -85,8 +85,8 @@ function logout(){
 
 //register new user and save username/password in local storage if successful
 //submits registration-form
-//goes to #cCard if successful
-//use express-mailer to send email 
+//goes to #browse if successful
+//TODO use express-mailer to send email 
 function register(){
 	$.mobile.loading("show");
 	var form = $("#registration-form");
@@ -132,9 +132,29 @@ function buy(id){
 };
 
 //bid on item id
-//goes to #bidding
-//TODO
-function bid(id){
+function placebid(id){
+	alert("Item ID: "+id +", Bid: $" + document.getElementById("my-bid").value);
+	var bid = document.getElementById("my-bid").value;
+	var data = JSON.stringify({"bid":bid, "id":id});
+	$.ajax({
+			url : "http://localhost:8888/bid/" + id ,
+			method: 'post',
+			data : data,
+			contentType: "application/json",
+			dataType: "json",
+			success : function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				loadProductPage(id);
+			},
+			error: function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert(data.responseText);
+			}
+		});	
+};
+
+//loads product page
+function loadProductPage(id){
 	
 };
 
