@@ -10,7 +10,7 @@ $(document).on('pagebeforeshow', "#browse", function( event, ui ) {
 			var product;
 			for (var i=0; i < productList.length; ++i){
 				product = productList[i];
-				list.append("<li><h2>" + product.name + "</h2><p><strong> Brand: " + product.brand + "</strong></p>" + 
+				list.append("<li><h2><a href='#product'>" + product.name + "</a></h2><p><strong> Brand: " + product.brand + "</strong></p>" + 
 					"<p>" + product.description + "</p>" +
 					"<p class=\"ui-li-aside\"><button>Buy: $" + product.instantprice + "</button>" +
 					"<br /><button>Bid: $" + product.nextbidprice + "</button></p>" +
