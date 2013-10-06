@@ -61,7 +61,7 @@ var Sale = sales.Sale;
 //Sale(name, category, revenue, seller, buyer, date, photo)
 var salesList = new Array(
 	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg'),
-	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "user", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
+	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "susyspider", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
 );
 
 var saleNextId = 0;
@@ -459,7 +459,7 @@ app.post("/bid/:id", function(req, res){
 					}
 				}
 				res.statusCode = 200;
-				res.send('New bid accepted.');
+				res.json(true);
 			}
 			//previous bidder, update bid
 			else{
@@ -476,7 +476,7 @@ app.post("/bid/:id", function(req, res){
 							}				
 				}
 				res.statusCode = 200;
-				res.send('Bid updated.');
+				res.json(true);
 			}
 		}
 	}

@@ -1,11 +1,15 @@
 //load the complete product list to the browse page
-$(document).on('pagebeforeshow', "#browse", function( event, ui ) {
+$(document).on('pagebeforeshow', "#browse", function() {
 	browseCategories('all');
 });
 
 //load today's sales list
-$(document).on('pagebeforeshow', "#sales", function( event, ui ) {
+$(document).on('pagebeforeshow', "#sales", function() {
 	salesCategories('all');
+});
+
+$(document).on('pagebeforeshow', "#product", function() {
+	$("#product").trigger("create");
 });
 
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
@@ -109,7 +113,7 @@ function buy(id){
 //bid on item id
 function placebid(id){
 	var bid = document.getElementById("offerbid").value;
-	var data = JSON.stringify({"bid":bid, "id":id});
+	var data = JSON.stringify({"bid":bid});
 	$.ajax({
 			url : "http://localhost:8888/bid/" + id ,
 			method: 'post',
@@ -118,6 +122,8 @@ function placebid(id){
 			dataType: "json",
 			success : function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
+				alert("Bid accepted.");				
+				loadProductPage(id);
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
@@ -151,12 +157,12 @@ function loadProductPage(id){
 			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Place bid</a>");
 			var desc = $("#product-description");
 			desc.empty();
-			desc.append(product.description);
-			var ext = $("#product-extended");
-			ext.empty();
-			ext.replaceWith("<li id='product-extended'>Model: " + product.model + "</li>"	
-				+ "<li>Brand: " + product.brand + "</li>"
-				+ "<li>Product Dimensions: " + product.dimensions + "</li>");
+			desc.append("<div data-role='collapsible' data-collapsed='true'>"
+					+ "<h4>Product Description</h4>"
+					+ product.description + "</div>"
+					+ "<li>Model: " + product.model + "</li>"	
+					+ "<li>Brand: " + product.brand + "</li>"
+					+ "<li>Product Dimensions: " + product.dimensions + "</li>");
 			$.mobile.loading("hide");
 			$.mobile.changePage("#product");
 		},
