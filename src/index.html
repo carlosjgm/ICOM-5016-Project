@@ -328,7 +328,7 @@
 	<!-- right Panel -->
 	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
 			
-		<div data-role="button" data-theme="a">
+		<div data-role="button" href="#seller" data-theme="a">
 			<img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
 			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
 			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
@@ -445,11 +445,11 @@
 				<h4>Item Description</h4>
 				<div>
 					Sed quis nunc sapien. In volutpat porta orci. Nam accumsan metus at metus faucibus, sit amet lacinia mi tristique. 
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tristique tempor justo non facilisis. Sed convallis 
-						 mi orci, sed lobortis risus ullamcorper blandit. Pellentesque vitae odio gravida, dictum elit eu, eleifend ante. 
-						 Integer ac fringilla ante. Aenean a sapien elementum, molestie nisi et, ultrices risus. Donec nulla est, mollis 
-						 tincidunt varius nec, posuere sed urna. Donec semper justo vitae mauris ullamcorper sollicitudin. 
-						 Phasellus quis arcu ut mi feugiat ullamcorper.
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tristique tempor justo non facilisis. Sed convallis 
+					mi orci, sed lobortis risus ullamcorper blandit. Pellentesque vitae odio gravida, dictum elit eu, eleifend ante. 
+					Integer ac fringilla ante. Aenean a sapien elementum, molestie nisi et, ultrices risus. Donec nulla est, mollis 
+					tincidunt varius nec, posuere sed urna. Donec semper justo vitae mauris ullamcorper sollicitudin. 
+					Phasellus quis arcu ut mi feugiat ullamcorper.
 				</div>
 			</div> 
 			<li>Model: product.model</li>
@@ -491,6 +491,22 @@
 <!--seller page-->
 <div id="seller" data-role="page">
 	
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#browse" data-icon="back" data-mini="true" data-iconpos="notext" data-inline="true">Back</a>
+		<h2>Seller</h2>
+		<a id="product-pid"></a>
+    	<script>profilebutton("#product-pid","#product-account-panel");</script>
+	</div>
+	
+	<div data-role="content">
+		<div data-role="button" data-theme="a">
+			<img src="http://ih3.redbubble.net/image.13485822.8405/fc,550x550,black.jpg" 
+			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
+			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
+			Fulano DeTal<br/>
+			Rating %</p>
+		</div>
+	</div>
 </div>
 
 <!--sales report-->
