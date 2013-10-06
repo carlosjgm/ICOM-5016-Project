@@ -59,6 +59,13 @@ for (var i=0; i < salesList.length; ++i){
 	userList[1].sales.push(i);
 }
 
+//uid, holdername, carnum, ccv, expday, expmonth, expyear
+var cCardList = new Array(
+	new User("1", "Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
+	new User("2", "Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
+	new User("3", "Randy Soto", "7890789078907890", "789", "7", "7", "2014")
+);
+
 //server configuration----------------------------------------------------------------------------------
 app.use(express.bodyParser());
 

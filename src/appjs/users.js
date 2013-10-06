@@ -5,6 +5,7 @@ function User(username, password, email){
 	this.fname;
 	this.lname;
 	this.email = email;
+	this.avatar = avatar;
 	this.selling = new Array();
 	this.bidding = new Array();
 	this.cart = new Array();
