@@ -49,6 +49,7 @@ var creditCard = creditCards.creditCard;
 var cCardList = new Array(
 	new creditCard("Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
 	new creditCard("Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
+	new creditCard("Susana C. Galicia", "4567456745674568", "456", "4", "4", "2014"),
 	new creditCard("Randy Soto", "7890789078907890", "789", "7", "7", "2014")
 );
 for (var i=0;i<cCardList.length;i++)
