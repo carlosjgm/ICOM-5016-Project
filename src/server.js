@@ -97,10 +97,25 @@ function authorized(user, pass) {
 
 //REST API for products**************************************************************************************************************************
 
-//get all products------------------------------------------------------
-app.get('/browse', function(req, res){
-	console.log("Get all products request received.");
-	res.json({"products" : productList});
+//browse product by category------------------------------------------------------
+app.get('/browse/:category', function(req, res){
+	console.log("Get " + req.params.category + " products request received.");
+	
+	var templist = new Array();
+	var product;
+	
+	//search by category
+	if(req.params.category != 'all'){
+		for(var i=0;i<productList.length;i++){
+			product = productList[i];
+			if(product.category == req.params.category)
+				templist.push(product);
+		}
+	}
+	else
+		templist = productList;
+		
+	res.json({"products" : templist});
 });
 
 //get product by id-----------------------------------------------------
@@ -495,7 +510,6 @@ app.post("/sales", function(req,res){
 		//search by date
 		for(var i=0;i<templist.length;i++){
 			sale = templist[i];
-			console.log(sale);
 			if(checkSalesDate(fromDate,toDate,sale.date)){
 				totalrevenue += sale.revenue;
 				result.push(sale);

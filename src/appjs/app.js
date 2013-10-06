@@ -1,29 +1,6 @@
 //load the complete product list to the browse page
 $(document).on('pagebeforeshow', "#browse", function( event, ui ) {
-	$.ajax({
-		url : "http://localhost:8888/browse",
-		contentType: "application/json",
-		success : function(data, textStatus, jqXHR){
-			var productList = data.products;
-			var list = $("#product-list");
-			list.empty();
-			var product;
-			for (var i=0; i < productList.length; ++i){
-				product = productList[i];
-				list.append("<li><a href='#product'><img src='" + product.photo + "' />"
-					+ "<h3>" + product.name + "</h3>"
-					+ "<p> Brand: " + product.brand + "</p>"
-					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
-					+ "</p></a></li>");
-					
-			}
-			list.listview("refresh");	
-		},
-		error: function(data, textStatus, jqXHR){
-			console.log("textStatus: " + textStatus);
-			alert("Data not found!");
-		}
-	});
+	browseCategories('all');
 });
 
 //load today's sales list
@@ -112,8 +89,6 @@ function register(){
 			alert(data.responseText);			
 		}
 	});
-	
-	
 };
 
 //updates card information
@@ -154,6 +129,7 @@ function placebid(id){
 };
 
 //loads product page
+//TODO
 function loadProductPage(id){
 	
 };
@@ -165,7 +141,7 @@ function submitSales(){
 	$.mobile.loading("show");
 	
 	if(localStorage.getItem("salesInitialized")==undefined){
-		localStorage.setItem("category",'all');
+		localStorage.setItem("salesCategory",'all');
 		localStorage.setItem("salesInitialized",true);
 	}
 	
@@ -185,7 +161,7 @@ function submitSales(){
 		localStorage.setItem("fromDate",fromDate);
 		localStorage.setItem("toDate",toDate);
 		
-		var jsonData = JSON.stringify({"category":localStorage.getItem("category"),"fromDate":fromDate,"toDate":toDate});	
+		var jsonData = JSON.stringify({"category":localStorage.getItem("salesCategory"),"fromDate":fromDate,"toDate":toDate});	
 		$.ajax({
 			url : "http://localhost:8888/sales" ,
 			method: 'post',
@@ -195,10 +171,12 @@ function submitSales(){
 			success : function(data, textStatus, jqXHR){
 				var salesList = data.sales;
 				var list = $("#sales-list");
+				var header = $("#sales-list-header");
 				list.empty();
-				list.append("<li><h1>Category: " + localStorage.getItem("category") + ", From: " + (new Date(fromDate)).toDateString() 
-						+ ", To: " + (new Date(toDate)).toDateString() + "</h1> Total Revenue: $" + data.totalRevenue 
-						+ ", Total sales: "	+ data.totalSales + "</li>");
+				header.empty();
+				header.append("<li><h3>Category: " + localStorage.getItem("salesCategory") + ", From: " + fromDate.toDateString() 
+					+ ", To: " + toDate.toDateString() + "</h3> Total Revenue: $" + data.totalRevenue 
+					+ ", Total sales: "	+ data.totalSales + "</li>");
 				var sale;
 				for (var i=0; i < salesList.length; ++i){
 					sale = salesList[i];
@@ -206,6 +184,7 @@ function submitSales(){
 						", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
 				}
 				$.mobile.loading("hide");
+				header.listview("refresh");
 				list.listview("refresh");		
 			},
 			error: function(data, textStatus, jqXHR){
@@ -218,7 +197,6 @@ function submitSales(){
 
 //replaces #sales-list with a list of sales from category
 //stores category in localvariable
-//join salescategories and submitsales, save 
 function salesCategories(category){
 	$.mobile.loading("show");
 	if(localStorage.getItem("salesInitialized")==undefined){
@@ -231,7 +209,7 @@ function salesCategories(category){
 		localStorage.setItem("salesInitialized",true);
 	}
 	
-	localStorage.setItem("category", category);
+	localStorage.setItem("salesCategory", category);
 	var fromDate = localStorage.getItem("fromDate");
 	var toDate = localStorage.getItem("toDate");
 	var jsonData = JSON.stringify({"category":category,"fromDate":fromDate,"toDate":toDate});
@@ -257,6 +235,7 @@ function salesCategories(category){
 					", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
 			}
 			$.mobile.loading("hide");
+			header.listview("refresh");
 			list.listview("refresh");		
 		},
 		error: function(data, textStatus, jqXHR){
@@ -264,6 +243,40 @@ function salesCategories(category){
 			alert("Data not found.");			
 		}
 	});
+};
+
+//replaces #product-list with a list of products from category
+//stores category in localvariable
+function browseCategories(category){
+	$.mobile.loading("show");
+	//localStorage.setItem("browseCategory", category);
+	$.ajax({
+		url : "http://localhost:8888/browse/" + category ,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var productList = data.products;
+			var list = $("#product-list");
+			list.empty();
+			list.append("<li data-role='list-divider'>"+category+"</li>");
+			var product;
+			for (var i=0; i < productList.length; ++i){
+				product = productList[i];
+				list.append("<li><a href='#product'><img src='" + product.photo + "' />"
+					+ "<h3>" + product.name + "</h3>"
+					+ "<p> Brand: " + product.brand + "</p>"
+					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
+					+ "</p></a></li>");
+					
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			console.log("textStatus: " + textStatus);
+			$.mobile.loading("hide");
+			alert("Data not found!");			
+		}
+	});	
 };
 
 //convert the form data to json format

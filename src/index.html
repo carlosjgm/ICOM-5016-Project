@@ -237,54 +237,57 @@
 	<div data-role="panel" id="browse-panel" data-position="left" data-display="reveal" data-theme="a">
 		<h3>Search by Category</h3>
 		<div data-role="collapsible-set">
+			<ul data-role="listview">
+				<li><a onclick="browseCategories('all')">All</a></li>
+			</ul>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Books</h4>
 				<ul data-role="listview">
-					<li><a href="#">Children</a></li>
-					<li><a href="#">Fiction</a></li>
-					<li><a href="#">Technology</a></li>
-					<li><a href="#">Business</a></li>
+					<li><a onclick="browseCategories('books-children')">Children</a></li>
+					<li><a onclick="browseCategories('books-fiction')">Fiction</a></li>
+					<li><a onclick="browseCategories('books-technology')">Technology</a></li>
+					<li><a onclick="browseCategories('books-business')">Business</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Electronics</h4>
 				<ul data-role="listview">
-					<li><a href="#">TV</a></li>
-					<li><a href="#">Audio</a></li>
-					<li><a href="#">Phones</a></li>
-					<li><a href="#">Cameras</a></li>
-					<li><a href="#">Video</a></li>
+					<li><a onclick="browseCategories('electronics-tv')">TV</a></li>
+					<li><a onclick="browseCategories('electronics-audio')">Audio</a></li>
+					<li><a onclick="browseCategories('electronics-phones')">Phones</a></li>
+					<li><a onclick="browseCategories('electronics-cameras')">Cameras</a></li>
+					<li><a onclick="browseCategories('electronics-video')">Video</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Computers</h4>
 				<ul data-role="listview">
-					<li><a href="#">Laptops</a></li>
-					<li><a href="#">Desktops</a></li>
-					<li><a href="#">Tablets</a></li>
-					<li><a href="#">Printers</a></li>
+					<li><a onclick="browseCategories('computers-laptops')">Laptops</a></li>
+					<li><a onclick="browseCategories('computers-desktops')">Desktops</a></li>
+					<li><a onclick="browseCategories('computers-tablets')">Tablets</a></li>
+					<li><a onclick="browseCategories('computers-printers')">Printers</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Clothing</h4>
 				<ul id="custom-listview" data-role="listview">
-					<li class="custom-li-first"><a href="#">Children</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('clothing-children')">Children</a></li>
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Men</h4>
 								<ul data-role="listview">
-									<li><a href="#">Shirts</a></li>
-									<li><a href="#">Pants</a></li>
-									<li><a href="#">Dresses</a></li>
+									<li><a onclick="browseCategories('clothing-men-shirts')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-men-pants')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-men-dresses')">Dresses</a></li>
 								</ul>
 							</div>
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Women</h4>
 								<ul data-role="listview">
-									<li><a href="#">Shirts</a></li>
-									<li><a href="#">Pants</a></li>
-									<li><a href="#">Dresses</a></li>
+									<li><a onclick="browseCategories('clothing-women-shirts')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-women-pants')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-women-dresses')">Dresses</a></li>
 								</ul>
 							</div>
 						</div>
@@ -294,9 +297,9 @@
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Shoes</h4>
 				<ul data-role="listview">
-					<li><a href="#">Children</a></li>
-					<li><a href="#">Women</a></li>
-					<li><a href="#">Men</a></li>
+					<li><a onclick="browseCategories('shoes-children')">Children</a></li>
+					<li><a onclick="browseCategories('shoes-women')">Women</a></li>
+					<li><a onclick="browseCategories('shoes-men')">Men</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
@@ -304,21 +307,21 @@
 				<ul id="custom-listview" data-role="listview">
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" data-inset="false">
 								<h4>Bicycles</h4>
 								<ul data-role="listview">
-									<li><a href="#">Frames</a></li>
-									<li><a href="#">Wheels</a></li>
-									<li><a href="#">Helmet</a></li>
-									<li><a href="#">Parts</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-frames')">Frames</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-wheels')">Wheels</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-helmet')">Helmet</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-parts')">Parts</a></li>
 								</ul>
 							</div>
 						</div>
 					</li>
-					<li class="custom-li-first"><a href="#">Fishing</a></li>
-					<li class="custom-li-first"><a href="#">Basebal</a></li>
-					<li class="custom-li-first"><a href="#">Golf</a></li>
-					<li class="custom-li-first"><a href="#">Basketball</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-fishing')">Fishing</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baseball')">Baseball</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-golf')">Golf</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baskeball')">Basketball</a></li>
 				</ul>
 			</div>
 		</div>
