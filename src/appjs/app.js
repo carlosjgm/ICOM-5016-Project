@@ -146,10 +146,10 @@ function loadProductPage(id){
 			content.append("<img src='" + product.photo + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
 			content.append("<div style='text-align: left;'>" + product.name + "</div>");
 			content.append("<div id='item-info' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.seller + "</a></div>");
-			content.append("<div id='item-info' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div>");
-			content.append("<div data-theme='a' style='line-height: 1.4; position: fixed; float: right; top: 70px; right: 15px; width:130px;' data-inline='true'>"
+			content.append("<div id='item-info' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div></div>");
+			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>"
 				+ "<a data-role='button' href='#' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right'>Buy now</a>"
-				+ "<a data-role='button' href='#' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>"
+				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>"
 				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
 			var popup = $("#my-bid");
 			popup.empty();
