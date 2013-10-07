@@ -103,6 +103,7 @@ app.use(function(req, res, next){
 	next();
 });
 
+
 // Authenticator
 function authorized(user, pass) {
 	for (var i=0; i < userList.length; ++i){
@@ -326,45 +327,44 @@ app.get('/product/:id', function(req, res){
 });
 
 //new product-------------------------------------------------
+//TODO authorize user
 app.post('/newproduct', function(req, res) {
 	console.log("Add new product request received.");
-	if(!authorized(req.body.username, req.body.password))
-		res.send("Unauthorized");
+	
+  	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
+  	|| req.body.description=="" || req.body.model == "" 
+  	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="" || req.body.bid=="") {
+		res.statusCode = 400;
+		res.send('Product form is missing fields.');
+	}
+	else if(req.body.instantprice < req.body.bid){
+		res.statusCode = 400;
+		res.send("Product instant price must be greater than bid price.");
+	}
 	else{
-	  	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
-	  	|| req.body.description=="" || req.body.model == "" 
-	  	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="" || req.body.bid=="") {
-			res.statusCode = 400;
-			res.send('Error 400: Product form is missing fields.');
-		}
-		else if(req.body.instantprice < req.body.bid){
-			res.statusCode = 400;
-			res.send("Product instant price must be greater than bid price.");
-		}
-		else{
-			var newProduct = new Product(req.body.name, req.body.category, req.body.instantprice, req.body.description, req.body.model,
-				req.body.photo,	req.body.brand, req.body.dimensions, req.body.seller, req.body.bid);
-				
-			newProduct.id = productNextId++;
-			newProduct.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
+		var newProduct = new Product(req.body.name, req.body.category, req.body.instantprice, req.body.description, req.body.model,
+			req.body.photo,	req.body.brand, req.body.dimensions, req.body.seller, req.body.bid);
 			
-			productList.push(newProduct);
+		newProduct.id = productNextId++;
+		newProduct.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
+		
+		productList.push(newProduct);
+		
+		//add new product to selling list of seller
+		var target;
+		for(var i=0; i < userList.length; i++)
+			if(userList[i].username == req.body.seller){
+				userList[i].selling.push(productNextId - 1);
+				break;
+			}
 			
-			//add new product to selling list of seller
-			var target;
-			for(var i=0; i < userList.length; i++)
-				if(userList[i].username == req.body.seller){
-					userList[i].selling.push(productNextId - 1);
-					break;
-				}
-				
-			res.statusCode = 200;
-			res.redirect(req.body.URL);
-		}
+		res.statusCode = 200;
+		res.redirect(req.body.URL);		
 	}
 });
 
 //update product-------------------------------------------------
+//TODO authorize user
 app.post('/product/:id', function(req, res) {
 	console.log("Update product " + req.params.id + "request received.");
 	if (productList.length <= req.params.id || req.params.id < 0){
@@ -410,6 +410,7 @@ app.post('/product/:id', function(req, res) {
 });
 
 //delete product by id-------------------------------------------------------
+//TODO authorize user
 app.del('/product/:id', function(req, res) {
 	console.log("Delete product " + req.params.id + "request received.");
 	if(productList.length <= req.params.id || req.params.id < 0) {
@@ -554,7 +555,7 @@ app.post("/reset", function(req, res){
 	
 });
 
-//update password
+//update password--------------------------------------------------
 app.post("/password", function(req,res){
 	console.log("Change password request received from " + req.body.username);
 	if(req.body.updpassword == "")
@@ -567,6 +568,28 @@ app.post("/password", function(req,res){
 					res.json(200,"Password updated.");
 				}
 				else
+				//TODO send to login page
+					res.json(400,"Invalid username/password.");
+			}
+		}
+		res.json(400,"Invalid username/password.");
+	}
+});
+
+//update avatar--------------------------------------------------
+app.post("/avatar", function(req,res){
+	console.log("Change avatar request received from " + req.body.username);
+	if(req.body.updavatar == "")
+		res.json(400,"Please enter an URL.");
+	else {
+		for (var i=0; i < userList.length; ++i){
+			if (userList[i].username == req.body.username){
+				if(userList[i].password == req.body.password){
+					userList[i].avatar = req.body.updavatar;
+					res.json(200,"Avatar updated.");
+				}
+				else
+				//TODO send to login page
 					res.json(400,"Invalid username/password.");
 			}
 		}
@@ -575,6 +598,7 @@ app.post("/password", function(req,res){
 });
 
 //user profile-------------------------------------------------
+//TODO authorize user
 app.get("/user/:username", function(req, res){
 	console.log("Get " + req.params.username + " request received.");
 	
@@ -598,6 +622,7 @@ app.get("/user/:username", function(req, res){
 
 //user product methods****************************************************************************8
 //bid on item-------------------------------------------------------------
+//TODO authorize user
 app.post("/bid/:id", function(req, res){
 	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
 	
@@ -682,7 +707,41 @@ app.post("/bid/:id", function(req, res){
 	
 });
 
+//add item to cart
+app.post("/addtocart", function(req,res){
+	console.log("Add item " + req.body.id + " to " + req.body.username + "'s cart request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	
+	else{
+		//search for product
+		for (var i=0; i < productList.length; ++i){
+			if (productList[i].id == req.body.id){
+				userList[target].cart.push(i);
+				res.statusCode = 200;
+				res.json(true);
+			}
+		}
+		res.statusCode = 404;
+		res.json("Item not found.");
+	}
+});
+
 //return sales report based on date and category
+//TODO authorize user
 app.post("/sales", function(req,res){
 	var fromDate = new Date(req.body.fromDate);
 	var toDate = new Date(req.body.toDate);
