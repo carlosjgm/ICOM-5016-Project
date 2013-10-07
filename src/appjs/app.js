@@ -28,7 +28,7 @@ function profilebutton(buttonid,pagepanel){
 			$(buttonid).replaceWith("<a id='" + buttonid + "' href='" + pagepanel + "' data-role='button' data-icon='bars' data-mini='true'"
 				+ "data-inline='true'>" + user + "</a>");	
 	else
-		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#login' data-role='button' data-icon='check' data-iconpos='right' data-mini='true' data-inline='true'>Login</a>");
+		$(buttonid).replaceWith("<a id='" + buttonid + "' href='#login' data-role='button' data-icon='checkbox-on' data-iconpos='right' data-mini='true' data-inline='true'>Login</a>");
 };
 
 //submit login form and save username/password in local storage if successful
@@ -321,7 +321,7 @@ function loadProductPage(id){
 			var popup = $("#my-bid");
 			popup.empty();
 			popup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder='$ " + product.nextbidprice + "'/>");
-			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Place bid</a>");
+			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true' data-mini='true'>Place bid</a>");
 			var desc = $("#product-description");
 			desc.empty();
 			desc.append("<div data-role='collapsible' data-collapsed='true'>"
