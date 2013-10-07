@@ -376,7 +376,7 @@ app.post("/reset", function(req, res){
 	
 });
 
-//update password
+//update password--------------------------------------------------
 app.post("/password", function(req,res){
 	console.log("Change password request received from " + req.body.username);
 	if(req.body.updpassword == "")
@@ -387,6 +387,26 @@ app.post("/password", function(req,res){
 				if(userList[i].password == req.body.password){
 					userList[i].password = req.body.updpassword;
 					res.json(200,"Password updated.");
+				}
+				else
+					res.json(400,"Invalid username/password.");
+			}
+		}
+		res.json(400,"Invalid username/password.");
+	}
+});
+
+//update avatar--------------------------------------------------
+app.post("/avatar", function(req,res){
+	console.log("Change avatar request received from " + req.body.username);
+	if(req.body.updavatar == "")
+		res.json(400,"Please enter an URL.");
+	else {
+		for (var i=0; i < userList.length; ++i){
+			if (userList[i].username == req.body.username){
+				if(userList[i].password == req.body.password){
+					userList[i].avatar = req.body.updavatar;
+					res.json(200,"Avatar updated.");
 				}
 				else
 					res.json(400,"Invalid username/password.");

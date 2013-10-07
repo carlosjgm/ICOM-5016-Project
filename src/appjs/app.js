@@ -125,6 +125,27 @@ function updatePassword(){
 	});
 };
 
+//updates avatar
+function updateAvatar(){
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"updavatar":document.getElementById("updavatar").value});
+	$.ajax({
+		url : "http://localhost:8888/avatar" ,
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert("Avatar changed.");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
 //buy item id (add to shopping cart)
 //goes to #cart
 //TODO
@@ -313,8 +334,8 @@ function salesCategories(category){
 };
 
 function closePanel(id){
-	$("#"+id).panel("close");
-}
+  $("#"+id).panel("close");
+};
 
 //replaces #product-list with a list of products from category
 //stores category in localvariable

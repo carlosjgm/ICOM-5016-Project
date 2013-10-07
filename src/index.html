@@ -238,7 +238,7 @@
 		<h3>Search by Category</h3>
 		<div data-role="collapsible-set">
 			<ul data-role="listview" data-theme="a" data-inset="true">
-				<li><a onclick="browseCategories('all')">All</a></li>
+				<li><a onclick="browseCategories('all'); closePanel('browse-panel')">All</a></li>
 			</ul>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Books</h4>
@@ -458,12 +458,19 @@
 	</div>
 	<div data-role="content">
 		<div data-role="controlgroup" data-inset="true">
-			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Change avatar</a>
+			<a href='#changeavatar' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change avatar</a>
 			<a href='#changepassword' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change password</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Manage credit cards</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Close account</a>
 		</div>
+	</div>
+	<!--change avatar-->
+	<div data-role="popup" id="changeavatar" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+		<h3>Change Avatar</h3>
+		<input type='text' id='updavatar' name='updavatar' data-mini='true' placeholder='Image URL' />
+		<a onclick='updateAvatar()' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Submit</a>
+		<a data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
 	</div>
 	<!--change password-->
 	<div data-role="popup" id="changepassword" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
@@ -554,56 +561,56 @@
 		<h3>Sales by Category</h3>
 		<div data-role="collapsible-set">
 			<ul data-role="listview" data-theme="a" data-inset="true">
-				<li><a onclick="salesCategories('all')">All</a></li>
+				<li><a onclick="salesCategories('all'); closePanel('sales-panel')">All</a></li>
 			</ul>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Books</h4>
 				<ul data-role="listview">
-					<li><a onclick="salesCategories('books-children')">Children</a></li>
-					<li><a onclick="salesCategories('books-fiction')">Fiction</a></li>
-					<li><a onclick="salesCategories('books-technology')">Technology</a></li>
-					<li><a onclick="salesCategories('books-business')">Business</a></li>
+					<li><a onclick="salesCategories('books-children'); closePanel('sales-panel')">Children</a></li>
+					<li><a onclick="salesCategories('books-fiction'); closePanel('sales-panel')">Fiction</a></li>
+					<li><a onclick="salesCategories('books-technology'); closePanel('sales-panel')">Technology</a></li>
+					<li><a onclick="salesCategories('books-business'); closePanel('sales-panel')">Business</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Electronics</h4>
 				<ul data-role="listview">
-					<li><a onclick="salesCategories('electronics-tv')">TV</a></li>
-					<li><a onclick="salesCategories('electronics-audio')">Audio</a></li>
-					<li><a onclick="salesCategories('electronics-phones')">Phones</a></li>
-					<li><a onclick="salesCategories('electronics-cameras')">Cameras</a></li>
-					<li><a onclick="salesCategories('electronics-video')">Video</a></li>
+					<li><a onclick="salesCategories('electronics-tv'); closePanel('sales-panel')">TV</a></li>
+					<li><a onclick="salesCategories('electronics-audio'); closePanel('sales-panel')">Audio</a></li>
+					<li><a onclick="salesCategories('electronics-phones'); closePanel('sales-panel')">Phones</a></li>
+					<li><a onclick="salesCategories('electronics-cameras'); closePanel('sales-panel')">Cameras</a></li>
+					<li><a onclick="salesCategories('electronics-video'); closePanel('sales-panel')">Video</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Computers</h4>
 				<ul data-role="listview">
-					<li><a onclick="salesCategories('computers-laptops')">Laptops</a></li>
-					<li><a onclick="salesCategories('computers-desktops')">Desktops</a></li>
-					<li><a onclick="salesCategories('computers-tablets')">Tablets</a></li>
-					<li><a onclick="salesCategories('computers-printers')">Printers</a></li>
+					<li><a onclick="salesCategories('computers-laptops'); closePanel('sales-panel')">Laptops</a></li>
+					<li><a onclick="salesCategories('computers-desktops'); closePanel('sales-panel')">Desktops</a></li>
+					<li><a onclick="salesCategories('computers-tablets'); closePanel('sales-panel')">Tablets</a></li>
+					<li><a onclick="salesCategories('computers-printers'); closePanel('sales-panel')">Printers</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Clothing</h4>
 				<ul id="custom-listview" data-role="listview">
-					<li class="custom-li-first"><a onclick="salesCategories('clothing-children')">Children</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('clothing-children'); closePanel('sales-panel')">Children</a></li>
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Men</h4>
 								<ul data-role="listview">
-									<li><a onclick="salesCategories('clothing-men-shirts')">Shirts</a></li>
-									<li><a onclick="salesCategories('clothing-men-pants')">Pants</a></li>
-									<li><a onclick="salesCategories('clothing-men-dresses')">Dresses</a></li>
+									<li><a onclick="salesCategories('clothing-men-shirts'); closePanel('sales-panel')">Shirts</a></li>
+									<li><a onclick="salesCategories('clothing-men-pants'); closePanel('sales-panel')">Pants</a></li>
+									<li><a onclick="salesCategories('clothing-men-socks'); closePanel('sales-panel')">Socks</a></li>
 								</ul>
 							</div>
 							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Women</h4>
 								<ul data-role="listview">
-									<li><a onclick="salesCategories('clothing-women-shirts')">Shirts</a></li>
-									<li><a onclick="salesCategories('clothing-women-pants')">Pants</a></li>
-									<li><a onclick="salesCategories('clothing-women-dresses')">Dresses</a></li>
+									<li><a onclick="salesCategories('clothing-women-shirts'); closePanel('sales-panel')">Shirts</a></li>
+									<li><a onclick="salesCategories('clothing-women-pants'); closePanel('sales-panel')">Pants</a></li>
+									<li><a onclick="salesCategories('clothing-women-dresses'); closePanel('sales-panel')">Dresses</a></li>
 								</ul>
 							</div>
 						</div>
@@ -613,9 +620,9 @@
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
 				<h4>Shoes</h4>
 				<ul data-role="listview">
-					<li><a onclick="salesCategories('shoes-children')">Children</a></li>
-					<li><a onclick="salesCategories('shoes-women')">Women</a></li>
-					<li><a onclick="salesCategories('shoes-men')">Men</a></li>
+					<li><a onclick="salesCategories('shoes-children'); closePanel('sales-panel')">Children</a></li>
+					<li><a onclick="salesCategories('shoes-women'); closePanel('sales-panel')">Women</a></li>
+					<li><a onclick="salesCategories('shoes-men'); closePanel('sales-panel')">Men</a></li>
 				</ul>
 			</div>
 			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
@@ -623,21 +630,21 @@
 				<ul id="custom-listview" data-role="listview">
 					<li class="custom-li">
 						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
 								<h4>Bicycles</h4>
 								<ul data-role="listview">
-									<li><a onclick="salesCategories('sports-bicycles-frames')">Frames</a></li>
-									<li><a onclick="salesCategories('sports-bicycles-wheels')">Wheels</a></li>
-									<li><a onclick="salesCategories('sports-bicycles-helmet')">Helmet</a></li>
-									<li><a onclick="salesCategories('sports-bicycles-parts')">Parts</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-frames'); closePanel('sales-panel')">Frames</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-wheels'); closePanel('sales-panel')">Wheels</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-helmet'); closePanel('sales-panel')">Helmet</a></li>
+									<li><a onclick="salesCategories('sports-bicycles-parts'); closePanel('sales-panel')">Parts</a></li>
 								</ul>
 							</div>
 						</div>
 					</li>
-					<li class="custom-li-first"><a onclick="salesCategories('sports-fishing')">Fishing</a></li>
-					<li class="custom-li-first"><a onclick="salesCategories('sports-baseball')">Baseball</a></li>
-					<li class="custom-li-first"><a onclick="salesCategories('sports-golf')">Golf</a></li>
-					<li class="custom-li-first"><a onclick="salesCategories('sports-baskeball')">Basketball</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-fishing'); closePanel('sales-panel')">Fishing</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-baseball'); closePanel('sales-panel')">Baseball</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-golf'); closePanel('sales-panel')">Golf</a></li>
+					<li class="custom-li-first"><a onclick="salesCategories('sports-baskeball'); closePanel('sales-panel')">Basketball</a></li>
 				</ul>
 			</div>
 		</div>
@@ -645,8 +652,9 @@
 	
 <!-- Sales Report -->
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#browse" data-icon="back" data-mini="true" data-inline="true">Back</a>
-		<h2>Sales Report</h2>    	
+		<a href="#sales-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
+		<h2>Sales Report</h2>
+		<a href="#browse" data-icon="home" data-mini="true" data-inline="true">Home</a>
 	</div>
 	
 	<div data-role="content">
