@@ -290,6 +290,10 @@ function salesCategories(category){
 	});
 };
 
+function closePanel(id){
+	$("#"+id).panel("close");
+}
+
 //replaces #product-list with a list of products from category
 //stores category in localvariable
 function browseCategories(category){
