@@ -495,6 +495,22 @@
 	</div>
 </div>
 
+
+<!-- current biddings page --> 
+<div id="bidding" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Current Biddings</h2>
+	</div>
+	
+	<div data-role="content">
+		<ul id="bidding-list" data-role="listview" data-inset="true"></ul>
+	</div>
+	
+</div>
+<!-- end biddings page -->
+
+
 <!--administrator page-->
 <div id="admin" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
@@ -886,7 +902,7 @@
 	<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
 		<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
 	<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
-		<a href="#placeorder" style="color: white;">Place Order</a></div>
+		<a href="#browse" onclick="placeOrder()" style="color: white;">Place Order</a></div>
 	</div>
 	
 </div>

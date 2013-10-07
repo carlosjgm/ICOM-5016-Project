@@ -711,6 +711,8 @@ app.post("/bid/:id", function(req, res){
 	
 });
 
+
+
 //add item to cart
 app.post("/addtocart", function(req,res){
 	console.log("Add item " + req.body.id + " to " + req.body.username + "'s cart request received.");
@@ -885,6 +887,37 @@ app.post("/sales", function(req,res){
 		res.json({"sales":result,"totalRevenue":totalrevenue,"totalSales":result.length});
 	}
 });
+
+
+//bidding list
+app.post("/loadbids", function(req,res){
+	console.log("Get " + req.body.username + "'s bids request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	
+	else{
+		console.log(JSON.stringify(userList[target]));
+		
+	res.statusCode=200;
+	res.json({"bid":userList[target].bidding});
+	
+	
+	}
+});
+
 
 //returns true if item date is between fromDate and toDate
 function checkSalesDate(fromDate,toDate,saleDate){
