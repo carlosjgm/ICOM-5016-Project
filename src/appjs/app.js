@@ -146,15 +146,33 @@ function updateAvatar(){
 	});
 };
 
-//buy item id (add to shopping cart)
+//add to shopping cart
 //goes to #cart
 //TODO
-function buy(id){
+function addToCart(id){
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":id});
+	$.ajax({
+		url: "http://localhost:8888/addtocart",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			alert("Item added to cart.");
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
 	
 };
 
 //bid on item id
 function placebid(id){
+	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
 	var data = JSON.stringify({"bid":bid});
 	$.ajax({
@@ -192,7 +210,7 @@ function loadProductPage(id){
 			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div></div>"); 
 			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>" 
 				+ "<a data-role='button' href='#' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right'>Buy now</a>"
-				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>" 
+				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.id + ")'>Add to cart</a>" 
 				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
 			var popup = $("#my-bid");
 			popup.empty();
