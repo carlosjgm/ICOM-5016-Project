@@ -42,6 +42,8 @@ for (var i=0; i < productList.length; ++i){
 	userList[1].selling.push(i);
 }
 
+//credit cards------------------------------------------------------------------------------------------
+
 var creditCards = require('./appjs/creditcard');
 var creditCard = creditCards.creditCard;
 
@@ -52,10 +54,30 @@ var cCardList = new Array(
 	new creditCard("Susana C. Galicia", "4567456745674568", "456", "4", "4", "2014"),
 	new creditCard("Randy Soto", "7890789078907890", "789", "7", "7", "2014")
 );
+
 for (var i=0;i<cCardList.length;i++)
 	userList[i].creditcard.push(cCardList[i]);
 
-//sales
+//TODO
+//credit card users----------------------------------------------------------------------------------------
+/*
+var cards = require('./appjs/creditcards');
+var creditCardss = cards.creditCardss; 
+
+//cCardUsers(id, holdername, carnum, ccv, expday, expmonth, expyear)
+//this is a relationship table, this will be a separate table in the database
+var cCardUsers = new Array(
+	new creditCards("1", "Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
+	new creditCards("2", "Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
+	new creditCards("2", "Susana C. Galicia", "4567456745674568", "456", "4", "4", "2014"),
+	new creditCards("3", "Randy Soto", "7890789078907890", "789", "7", "7", "2014")
+);
+
+for (var i=0;i<cCardUsers.length;i++)
+	userList[i].creditcards.push(cCardUsers[i]);
+/**/
+
+//sales----------------------------------------------------------------------------------------
 var sales = require('./appjs/sales');
 var Sale = sales.Sale;
 
@@ -95,6 +117,162 @@ function authorized(user, pass) {
 	return false;
 };
 
+/*
+ * REST API for credit cards*********************************************************************************************************************
+ */
+/*
+//TODO
+//get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
+app.get('/cards/:id', function(req, res){
+	console.log("Get the credit cards for user " + req.params.id + " request received.");
+	
+	var templist = new Array();
+	var card;
+	
+	//search by id
+	if(req.params.id != ''){ //need to change this to 'if id exists in table, then...'
+		for(var i=0;i<cardsList.length;i++){
+			card = cardsList[i];
+			if(card.id == req.params.id)
+				templist.push(card);
+		}
+	}
+	else
+		templist = cardsList;
+		
+	res.json({"cards" : templist});
+});
+
+//TODO
+//get one card by carnum, from creditcard table, where carnum is the primary key -----------------------------------------------------
+app.get('/card/:carnum', function(req, res){
+	console.log("Get card with number" + req.params.carnum + " request received.");
+	if(cardList.length <= req.params.carnum || req.params.carnum < 0){
+		res.statusCode = 404;
+		res.send('No such card found.');
+	}
+	else{
+		var id = req.params.carnum;
+		var target = -1;
+		for (var i=0; i < cardList.length; ++i){
+			if (cardList[i].carnum == carnum){
+				target = i;
+				break;	
+			}
+		}
+		if(target == -1){
+			res.statusCode = 404;
+			res.send('No such card found.');
+		}
+		else{
+			var card = cardList[target];
+			res.statusCode = 200;
+			res.json({"card":card});	
+		}
+	}	
+});
+
+//TODO
+//new card-------------------------------------------------
+/*
+app.post('/newcard', function(req, res) {
+	console.log("Add new card request received.");
+	if(!authorized(req.body.username, req.body.password))
+		res.send("Unauthorized");
+	else{
+	  	if(req.body.carnum=="" || req.body.ccv=="" || req.body.holdername==""
+	  	|| req.body.expmonth=="" || req.body.expyear == "") {
+			res.statusCode = 400;
+			res.send('Error 400: Add credit card form has empty fields.');
+		}
+		else if(){
+			//need to validate input format
+			//carnum should be a 16-digit number
+			//ccv should be a 3-digit num
+		}
+		else{
+			//var newCard = new creditcard(req.body.holdername, req.body.carnum, req.body.ccv, req.body.expmonth, req.body.expyear);
+			var newCards = new creditcards(req.body.id, req.body.holdername, req.body.carnum, req.body.ccv, req.body.expmonth, req.body.expyear);
+			
+			//cardList.push(newCard);
+			cardsList.push(newCards);
+				
+			res.statusCode = 200;
+			res.redirect(req.body.URL);
+		}
+	}
+});
+
+//TODO
+//update card-------------------------------------------------
+app.post('/card/:carnum', function(req, res) {
+	console.log("Update card " + req.params.carnum + "request received.");
+	if (cardList.length <= req.params.carnum || req.params.carnum < 0){
+		res.statusCode = 404;
+		res.send("Error 404: No such credit card found.");
+	}
+	
+  	else if(req.body.carnum=="" || req.body.ccv=="" || req.body.holdername==""
+	  	|| req.body.expmonth=="" || req.body.expyear == "") {
+		res.statusCode = 400;
+		res.send('Error 400: Credit card form is missing fields.');
+	}
+	
+	else{
+		var carnum = req.params.carnum;
+		var target = -1;
+		//for (var i=0; i < productList.length; ++i){
+		//	if (productList[i].id == id){
+		//		target = i;
+		//		break;	
+		//	}
+		}
+		if (target == -1){
+			res.statusCode = 404;
+			res.send("Error 404: No such card found.");			
+		}	
+		else {	
+			var thecard = cardList[target];
+			thecard.holdername = req.body.holdername;
+			thecard.carnum = req.body.carnum;
+			thecard.ccv = req.body.ccv;
+			thecard.expmonth = req.body.expmonth;
+			thecard.expyear = req.body.expyear;
+			res.statusCode = 200;
+			res.redirect(req.body.URL);
+		}
+	}
+});
+
+//TODO
+//remove card by acc num-------------------------------------------------------
+app.del('/card/:carnum', function(req, res) {
+	console.log("Delete card " + req.params.carnum + " request received.");
+	if(cardList.length <= req.params.carnum || req.params.carnum < 0) {
+		res.statusCode = 404;
+		res.send('No such card found');
+	}
+	else{
+		var id = req.params.carnum;
+		var target = -1;
+		for (var i=0; i < cardList.length; ++i){
+			if (cardList[i].carnum == carnum){
+				target = i;
+				break;	
+			}
+		}
+		if (target == -1){
+			res.statusCode = 404;
+			res.send("No such card found.");			
+		}	
+		else {	
+			var removed = cardList.splice(req.params.carnum, 1);
+			res.statusCode = 200;
+			res.json({"card" : removed});
+		}
+	}
+});
+/**/
 
 //REST API for products**************************************************************************************************************************
 

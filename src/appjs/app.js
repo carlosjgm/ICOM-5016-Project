@@ -103,6 +103,43 @@ function updCard(){
 	$.mobile.changePage("#browse", {reloadPage : true});
 };
 
+/*
+//TODO
+//Gets all credit cards associated with one user
+function getCreditCards(id){
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/cards/"+ id,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var cardList = data.cards; //check later
+			var list = $("#credit-card-list");
+			list.empty();
+			list.append("<li data-role='list-divider'>"+category+"</li>");
+			var card;
+			for (var i=0; i < cardList.length; ++i){
+				card = cardList[i];
+				if(card.id == id){
+					list.append("<li><a>"
+						+ "<h3>Card Holder Name:" + card.holdername + "</h3>"
+						+ "<p> Card Num: " + card.carnum + "</p>"
+						+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
+						+ "</p></a></li>");
+				}
+					
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			console.log("textStatus: " + textStatus);
+			$.mobile.loading("hide");
+			alert("You have no credit cards :(");			
+		}
+	});	
+};
+/**/
+
 //updates password
 function updatePassword(){
 	$.mobile.loading("show");

@@ -461,7 +461,7 @@
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Change avatar</a>
 			<a href='#changepassword' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change password</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
-			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Manage credit cards</a>
+			<a href="#manage-credit-cards" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="getCreditCards('2')">Manage credit cards</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Close account</a>
 		</div>
 	</div>
@@ -472,6 +472,16 @@
 		<a onclick='updatePassword()' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Submit</a>
 		<a data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
 	</div>
+</div>
+
+<!--manage credit cards page-->
+<div id="manage-credit-cards" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>My Credit Cards</h2>
+	</div>
+	<ul id="credit-card-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+	
 </div>
 
 <!--administrator page-->
