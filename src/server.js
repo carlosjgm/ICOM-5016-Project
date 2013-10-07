@@ -725,18 +725,70 @@ app.post("/addtocart", function(req,res){
 			res.statusCode = 404;
 			res.json("Invalid username/password.");
 	}	
-	
 	else{
-		//search for product
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == req.body.id){
-				userList[target].cart.push(i);
+		
+		//item already in cart
+		var done = false;
+		for(var i=0;i < userList[target].cart.length;i++){
+			if(userList[target].cart[i].id == req.body.id){
+				userList[target].cart[i].qty += 1;
+				done = true;
 				res.statusCode = 200;
 				res.json(true);
 			}
+		}		
+		
+		//new item
+		if(!done){
+			//search for product
+			for (var i=0; i < productList.length; ++i){
+				if (productList[i].id == req.body.id){
+					userList[target].cart.push({"id":productList[i].id,"qty":1});
+					res.statusCode = 200;
+					res.json(true);
+				}
+			}
+			res.statusCode = 404;
+			res.json("Item not found.");
 		}
-		res.statusCode = 404;
-		res.json("Item not found.");
+	}
+});
+
+//returns items in user cart
+//TODO remove item from cart if not found
+app.post("/loadcart", function(req,res){
+	console.log("Get " + req.body.username + "'s cart request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	
+	else{
+		var tempList = userList[target].cart;
+		var cartList = new Array();
+		var total = 0;
+		//search for items
+		for(var j=0; j < tempList.length; j++){			
+			for (var i=0; i < productList.length; ++i){
+				if (productList[i].id == tempList[j].id){
+					cartList.push({"name":productList[i].name,"id":productList[i].id,"instantprice":productList[i].instantprice, "qty":tempList[j].qty});
+					total += productList[i].instantprice * tempList[j].qty;
+				}
+			}	
+		}	
+		res.statusCode = 200;
+		res.json({"cart":cartList,"total":total});
 	}
 });
 
