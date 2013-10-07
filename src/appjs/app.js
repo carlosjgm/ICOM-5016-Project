@@ -192,8 +192,9 @@ function updateAvatar(){
 //add to shopping cart
 //goes to #cart
 function addToCart(id){
-	$.mobile.loading("show");
-	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":id});
+	$.mobile.loading("show");	
+	var qty = document.getElementById("quantity").value;
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":id,"qty":qty});
 	$.ajax({
 		url: "http://localhost:8888/addtocart",
 		method: 'post',
@@ -280,7 +281,7 @@ function placeOrder(){
 function placebid(id){
 	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
-	var data = JSON.stringify({"bid":bid});
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"bid":bid,"qty":qty});
 	$.ajax({
 			url : "http://localhost:8888/bid/" + id ,
 			method: 'post',
@@ -316,12 +317,16 @@ function loadProductPage(id){
 			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div></div>"); 
 			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>" 
 				+ "<a data-role='button' href='#cart' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.id + ")'>Buy now</a>"
-				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.id + ")'>Add to cart</a>" 
+				+ "<a data-role='button' href='#qtypopup' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Add to cart</a>" 
 				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
-			var popup = $("#my-bid");
-			popup.empty();
-			popup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder='$ " + product.nextbidprice + "'/>");
-			popup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true' data-mini='true'>Place bid</a>");
+			var bidpopup = $("#my-bid");
+			bidpopup.empty();
+			bidpopup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder='$ " + product.nextbidprice + "'/>");
+			bidpopup.append("<a onclick='placebid(" + product.id + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true' data-mini='true'>Place bid</a>");
+			var qtypopup = $("#my-quantity");
+			qtypopup.empty();
+			qtypopup.append("<input type='number' id='quantity' name='quantity' data-mini='true' placeholder='0'/>");
+			qtypopup.append("<a onclick='addToCart(" + product.id + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true' data-mini='true'>Add to cart</a>");
 			var desc = $("#product-description");
 			desc.empty();
 			desc.append("<div data-role='collapsible' data-collapsed='true'>"

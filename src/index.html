@@ -442,6 +442,14 @@
 			<a id="product-content"></a>
 		</div>
 		
+		<!-- quantity popup -->
+		<div data-role="popup" id="qtypopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<h3>How many?</h3>
+			<a id="my-quantity"></a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
+		</div>
+		
+		<!-- bid popup -->
 		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 			<h3>Place Bid?</h3>
 			<a id="my-bid"></a>
@@ -449,6 +457,7 @@
 		</div>
 				
 		<ul id="product-description" data-role="listview" data-inset="true"></ul>
+			
 	</div>
 </div>
 
@@ -886,7 +895,7 @@
 	<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
 		<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
 	<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
-		<a href="#placeorder" style="color: white;">Place Order</a></div>
+		<a href="#placeorder" style="color: white;" onclick="placeOrder()">Place Order</a></div>
 	</div>
 	
 </div>

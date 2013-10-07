@@ -134,10 +134,8 @@ app.get('/cards/:id', function(req, res){
 		
 	}
 	if(req.params.id != ''){ //need to change this to 'if id exists in table, then...'
-		console.log('List is not empty');
 		for(var i=0;i<cCardUsers.length;i++){
 			card = cCardUsers[i];
-			console.log(JSON.stringify(card));
 			if(card.id == req.params.id)
 				templist.push(card);
 		}
@@ -629,7 +627,7 @@ app.get("/user/:username", function(req, res){
 //TODO authorize user
 app.post("/bid/:id", function(req, res){
 	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
-	
+		
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
 		res.send('No such product found.');
@@ -713,7 +711,13 @@ app.post("/bid/:id", function(req, res){
 
 //add item to cart
 app.post("/addtocart", function(req,res){
-	console.log("Add item " + req.body.id + " to " + req.body.username + "'s cart request received.");
+	
+	if(req.body.qty == 0 || req.body.qty == ""){
+		res.statusCode = 400;
+		res.json("Please specify a quantity");
+	}
+	
+	console.log("Add item " + req.body.id + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
 	
 	var target=-1;
 	//search for user
@@ -735,7 +739,7 @@ app.post("/addtocart", function(req,res){
 		var done = false;
 		for(var i=0;i < userList[target].cart.length;i++){
 			if(userList[target].cart[i].id == req.body.id){
-				userList[target].cart[i].qty += 1;
+				userList[target].cart[i].qty += req.body.qty;
 				done = true;
 				res.statusCode = 200;
 				res.json(true);
@@ -747,7 +751,7 @@ app.post("/addtocart", function(req,res){
 			//search for product
 			for (var i=0; i < productList.length; ++i){
 				if (productList[i].id == req.body.id){
-					userList[target].cart.push({"id":productList[i].id,"qty":1});
+					userList[target].cart.push({"id":productList[i].id,"qty":req.body.qty});
 					res.statusCode = 200;
 					res.json(true);
 				}
