@@ -99,8 +99,30 @@ function register(){
 //submits card-form
 //goes to #profile if successful
 //TODO
-function  updCard(){
+function updCard(){
 	$.mobile.changePage("#browse", {reloadPage : true});
+};
+
+//updates password
+function updatePassword(){
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"updpassword":document.getElementById("updpassword").value});
+	$.ajax({
+		url : "http://localhost:8888/password" ,
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			localStorage.setItem("password", document.getElementById("updpassword").value);
+			$.mobile.loading("hide");
+			alert("Password changed.");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
 };
 
 //buy item id (add to shopping cart)
@@ -145,11 +167,11 @@ function loadProductPage(id){
 			content.empty();
 			content.append("<img src='" + product.photo + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
 			content.append("<div style='text-align: left;'>" + product.name + "</div>");
-			content.append("<div id='item-info' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.seller + "</a></div>");
-			content.append("<div id='item-info' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div></div>");
-			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>"
+			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.seller + "</a></div>");
+			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: $" + product.nextbidprice + "</div></div>"); 
+			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>" 
 				+ "<a data-role='button' href='#' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right'>Buy now</a>"
-				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>"
+				+ "<a data-role='button' href='#cart' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right'>Add to cart</a>" 
 				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
 			var popup = $("#my-bid");
 			popup.empty();

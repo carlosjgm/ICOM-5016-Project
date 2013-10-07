@@ -84,13 +84,13 @@ app.use(function(req, res, next){
 // Authenticator
 function authorized(user, pass) {
 	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == user)
+		if (userList[i].username == user){
 			if(userList[i].password == pass){
 				return true;
 			}
 			else
 				return false;
-		
+		}
 	}
 	return false;
 };
@@ -374,6 +374,26 @@ app.post("/reset", function(req, res){
 		}
 	}
 	
+});
+
+//update password
+app.post("/password", function(req,res){
+	console.log("Change password request received from " + req.body.username);
+	if(req.body.updpassword == "")
+		res.json(400,"Please enter a password.");
+	else {
+		for (var i=0; i < userList.length; ++i){
+			if (userList[i].username == req.body.username){
+				if(userList[i].password == req.body.password){
+					userList[i].password = req.body.updpassword;
+					res.json(200,"Password updated.");
+				}
+				else
+					res.json(400,"Invalid username/password.");
+			}
+		}
+		res.json(400,"Invalid username/password.");
+	}
 });
 
 //user profile-------------------------------------------------
