@@ -8,6 +8,11 @@ $(document).on('pagebeforeshow', "#sales", function() {
 	salesCategories('all');
 });
 
+//load credit card list
+$(document).on('pagebeforeshow', "#manage-credit-cards", function() {
+	getCreditCards(localStorage["id"]);
+});
+
 $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
 });
@@ -38,6 +43,7 @@ function login(){
 		success : function(data, textStatus, jqXHR){
 			localStorage.setItem("username", document.getElementById("username").value);
 			localStorage.setItem("password", document.getElementById("password").value);
+			localStorage.setItem("id", data.id);
 			$.mobile.loading("hide");
 			$.mobile.changePage("#browse", {reloadPage : true});
 		},
@@ -61,6 +67,7 @@ function authorize(){
 function logout(){
 	localStorage.removeItem("username");
 	localStorage.removeItem("password");
+	localStorage.removeItem("id");
 	$.mobile.changePage("#browse", {reloadPage : true, transition : "none"});
 };
 
@@ -103,7 +110,7 @@ function updCard(){
 	$.mobile.changePage("#browse", {reloadPage : true});
 };
 
-/*
+
 //TODO
 //Gets all credit cards associated with one user
 function getCreditCards(id){
@@ -115,24 +122,19 @@ function getCreditCards(id){
 			var cardList = data.cards; //check later
 			var list = $("#credit-card-list");
 			list.empty();
-			list.append("<li data-role='list-divider'>"+category+"</li>");
 			var card;
 			for (var i=0; i < cardList.length; ++i){
-				card = cardList[i];
-				if(card.id == id){
-					list.append("<li><a>"
-						+ "<h3>Card Holder Name:" + card.holdername + "</h3>"
-						+ "<p> Card Num: " + card.carnum + "</p>"
-						+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
-						+ "</p></a></li>");
-				}
-					
+			card = cardList[i];
+				list.append("<li><a>"
+					+ "<h3>Card Holder Name: " + card.holdername + "</h3>"
+					+ "<p> Card Num: " + card.carnum + "</p>"
+					+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
+					+ "</p></a></li>");
 			}
-			list.listview("refresh");	
+			//list.listview("refresh");	
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
-			console.log("textStatus: " + textStatus);
 			$.mobile.loading("hide");
 			alert("You have no credit cards :(");			
 		}

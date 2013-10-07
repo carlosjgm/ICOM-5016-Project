@@ -1,11 +1,10 @@
-function creditCards(id, holdername, carnum, ccv, expday, expmonth, expyear){
-	this.id;
-	this.holdername; //credit card holder name
-	this.carnum;
-	this.ccv;
-	this.expday;
-	this.expmonth;
-	this.expyear;
+function creditCards(id, holdername, carnum, ccv, expmonth, expyear){
+	this.id = id;
+	this.holdername = holdername;
+	this.carnum = carnum;
+	this.ccv = ccv;
+	this.expmonth = expmonth;
+	this.expyear = expyear;
 };
 
 exports.creditCards = creditCards;

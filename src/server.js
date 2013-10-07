@@ -43,9 +43,9 @@ for (var i=0; i < productList.length; ++i){
 }
 
 //credit cards------------------------------------------------------------------------------------------
-
-var creditCards = require('./appjs/creditcard');
-var creditCard = creditCards.creditCard;
+/*
+var creditcards = require('./appjs/creditcard');
+var creditCard = creditcards.creditCard;
 
 //creditCard(holdername, carnum, ccv, expday, expmonth, expyear)
 var cCardList = new Array(
@@ -57,25 +57,21 @@ var cCardList = new Array(
 
 for (var i=0;i<cCardList.length;i++)
 	userList[i].creditcard.push(cCardList[i]);
-
+*/
 //TODO
 //credit card users----------------------------------------------------------------------------------------
-/*
+
 var cards = require('./appjs/creditcards');
-var creditCardss = cards.creditCardss; 
+var creditCards = cards.creditCards; 
 
 //cCardUsers(id, holdername, carnum, ccv, expday, expmonth, expyear)
 //this is a relationship table, this will be a separate table in the database
 var cCardUsers = new Array(
-	new creditCards("1", "Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
-	new creditCards("2", "Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
-	new creditCards("2", "Susana C. Galicia", "4567456745674568", "456", "4", "4", "2014"),
-	new creditCards("3", "Randy Soto", "7890789078907890", "789", "7", "7", "2014")
+	new creditCards("0", "Carlos J. Gomez", "1234123412341234", "123","1","2014"),
+	new creditCards("1", "Susana C. Galicia", "4567456745674567", "456", "4", "2014"),
+	new creditCards("1", "Susana C. Galicia", "4567456745674568", "456", "4", "2014"),
+	new creditCards("2", "Randy Soto", "7890789078907890", "789", "7", "2014")
 );
-
-for (var i=0;i<cCardUsers.length;i++)
-	userList[i].creditcards.push(cCardUsers[i]);
-/**/
 
 //sales----------------------------------------------------------------------------------------
 var sales = require('./appjs/sales');
@@ -121,7 +117,7 @@ function authorized(user, pass) {
 /*
  * REST API for credit cards*********************************************************************************************************************
  */
-/*
+
 //TODO
 //get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
 app.get('/cards/:id', function(req, res){
@@ -131,15 +127,23 @@ app.get('/cards/:id', function(req, res){
 	var card;
 	
 	//search by id
+	
+	if(cCardUsers.length == 0){
+		res.statusCode = 404;
+		res.json('There are no credit cards');
+		
+	}
 	if(req.params.id != ''){ //need to change this to 'if id exists in table, then...'
-		for(var i=0;i<cardsList.length;i++){
-			card = cardsList[i];
+		console.log('List is not empty');
+		for(var i=0;i<cCardUsers.length;i++){
+			card = cCardUsers[i];
+			console.log(JSON.stringify(card));
 			if(card.id == req.params.id)
 				templist.push(card);
 		}
 	}
 	else
-		templist = cardsList;
+		templist = cCardUsers;
 		
 	res.json({"cards" : templist});
 });
@@ -175,7 +179,7 @@ app.get('/card/:carnum', function(req, res){
 
 //TODO
 //new card-------------------------------------------------
-/*
+
 app.post('/newcard', function(req, res) {
 	console.log("Add new card request received.");
 	if(!authorized(req.body.username, req.body.password))
@@ -186,7 +190,7 @@ app.post('/newcard', function(req, res) {
 			res.statusCode = 400;
 			res.send('Error 400: Add credit card form has empty fields.');
 		}
-		else if(){
+		else if(0){
 			//need to validate input format
 			//carnum should be a 16-digit number
 			//ccv should be a 3-digit num
@@ -242,7 +246,7 @@ app.post('/card/:carnum', function(req, res) {
 			res.statusCode = 200;
 			res.redirect(req.body.URL);
 		}
-	}
+
 });
 
 //TODO
@@ -273,7 +277,7 @@ app.del('/card/:carnum', function(req, res) {
 		}
 	}
 });
-/**/
+
 
 //REST API for products**************************************************************************************************************************
 
@@ -461,7 +465,7 @@ app.post("/login", function(req, res){
 		}	
 		else if(userList[target].password == req.body.password) {	
 			res.statusCode = 200;
-			res.json(true);
+			res.json({"id":userList[target].id});
 		}
 		else{
 			res.statusCode = 404;

@@ -463,7 +463,7 @@
 			<a href='#changeavatar' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change avatar</a>
 			<a href='#changepassword' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change password</a>
 			<a href='#manageaddress' data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
-			<a href="#manage-credit-cards" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="getCreditCards('2')">Manage credit cards</a>
+			<a href="#manage-credit-cards" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="getCreditCards(localStorage.getItem('id'))">Manage credit cards</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Close account</a>
 		</div>
 	</div>
@@ -489,8 +489,9 @@
 		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>My Credit Cards</h2>
 	</div>
-	<ul id="credit-card-list" data-role="listview" data-filter="true" data-inset="true"></ul>
-	
+	<div data-role="content">
+		<ul id="credit-card-list" data-role="listview" data-inset="true"></ul>
+	</div>
 </div>
 
 <!--administrator page-->
