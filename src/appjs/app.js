@@ -17,6 +17,10 @@ $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
 });
 
+$(document).on('pagebeforeshow', '#cart', function(){
+	loadCart();
+});
+
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
@@ -56,10 +60,10 @@ function login(){
 	
 };
 
-//authorizes user
-//add credentials to any request and form data
+//sends to login 
 function authorize(){
-	
+	alert("Please log in.");
+	$.mobile.changePage("#login");
 };
 
 //logout from account
@@ -187,7 +191,6 @@ function updateAvatar(){
 
 //add to shopping cart
 //goes to #cart
-//TODO
 function addToCart(id){
 	$.mobile.loading("show");
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":id});
@@ -205,8 +208,72 @@ function addToCart(id){
 			$.mobile.loading("hide");
 			alert(data.responseText);
 		}
+	});	
+};
+
+//removes id from cart
+//TODO
+function removeFromCart(id){
+	alert("Removed item from cart (not implemented)");
+};
+
+function loadCart(){	
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	$.ajax({
+		url : "http://localhost:8888/loadcart",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var cartList = data.cart;
+			var content = $("#cart-content");
+			content.empty();
+			var cartItem;
+			for (var i=0; i < cartList.length; ++i){
+				cartItem = cartList[i];
+				content.append("<li><h3>" + cartItem.name + "</h3>"
+				+ "<p>Quantity: " + cartItem.qty
+				+ "<p>Price: $" + cartItem.instantprice + "</p>"
+				+ "<input type='button' onclick='removeFromCart(" + cartItem.id + ")' value='Delete'></li>");				
+			}
+			content.append("<li data-theme='f'><p><h2>Shipping: $$$$</h2></p><p><h2>Total: $" + data.total + "</h2></p>"
+						+ "<input type='button' onclick='checkout()' value='Checkout'></li>");
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
+//checkout
+function checkout(){
+	$.mobile.changePage("#checkout");
+};
+
+//places order
+function placeOrder(){
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	$.ajax({
+		url : "http://localhost:8888/placeorder",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert("Order placed.");
+		},
+		error : function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);
+		}
 	});
-	
 };
 
 //bid on item id
@@ -377,7 +444,7 @@ function salesCategories(category){
 			for (var i=0; i < salesList.length; ++i){
 				sale = salesList[i];
 				list.append("<li><img src='" + sale.img + "'/> <h2>" + sale.name + "</h2> Seller: "+ sale.seller +  
-					", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
+					", Buyer: " + sale.buyer + ", Quantity: " + sale.qty + ", Revenue: $" + sale.revenue + "</li>");
 			}
 			$.mobile.loading("hide");
 			header.listview("refresh");
@@ -396,7 +463,7 @@ function closePanel(id){
 
 //replaces #product-list with a list of products from category
 //stores category in localvariable
-function browseCategories(category){
+function browseCategories(category){	
 	$.mobile.loading("show");
 	$.ajax({
 		url : "http://localhost:8888/browse/" + category ,

@@ -79,8 +79,8 @@ var Sale = sales.Sale;
 
 //Sale(name, category, revenue, seller, buyer, date, photo)
 var salesList = new Array(
-	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg'),
-	new Sale("pokemon tshirt", "clothing-children", 9, "carlosjgm", "susyspider", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg')
+	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg', 1),
+	new Sale("pokemon tshirt", "clothing-children", 90, "carlosjgm", "susyspider", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg', 10)
 );
 
 var saleNextId = 0;
@@ -729,18 +729,114 @@ app.post("/addtocart", function(req,res){
 			res.statusCode = 404;
 			res.json("Invalid username/password.");
 	}	
-	
 	else{
-		//search for product
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == req.body.id){
-				userList[target].cart.push(i);
+		
+		//item already in cart
+		var done = false;
+		for(var i=0;i < userList[target].cart.length;i++){
+			if(userList[target].cart[i].id == req.body.id){
+				userList[target].cart[i].qty += 1;
+				done = true;
 				res.statusCode = 200;
 				res.json(true);
 			}
+		}		
+		
+		//new item
+		if(!done){
+			//search for product
+			for (var i=0; i < productList.length; ++i){
+				if (productList[i].id == req.body.id){
+					userList[target].cart.push({"id":productList[i].id,"qty":1});
+					res.statusCode = 200;
+					res.json(true);
+				}
+			}
+			res.statusCode = 404;
+			res.json("Item not found.");
 		}
-		res.statusCode = 404;
-		res.json("Item not found.");
+	}
+});
+
+//places order
+//TODO remove item from cart if not found
+app.post("/placeorder", function(req,res){
+	console.log("Place " + req.body.username + "'s order request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	else{	
+		var cart = userList[target].cart;
+		console.log("Items in cart: " + JSON.stringify(cart));
+		var solditem, sale;
+		//for each item in the cart
+		var cartlength = cart.length;
+		for(var j=0; j < cartlength; j++){	
+			solditem = cart.pop();	
+			//search for item in product list
+			for (var i=0; i < productList.length; ++i){
+				if (productList[i].id == solditem.id){
+					sale = new Sale(productList[i].name, productList[i].category, solditem.qty*productList[i].instantprice, 
+							productList[i].seller, req.body.username, new Date(), productList[i].photo, solditem.qty);
+					sale.id = saleNextId++;
+					salesList.push(sale);
+					userList[target].sales.push(saleNextId - 1);
+				}				
+			}
+			console.log("Sold: " + JSON.stringify(solditem));
+		}
+		res.statusCode = 200;
+		res.json(true);
+	}	
+});
+
+//returns items in user cart
+//TODO remove item from cart if not found
+app.post("/loadcart", function(req,res){
+	console.log("Get " + req.body.username + "'s cart request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	
+	else{
+		var tempList = userList[target].cart;
+		var cartList = new Array();
+		var total = 0;
+		//search for items
+		for(var j=0; j < tempList.length; j++){			
+			for (var i=0; i < productList.length; ++i){
+				if (productList[i].id == tempList[j].id){
+					cartList.push({"name":productList[i].name,"id":productList[i].id,"instantprice":productList[i].instantprice, "qty":tempList[j].qty});
+					total += productList[i].instantprice * tempList[j].qty;
+				}
+			}	
+		}	
+		res.statusCode = 200;
+		res.json({"cart":cartList,"total":total});
 	}
 });
 

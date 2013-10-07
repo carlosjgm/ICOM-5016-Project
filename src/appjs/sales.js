@@ -1,4 +1,4 @@
-function Sale(name, category, revenue, seller, buyer, date, img){
+function Sale(name, category, revenue, seller, buyer, date, img, qty){
 	this.id = "";
 	this.name = name;
 	this.category = category;	
@@ -7,6 +7,7 @@ function Sale(name, category, revenue, seller, buyer, date, img){
 	this.seller = seller;
 	this.img = img;
 	this.buyer = buyer;
+	this.qty = qty;
 	
 	this.day = date.getDate();
 	this.month = date.getMonth() + 1;
