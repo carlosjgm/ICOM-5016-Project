@@ -13,6 +13,11 @@ $(document).on('pagebeforeshow', "#manage-credit-cards", function() {
 	getCreditCards(localStorage["id"]);
 });
 
+//load bidding list
+$(document).on('pagebeforeshow', "#bidding", function() {
+	loadBids();
+});
+
 $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
 });
@@ -250,6 +255,37 @@ function loadCart(){
 		}
 	});	
 };
+
+
+function loadBids(){	
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	$.ajax({
+		url : "http://localhost:8888/loadbids",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var bidList = data.bid;
+			var content = $("#bidding-list");
+			content.empty();
+			var bidItem;
+			for (var i=0; i < bidList.length; ++i){
+				bidItem = bidList[i];
+				content.append("<li><h3>" + bidItem.id + "</h3></li>");				
+			}
+			
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
 
 //checkout
 function checkout(){
