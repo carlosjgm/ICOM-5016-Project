@@ -463,7 +463,7 @@
 			<a href='#changeavatar' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change avatar</a>
 			<a href='#changepassword' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change password</a>
 			<a href='#manageaddress' data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
-			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Manage credit cards</a>
+			<a href="#manage-credit-cards" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="getCreditCards('2')">Manage credit cards</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Close account</a>
 		</div>
 	</div>
@@ -482,6 +482,18 @@
 		<a data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
 	</div>
 </div>
+
+-<!--manage credit cards page-->
+-<div id="manage-credit-cards" data-role="page">
+-	<div data-role="header" data-theme="a" data-position="fixed">
+-		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+-		<h2>My Credit Cards</h2>
+-	</div>
+-	<ul id="credit-card-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+-	
+-</div>
+-
+
 
 <!--administrator page-->
 <div id="admin" data-role="page">
@@ -818,7 +830,10 @@
 		<h2>Shopping Cart</h2>    	
 	</div>
 	
-<!-- dummy product 1 -->	
+-	<ul id="cart-content" data-role="listview" data-inset="true"></ul>
+-	
+-	<!--<!-- dummy product 1 --	
+	
 	<div data-role="content" data-theme="c" data-inline="true" data-inset="true">
 		Product_Name_1
 		<div style="float:right;"><table><tr><td><div style="width: 70px; text-align: right;"> Qty </div></td> <td><div style="width: 70px; text-align: right;"> Price </td></div>
@@ -826,8 +841,9 @@
 			<tr> <td><div style="text-align: right;">#</div></td> <td><div style="text-align: right;">$$$$</div></td> </tr></table>
 		</div>
 	</div>
-<!-- --- -->		
-<!-- dummy product 2 -->	
+-	<!-- --- --		
+-	<!-- dummy product 2 --
+	
 	<div data-role="content" data-theme="c" data-inline="true" data-inset="true">
 		Product_Name_2
 		<div style="float:right;"><table><tr><td><div style="width: 70px; text-align: right;"> Qty </div></td> <td><div style="width: 70px; text-align: right;"> Price </td></div>
@@ -835,14 +851,14 @@
 			<tr> <td><div style="text-align: right;">#</div></td> <td><div style="text-align: right;">$$$$</div></td> </tr></table>
 		</div>
 	</div>
-<!-- --- -->		
+		
 	
 	
 	<div style="float:right; padding-right:15px;"><table><tr><td><div style="width: 80px; text-align: right;"> Shipping:<br/> Total: </div></td>
 		<td><div style="width: 70px; text-align: right;"> $$$$</br> $$$$ </div></td>
 		<td><div style="width: 70px; text-align: right;"> </div></td></table></tr>
 		<div data-role="button" data-theme="e" style="width: 200px; margin-top: 15px;"><a href="#checkout">Checkout</a></div>
-	</div>
+	</div> -->
 </div>	
 <!-- End Shopping Cart -->	
 
