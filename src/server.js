@@ -963,12 +963,52 @@ app.post("/loadbids", function(req,res){
 	}	
 	
 	else{
-		console.log(JSON.stringify(userList[target]));
 		
-	res.statusCode=200;
-	res.json({"bid":userList[target].bidding});
+		var tempList = new Array();
+		for(var i=0; i< userList[target].bidding.length; i++){
+			for(var j=0; j< productList.length; j++){
+				if(productList[j].id==userList[target].bidding[i].id){
+					tempList.push(productList[j]);
+				}
+			}
+		}
+				
+		res.statusCode=200;
+		res.json({"bid":tempList});
 	
 	
+	}
+});
+
+//Seller Catalog
+app.post("/catalog", function(req,res){
+	console.log("Get " + req.body.username + "'s catalog request received.");
+	
+	var target=-1;
+	//search for user
+	for (var i=0; i < userList.length; ++i){
+		if (userList[i].username == req.body.username){
+			if(userList[i].password == req.body.password){
+				target = i;
+			}
+		}	
+	}
+	if(target==-1){
+			//TODO send to login page
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+	}	
+	else{
+		var tempList = new Array();
+		
+			for(var j=0; j< productList.length; j++){
+				if(productList[j].seller==userList[target].username){
+					tempList.push(productList[j]);
+				}
+			
+		}
+		res.statusCode=200;
+		res.json({"cat":tempList});
 	}
 });
 

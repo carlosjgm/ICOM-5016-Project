@@ -23,6 +23,11 @@ $(document).on('pagebeforeshow', "#bidding", function() {
 	loadBids();
 });
 
+//load items in catalog
+$(document).on('pagebeforeshow', "#catalogpage", function() {
+	getCatalogItems();
+});
+
 $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
 });
@@ -34,6 +39,7 @@ $(document).on('pagebeforeshow', '#cart', function(){
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
+	
 	if(user != null)
 			$(buttonid).replaceWith("<a id='" + buttonid + "' href='" + pagepanel + "' data-role='button' data-icon='bars' data-mini='true'"
 				+ "data-inline='true'>" + user + "</a>");	
@@ -429,7 +435,47 @@ function loadBids(){
 			var bidItem;
 			for (var i=0; i < bidList.length; ++i){
 				bidItem = bidList[i];
-				content.append("<li><h3>" + bidItem.id + "</h3></li>");				
+				
+			content.append("<img src='" + bidItem.photo + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />");
+			content.append("<div style='text-align: left;'><b>" + bidItem.name + "</b></div>");
+			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + bidItem.seller + "</a></div>");
+			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Current bid: $" + bidItem.nextbidprice + "</div></div>"); 
+			content.append("<div data-type='vertical' style='float: right; margin-top: -50px;'>"
+				+ "<input type='button' href='#bidpopup' data-theme='e' data-rel='popup' data-position-to='window' data-transition='pop' value='Increase Bid'/></div></li><br/><hr style='margin-left: -41px;'>");			
+			}
+			
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
+
+//Get Catalog Items
+function getCatalogItems(){	
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	$.ajax({
+		url : "http://localhost:8888/catalog",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var itemList = data.cat;
+			var content = $("#catalog");
+			content.empty();
+			var product;
+			for (var i=0; i < itemList.length; ++i){
+				product = itemList[i];
+		
+				content.append("<a onclick='loadProductPage(" + product.id + ")'><img src='" + product.photo + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
+							+"<div style='text-align: left;'><b>" + product.name + "</b></div>"
+							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Instant Price: $" + product.instantprice + "<br/> Bid Price: $" + product.nextbidprice + "</div></div></a><br/><hr style='margin-left: -41px;'></a>");			
 			}
 			
 			content.listview("refresh");	
@@ -473,7 +519,9 @@ function placeOrder(){
 function placebid(id){
 	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
-	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"bid":bid});
+
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"], "bid":bid});
+
 	$.ajax({
 			url : "http://localhost:8888/bid/" + id ,
 			method: 'post',
@@ -680,7 +728,7 @@ function browseCategories(category){
 					+ "</p></a></li>");
 					
 			}
-			list.listview("refresh");	
+			list.listview("refresh");
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
