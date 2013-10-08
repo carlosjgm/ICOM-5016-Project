@@ -13,6 +13,11 @@ $(document).on('pagebeforeshow', "#manage-credit-cards", function() {
 	getCreditCards(localStorage["id"]);
 });
 
+//load address list
+$(document).on('pagebeforeshow', "#manage-addresses", function() {
+	getAddresses(localStorage["id"]);
+});
+
 $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
 });
@@ -106,16 +111,52 @@ function register(){
 	});
 };
 
-//updates card information
-//submits card-form
-//goes to #profile if successful
-//TODO
-function updCard(){
-	$.mobile.changePage("#browse", {reloadPage : true});
+
+function addNewCard(){
+	$.mobile.loading("show");
+	var form = $("#newcard-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	var logdatajson = JSON.stringify(logdata);
+	
+	$.ajax({
+		url : "http://localhost:8888/newcard/"+localStorage.getItem("id"),
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-credit-cards", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			//$("#register-invalid").replaceWith("<br /><p id='invalid' style='color:red'>"+data.responseText+"</p>");
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
 };
 
+function removeCard(carnum){
+	$.mobile.loading("show");
+	
+	$.ajax({
+		url : "http://localhost:8888/cards/"+carnum,
+		method: 'delete',
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-credit-cards", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			//$("#register-invalid").replaceWith("<br /><p id='invalid' style='color:red'>"+data.responseText+"</p>");
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+};
 
-//TODO
 //Gets all credit cards associated with one user
 function getCreditCards(id){
 	$.mobile.loading("show");
@@ -127,15 +168,16 @@ function getCreditCards(id){
 			var list = $("#credit-card-list");
 			list.empty();
 			var card;
+			
 			for (var i=0; i < cardList.length; ++i){
 			card = cardList[i];
 				list.append("<li><a>"
 					+ "<h3>Card Holder Name: " + card.holdername + "</h3>"
-					+ "<p> Card Num: " + card.carnum + "</p>"
+					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.carnum[12]+card.carnum[13]+card.carnum[14]+card.carnum[15]+ "</p>"
 					+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
-					+ "</p></a></li>");
+					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.carnum +")'>Remove card</a></a></li>");
 			}
-			//list.listview("refresh");	
+			list.listview("refresh");	
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
@@ -145,6 +187,79 @@ function getCreditCards(id){
 	});	
 };
 /**/
+
+function getAddresses(id){
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/addresses/"+ id,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var addressList = data.addresses; //check later
+			var list = $("#address-list");
+			list.empty();
+			var address;
+			
+			for (var i=0; i < addressList.length; ++i){
+			address = addressList[i];
+				list.append("<li><a>"
+					//+ "<h3>" + localStorage.getItem("fname")+ " " + localStorage.getItem("lname") + "</h3>"
+					+ "<p>" + address.line1 + "<br/>" + address.line2 + "</p>"
+					+ "<p>" + address.city + ", " + address.state + "</p>"
+					+ "<p>" + address.country + ", " + address.zipcode
+					+ "</p><a href='#manage-addresses' data-role='button' data-icon='delete' onclick='removeAddress("+ i +")'>Remove address</a></a></li>");
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert("You have no addresses :(");			
+		}
+	});	
+};
+
+function addNewAddress(){
+	$.mobile.loading("show");
+	var form = $("#newaddress-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	var logdatajson = JSON.stringify(logdata);
+	
+	$.ajax({
+		url : "http://localhost:8888/newaddress/"+localStorage.getItem("id"),
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-addresses", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+};
+
+function removeAddress(index){
+	$.mobile.loading("show");
+	
+	$.ajax({
+		url : "http://localhost:8888/addresses/"+index,
+		method: 'delete',
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-addresses", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+};
 
 //updates password
 function updatePassword(){
