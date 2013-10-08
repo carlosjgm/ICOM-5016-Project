@@ -42,35 +42,28 @@ for (var i=0; i < productList.length; ++i){
 	userList[1].selling.push(i);
 }
 
-//credit cards------------------------------------------------------------------------------------------
-/*
-var creditcards = require('./appjs/creditcard');
-var creditCard = creditcards.creditCard;
-
-//creditCard(holdername, carnum, ccv, expday, expmonth, expyear)
-var cCardList = new Array(
-	new creditCard("Carlos J. Gomez", "1234123412341234", "123","1","1","2014"),
-	new creditCard("Susana C. Galicia", "4567456745674567", "456", "4", "4", "2014"),
-	new creditCard("Susana C. Galicia", "4567456745674568", "456", "4", "4", "2014"),
-	new creditCard("Randy Soto", "7890789078907890", "789", "7", "7", "2014")
-);
-
-for (var i=0;i<cCardList.length;i++)
-	userList[i].creditcard.push(cCardList[i]);
-*/
-//TODO
 //credit card users----------------------------------------------------------------------------------------
 
 var cards = require('./appjs/creditcards');
 var creditCards = cards.creditCards; 
 
-//cCardUsers(id, holdername, carnum, ccv, expday, expmonth, expyear)
-//this is a relationship table, this will be a separate table in the database
+//cCardUsers(id, holdername, carnum, ccv, expday, expmonth, expyear) relationship table
 var cCardUsers = new Array(
 	new creditCards("0", "Carlos J. Gomez", "1234123412341234", "123","1","2014"),
 	new creditCards("1", "Susana C. Galicia", "4567456745674567", "456", "4", "2014"),
 	new creditCards("1", "Susana C. Galicia", "4567456745674568", "456", "4", "2014"),
 	new creditCards("2", "Randy Soto", "7890789078907890", "789", "7", "2014")
+);
+
+//users with addresses----------------------------------------------------------------------------------------
+var allAddresses = require('./appjs/address');
+var Address = allAddresses.Address; 
+
+//Address(id,line1,line2,city,country,zipcode,state)
+var addresses = new Array(
+	new Address("0", "Some street 1", "Some street 2", "Cabo Rojo", "Puerto Rico", "00680", "Puerto Rico"),
+	new Address("1", "Some street 1", "Some street 2", "San German", "Puerto Rico", "00683", "Puerto Rico"),
+	new Address("2", "Some street 1", "Some street 2", "Mayaguez", "Puerto Rico", "00682", "Puerto Rico")
 );
 
 //sales----------------------------------------------------------------------------------------
@@ -118,8 +111,69 @@ function authorized(user, pass) {
  * REST API for credit cards*********************************************************************************************************************
  */
 
-//TODO
-//get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
+//Create new credit card
+app.post("/newcard/:id", function(req, res){
+	console.log("Add new card request received from user with id " + req.params.id);
+
+  	if(req.body['card-holder-name'] == "" || req.body['card-num'] == "" || req.body.ccv == "" || req.body['select-choice-month'] == "Month" || req.body['select-choice-year'] == "Year"){
+		res.statusCode = 400;
+		res.send('Error 400: The form has missing fields.');
+	}
+	
+	else if(req.body['card-num'].length != 16 || req.body.ccv.length != 3){
+			res.statusCode = 400;
+			res.send('Error 400: Fields have invalid format.');
+	}
+	
+	else {
+		var existingcard = false;
+		var expiredcard = false;
+		var today = new Date();
+		
+		console.log("Form has no missing fields");
+		
+		for (var i=0; i < cCardUsers.length; i++){
+			if(cCardUsers[i].id == req.params.id){
+				if (cCardUsers[i].carnum == req.body['card-num']){
+					existingcard = true;
+					break;
+				}
+					
+				if ((req.body['select-choice-year'] < today.getFullYear()) || ((req.body['select-choice-year'] == today.getFullYear()) && (req.body['select-choice-month'] < today.getMonth()))){
+					expiredcard = true;
+					break;	
+				}
+			}
+		}
+		
+		if(existingcard){
+			res.statusCode = 400;
+			res.send("Card has already been registered.");
+		}
+		
+		else if(expiredcard){
+			res.statusCode = 400;
+			res.send("Card is old, go get a new one! >:|");
+		}
+		
+		else{					//
+			var newCard = new creditCards(req.params.id, req.body['card-holder-name'], req.body['card-num'], req.body.ccv, req.body['select-choice-month'], req.body['select-choice-year']);
+			newCard.id = req.params.id;
+			newCard.holdername = req.body['card-holder-name'];
+			newCard.carnum = req.body['card-num'];
+			newCard.ccv = req.body.ccv;
+			newCard.expmonth = req.body['select-choice-month'];
+			newCard.expyear = req.body['select-choice-year'];
+			
+			cCardUsers.push(newCard);
+			
+			res.statusCode = 200;
+			res.json(true);
+		}
+	}
+});
+
+//Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
 app.get('/cards/:id', function(req, res){
 	console.log("Get the credit cards for user " + req.params.id + " request received.");
 	
@@ -134,10 +188,10 @@ app.get('/cards/:id', function(req, res){
 		
 	}
 	if(req.params.id != ''){ //need to change this to 'if id exists in table, then...'
-		console.log('List is not empty');
 		for(var i=0;i<cCardUsers.length;i++){
 			card = cCardUsers[i];
-			console.log(JSON.stringify(card));
+			//console.log(JSON.stringify(card));
+
 			if(card.id == req.params.id)
 				templist.push(card);
 		}
@@ -148,120 +202,21 @@ app.get('/cards/:id', function(req, res){
 	res.json({"cards" : templist});
 });
 
-//TODO
-//get one card by carnum, from creditcard table, where carnum is the primary key -----------------------------------------------------
-app.get('/card/:carnum', function(req, res){
-	console.log("Get card with number" + req.params.carnum + " request received.");
-	if(cardList.length <= req.params.carnum || req.params.carnum < 0){
-		res.statusCode = 404;
-		res.send('No such card found.');
-	}
-	else{
-		var id = req.params.carnum;
-		var target = -1;
-		for (var i=0; i < cardList.length; ++i){
-			if (cardList[i].carnum == carnum){
-				target = i;
-				break;	
-			}
-		}
-		if(target == -1){
-			res.statusCode = 404;
-			res.send('No such card found.');
-		}
-		else{
-			var card = cardList[target];
-			res.statusCode = 200;
-			res.json({"card":card});	
-		}
-	}	
-});
-
-//TODO
-//new card-------------------------------------------------
-
-app.post('/newcard', function(req, res) {
-	console.log("Add new card request received.");
-	if(!authorized(req.body.username, req.body.password))
-		res.send("Unauthorized");
-	else{
-	  	if(req.body.carnum=="" || req.body.ccv=="" || req.body.holdername==""
-	  	|| req.body.expmonth=="" || req.body.expyear == "") {
-			res.statusCode = 400;
-			res.send('Error 400: Add credit card form has empty fields.');
-		}
-		else if(0){
-			//need to validate input format
-			//carnum should be a 16-digit number
-			//ccv should be a 3-digit num
-		}
-		else{
-			//var newCard = new creditcard(req.body.holdername, req.body.carnum, req.body.ccv, req.body.expmonth, req.body.expyear);
-			var newCards = new creditcards(req.body.id, req.body.holdername, req.body.carnum, req.body.ccv, req.body.expmonth, req.body.expyear);
-			
-			//cardList.push(newCard);
-			cardsList.push(newCards);
-				
-			res.statusCode = 200;
-			res.redirect(req.body.URL);
-		}
-	}
-});
-
-//TODO
-//update card-------------------------------------------------
-app.post('/card/:carnum', function(req, res) {
-	console.log("Update card " + req.params.carnum + "request received.");
-	if (cardList.length <= req.params.carnum || req.params.carnum < 0){
-		res.statusCode = 404;
-		res.send("Error 404: No such credit card found.");
-	}
+//remove card by card num-------------------------------------------------------
+app.del('/cards/:carnum', function(req, res) {
+	var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
+	console.log("Delete card ending in " + lastfour + " request received.");
 	
-  	else if(req.body.carnum=="" || req.body.ccv=="" || req.body.holdername==""
-	  	|| req.body.expmonth=="" || req.body.expyear == "") {
-		res.statusCode = 400;
-		res.send('Error 400: Credit card form is missing fields.');
-	}
-	
-	else{
-		var carnum = req.params.carnum;
-		var target = -1;
-		//for (var i=0; i < productList.length; ++i){
-		//	if (productList[i].id == id){
-		//		target = i;
-		//		break;	
-		//	}
-		}
-		if (target == -1){
-			res.statusCode = 404;
-			res.send("Error 404: No such card found.");			
-		}	
-		else {	
-			var thecard = cardList[target];
-			thecard.holdername = req.body.holdername;
-			thecard.carnum = req.body.carnum;
-			thecard.ccv = req.body.ccv;
-			thecard.expmonth = req.body.expmonth;
-			thecard.expyear = req.body.expyear;
-			res.statusCode = 200;
-			res.redirect(req.body.URL);
-		}
-
-});
-
-//TODO
-//remove card by acc num-------------------------------------------------------
-app.del('/card/:carnum', function(req, res) {
-	console.log("Delete card " + req.params.carnum + " request received.");
-	if(cardList.length <= req.params.carnum || req.params.carnum < 0) {
+	if(cCardUsers.length == 0) {
 		res.statusCode = 404;
 		res.send('No such card found');
 	}
 	else{
-		var id = req.params.carnum;
+		var carnum = req.params.carnum;
 		var target = -1;
-		for (var i=0; i < cardList.length; ++i){
-			if (cardList[i].carnum == carnum){
+		
+		for (var i=0; i < cCardUsers.length; ++i){
+			if (cCardUsers[i].carnum == carnum){
 				target = i;
 				break;	
 			}
@@ -271,9 +226,102 @@ app.del('/card/:carnum', function(req, res) {
 			res.send("No such card found.");			
 		}	
 		else {	
-			var removed = cardList.splice(req.params.carnum, 1);
+			var removed = cCardUsers.splice(target, 1);
 			res.statusCode = 200;
+			//res.send('Card ending in '+ lastfour +' was removed.');
 			res.json({"card" : removed});
+		}
+	}
+});
+
+/*
+ * REST API for addresses*********************************************************************************************************************
+ */
+
+//Create new address
+app.post("/newaddress/:id", function(req, res){
+	console.log("Add new card request received from user with id " + req.params.id);
+
+  	if(req.params.id == "" || req.body['address-line1'] == "" || req.body['address-line2'] == "" || req.body['address-city'] == "" || req.body['address-zip'] == ""){
+		res.statusCode = 400;
+		res.send('Error 400: The form has missing fields.');
+	}
+		
+	else{
+		var existingaddress = false;
+		
+		for(var i=0; i<addresses.length; ++i){
+			if((req.body['address-line1'] == addresses[i].line1) && (req.body['address-line2'] == addresses[i].line2) && (req.body['address-city'] == addresses[i].city) && (req.body['address-zip'] == addresses[i].zipcode) && (req.body['select-choice-country'] == addresses[i].country) && (req.body['select-choice-state'] == addresses[i].state)){
+				existingaddress = true;
+				break;
+			}
+		}
+
+		if(existingaddress){
+			res.statusCode = 400;
+			res.send("Address has already been registered.");
+		}
+		
+		var newAddress = new Address(req.params.id, req.body['address-line1'], req.body['address-line2'], req.body['address-city'], req.body['select-choice-country'], req.body['address-zip'], req.body['select-choice-state']);
+		newAddress.id = req.params.id;
+		newAddress.line1 = req.body['address-line1'];
+		newAddress.line2 = req.body['address-line2'];
+		newAddress.city = req.body['address-city'];
+		newAddress.country = req.body['select-choice-country'];
+		newAddress.zipcode = req.body['address-zip'];
+		newAddress.state = req.body['select-choice-state'];
+		
+		addresses.push(newAddress);
+		
+		res.statusCode = 200;
+		res.json(true);
+	}
+
+});
+
+//Get all addresses associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
+app.get('/addresses/:id', function(req, res){
+	console.log("Get the addresses for user " + req.params.id + " request received.");
+	
+	var templist = new Array();
+	var address;
+	
+	if(addresses.length == 0){
+		res.statusCode = 404;
+		res.json('Address not found. Table is empty.');
+		
+	}
+	if(req.params.id != ''){
+		for(var i=0;i<addresses.length;i++){
+			address = addresses[i];
+			//console.log(JSON.stringify(card));
+			if(address.id == req.params.id)
+				templist.push(address);
+		}
+	}
+	else
+		templist = addresses;
+		
+	res.json({"addresses" : templist});
+});
+
+//Remove address by card num-------------------------------------------------------
+app.del('/addresses/:index', function(req, res) {
+	console.log("Delete address request received.");
+	
+	if(addresses.length == 0) {
+		res.statusCode = 404;
+		res.send('No such address found');
+	}
+	else{
+		if (req.params.index >= addresses.length){
+			res.statusCode = 404;
+			res.send("No such address found.");			
+		}	
+		else {	
+			var removed = addresses.splice(req.params.index, 1);
+			res.statusCode = 200;
+			res.json({"address" : removed});
 		}
 	}
 });
@@ -629,7 +677,7 @@ app.get("/user/:username", function(req, res){
 //TODO authorize user
 app.post("/bid/:id", function(req, res){
 	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
-	
+		
 	if(productList.length <= req.params.id || req.params.id < 0){
 		res.statusCode = 404;
 		res.send('No such product found.');
@@ -715,7 +763,13 @@ app.post("/bid/:id", function(req, res){
 
 //add item to cart
 app.post("/addtocart", function(req,res){
-	console.log("Add item " + req.body.id + " to " + req.body.username + "'s cart request received.");
+	
+	if(req.body.qty == 0 || req.body.qty == ""){
+		res.statusCode = 400;
+		res.json("Please specify a quantity");
+	}
+	
+	console.log("Add item " + req.body.id + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
 	
 	var target=-1;
 	//search for user
@@ -737,7 +791,7 @@ app.post("/addtocart", function(req,res){
 		var done = false;
 		for(var i=0;i < userList[target].cart.length;i++){
 			if(userList[target].cart[i].id == req.body.id){
-				userList[target].cart[i].qty += 1;
+				userList[target].cart[i].qty += req.body.qty;
 				done = true;
 				res.statusCode = 200;
 				res.json(true);
@@ -749,7 +803,7 @@ app.post("/addtocart", function(req,res){
 			//search for product
 			for (var i=0; i < productList.length; ++i){
 				if (productList[i].id == req.body.id){
-					userList[target].cart.push({"id":productList[i].id,"qty":1});
+					userList[target].cart.push({"id":productList[i].id,"qty":req.body.qty});
 					res.statusCode = 200;
 					res.json(true);
 				}

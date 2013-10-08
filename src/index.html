@@ -12,225 +12,6 @@
 
 <body> 
 
-<!--login page -->
-<div id="login" data-role="page">
-	<div data-role="header">
-		<a href="#browse" data-role="button" data-icon="home" >Browse</a>
-		<h1>Login</h1>
-	</div>
-	<p hidden id="invalid"></p>
-	<div data-role="content">	
-		<form id='login-form'>
-			<ul data-role="listview" data-inset="true" data-filter="false">
-				<label for="username" class="ui-hidden-accessible">Username:</label>
-				<li><input id="username" name="username" type="text" placeholder="Username"/></li>
-				<label for="password" class="ui-hidden-accessible">Password:</label>
-				<li><input id="password" name="password" type="password" placeholder="Password"/></li>
-			</ul>
-			<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
-			<input type="button" data-theme='b' onclick="login()" value="Login" /><br />
-		</form>
-		<a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
-		<a href="#register">Register</a>
-	</div>
-</div>
-
-<!--reset password page -->
-<div id="reset" data-role="page">
-	<div data-role="header">
-		<h1>Reset</h1>
-	</div>
-	<div data-role="content">
-		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
-			<input id="resetemail" name="resetemail" type="email" placeholder="Email"/> 
-			<input type='submit' value='Reset'/><br />
-		</form>
-	</div>
-</div>
-		
-<!--register user page-->
-<div id="register" data-role="page">
-	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#login" data-icon="back" >Back</a>
-		<h2>Register</h2>
-	</div>
-	<p hidden id="register-invalid"></p>
-	<div data-role="content">
-		<div class="content-primary">
-			<form id='registration-form'>
-				<ul data-role="listview">
-					<li data-role="fieldcontain">
-						<label for="newusername">Username:</label>
-						<input id="newusername" name="newusername" type="text" placeholder="Username" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newpassword">Password:</label>
-						<input id="newpassword" name="newpassword" type="password" placeholder="Password" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newemail">Email:</label>
-						<input id="newemail" name="newemail"  type="email" placeholder="username@site.com" />
-					</li>
-					<li data-role="fieldcontain">		
-						<label for="newfname">First Name:</label>
-						<input id="newfname" name="newfname" type="text" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newlname">Last Name:</label>
-						<input id="newlname" name="newlname" type="text" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newselectcountry" class="select">Country/Region:</label>
-						<select name="newselectcountry" id="newselectcountry">
-							<option value="us">United States</option>
-							<option value="uk">United Kingdom</option>
-							<option value="australia">Australia</option>
-							<option value="everywhere-else">Everywhere else</option>
-						</select>
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newaddress1">Street Address 1:</label>
-						<input type="text" name="newddress1" id="newaddress1" data-mini="true" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newaddress2">Street Address 2:</label>
-						<input type="text" name="newaddress2" id="newaddress2" data-mini="true" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newcity">City:</label>
-						<input type="text" name="newcity" id="newcity" data-mini="true" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newzipcode">Zipcode:</label>
-						<input type="number" name="newzipcode" id="newzipcode" data-mini="true" />
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newselectstate" class="select">State:</label>
-						<select name="newselectstate" id="newselectstate">
-							<option value="fl">Florida</option>
-							<option value="ca">California</option>
-							<option value="ny">New York</option>
-							<option value="tx">Texas</option>
-							<option value="md">Maryland</option>
-							<option value="ee">Everywhere else</option>
-						</select>
-					</li>
-					<li data-role="fieldcontain">
-						<label for="newphonenum">Phone number:</label>
-						<input type="number" name="newphonenum" id="newphonenum" data-mini="true" maxlength="12" placeholder="787-555-5555"/>
-					</li>
-								
-					<li class="ui-body ui-body-b">
-						<fieldset class="ui-grid-a">
-							<a data-role="button" onclick="register()" data-theme="b">Submit</a>
-						</fieldset>
-					</li>
-				</ul>
-			</form>
-		</div>
-	</div>
-</div>
-
-<!--update card information-->
-<div id="cCard" data-role="page">
-	<div data-role="header" data-theme="a" data-position="fixed">
-		<a data-rel="back" data-icon="delete" data-mini="true" data-inline="true">Back</a>
-		<h2>Credit Card Info</h2>
-	</div>
-		
-	<div data-role="content">
-		<form id='card-form'>
-			<fieldset data-role="controlgroup" data-type="horizontal">
-				<legend>Card type:</legend>
-				<input type="radio" name="radio-choice" id="radio-choice-1" value="Visa" checked="checked" />
-				<label for="radio-choice-1">Visa</label>
-				
-				<input type="radio" name="radio-choice" id="radio-choice-2" value="Master Card" />
-				<label for="radio-choice-2">Master Card</label>
-				
-				<input type="radio" name="radio-choice" id="radio-choice-3" value="American Express" />
-				<label for="radio-choice-3">American Express</label>
-				
-				<input type="radio" name="radio-choice" id="radio-choice-4" value="Godzilla" />
-				<label for="radio-choice-4">Godzilla</label>
-			</fieldset>
-			
-			<label for="card-num">Card number:</label>
-			<input type="text" name="card-num" id="card-num" data-mini="true" maxlength="19" placeholder="0000-0000-0000-0000"/>
-			<label for="ccv">CCV:</label>
-			<input type="text" name="ccv" id="card-num" data-mini="true" maxlength="3" placeholder="123"/>
-			
-			<div data-role="fieldcontain">
-				<fieldset data-role="controlgroup" data-type="horizontal">
-					<legend>Expiration date:</legend>
-					<label for="select-choice-month">Month</label>
-					<select name="select-choice-month" id="select-choice-month">
-						<option>Month</option>
-						<option value="jan">Jan</option>
-						<option value="feb">Feb</option>
-						<option value="mar">Mar</option>
-						<option value="apr">Apr</option>
-						<option value="may">May</option>
-						<option value="jun">Jun</option>
-						<option value="jul">Jul</option>
-						<option value="aug">Aug</option>
-						<option value="sep">Sep</option>
-						<option value="oct">Oct</option>
-						<option value="nov">Nov</option>
-						<option value="dec">Dec</option>
-					</select>
-					
-					<label for="select-choice-day">Day</label>
-					<select name="select-choice-day" id="select-choice-day">
-						<option>Day</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-						<option value="6">6</option>
-						<option value="7">7</option>
-						<option value="8">8</option>
-						<option value="9">9</option>
-						<option value="10">10</option>
-						<option value="11">11</option>
-						<option value="12">12</option>
-						<option value="13">13</option>
-						<option value="14">14</option>
-						<option value="15">15</option>
-						<option value="16">16</option>
-						<option value="17">17</option>
-						<option value="18">18</option>
-						<option value="19">19</option>
-						<option value="20">20</option>
-						<option value="21">21</option>
-						<option value="22">22</option>
-						<option value="23">23</option>
-						<option value="24">24</option>
-						<option value="25">25</option>
-						<option value="26">26</option>
-						<option value="27">27</option>
-						<option value="28">28</option>
-						<option value="29">29</option>
-						<option value="30">30</option>
-						<option value="31">31</option>
-					</select>
-					
-					<label for="select-choice-year">Year</label>
-					<select name="select-choice-year" id="select-choice-year">
-						<option>Year</option>
-						<option value="2013">2013</option>
-						<option value="2014">2014</option>
-						<option value="2015">2015</option>
-						<option value="2016">2016</option>
-					</select>
-				</fieldset>
-			</div>
-		</form>
-		<a data-role="button" data-theme="b" onclick="updCard()">Add card</a>
-	</div>
-</div>
-
 <!--browse page -->
 <div id="browse" data-role="page">
 	<!--left panel-->
@@ -383,7 +164,179 @@
 			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
 		</div>
 	</div>
+	<!-- login popup -->
+	<div data-role="popup" id="login" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+		<p hidden id="invalid"></p>
+		<div data-role="content">	
+			<form id='login-form'>
+				<ul data-role="listview" data-inset="true" data-filter="false">
+					<li data-role="list-divider">Login</li>
+					<label for="username" class="ui-hidden-accessible">Username:</label>
+					<li><input id="username" name="username" type="text" placeholder="Username"/></li>
+					<label for="password" class="ui-hidden-accessible">Password:</label>
+					<li><input id="password" name="password" type="password" placeholder="Password"/></li>
+					<input type="button" data-theme='b' onclick="login()" value="Login" />
+					<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>
+					
+				</ul>
+				<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
+			</form>
+			<br/><a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
+			<a href="#register">Register</a>
+		</div>
+	</div>
+	
 </div>
+
+<!--reset password page -->
+<div id="reset" data-role="page">
+	<div data-role="header">
+		<h1>Reset</h1>
+	</div>
+	<div data-role="content">
+		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
+			<input id="resetemail" name="resetemail" type="email" placeholder="Email"/> 
+			<input type='submit' value='Reset'/><br />
+		</form>
+	</div>
+</div>
+		
+<!--register user page-->
+<div id="register" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="#login" data-icon="back" >Back</a>
+		<h2>Register</h2>
+	</div>
+	<p hidden id="register-invalid"></p>
+	<div data-role="content">
+		<div class="content-primary">
+			<form id='registration-form'>
+				<ul data-role="listview">
+					<li data-role="fieldcontain">
+						<label for="newusername">Username:</label>
+						<input id="newusername" name="newusername" type="text" placeholder="Username" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newpassword">Password:</label>
+						<input id="newpassword" name="newpassword" type="password" placeholder="Password" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newemail">Email:</label>
+						<input id="newemail" name="newemail"  type="email" placeholder="username@site.com" />
+					</li>
+					<li data-role="fieldcontain">		
+						<label for="newfname">First Name:</label>
+						<input id="newfname" name="newfname" type="text" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newlname">Last Name:</label>
+						<input id="newlname" name="newlname" type="text" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newselectcountry" class="select">Country/Region:</label>
+						<select name="newselectcountry" id="newselectcountry">
+							<option value="us">United States</option>
+							<option value="uk">United Kingdom</option>
+							<option value="australia">Australia</option>
+							<option value="everywhere-else">Everywhere else</option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newaddress1">Street Address 1:</label>
+						<input type="text" name="newddress1" id="newaddress1" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newaddress2">Street Address 2:</label>
+						<input type="text" name="newaddress2" id="newaddress2" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newcity">City:</label>
+						<input type="text" name="newcity" id="newcity" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newzipcode">Zipcode:</label>
+						<input type="number" name="newzipcode" id="newzipcode" data-mini="true" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newselectstate" class="select">State:</label>
+						<select name="newselectstate" id="newselectstate">
+							<option value="fl">Florida</option>
+							<option value="ca">California</option>
+							<option value="ny">New York</option>
+							<option value="tx">Texas</option>
+							<option value="md">Maryland</option>
+							<option value="ee">Everywhere else</option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newphonenum">Phone number:</label>
+						<input type="number" name="newphonenum" id="newphonenum" data-mini="true" maxlength="12" placeholder="787-555-5555"/>
+					</li>
+								
+					<li class="ui-body ui-body-b">
+						<fieldset class="ui-grid-a">
+							<a data-role="button" onclick="register()" data-theme="b">Submit</a>
+						</fieldset>
+					</li>
+				</ul>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!--update card information-->
+<div id="cCard" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="delete" data-mini="true" data-inline="true">Back</a>
+		<h2>Credit Card Info</h2>
+	</div>
+		
+	<div data-role="content">
+		<form id='card-form'>
+			<label for="card-num">Card number:</label>
+			<input type="text" name="card-num" id="card-num" data-mini="true" maxlength="19" placeholder="0000-0000-0000-0000"/>
+			<label for="ccv">CCV:</label>
+			<input type="text" name="ccv" id="ccv" data-mini="true" maxlength="3" placeholder="123"/>
+			
+			<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup" data-type="horizontal">
+					<legend>Expiration date:</legend>
+					<label for="select-choice-month">Month</label>
+					<select name="select-choice-month" id="select-choice-month">
+						<option>Month</option>
+						<option value="0">Jan</option><option value="1" >Feb</option><option value="2" >Mar</option>
+						<option value="3">Apr</option><option value="4" >May</option><option value="5" >Jun</option>
+						<option value="6">Jul</option><option value="7" >Aug</option><option value="8" >Sep</option>
+						<option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+					</select>
+					
+					<label for="select-choice-day">Day</label>
+					<select name="select-choice-day" id="select-choice-day">
+						<option>Day</option>
+						<option value="1" >1</option> <option value="2" >2</option> <option value="3" >3</option> <option value="4" >4</option> <option value="5" >5</option> <option value="6" >6</option> <option value="7" >7</option>
+						<option value="8" >8</option> <option value="9" >9</option> <option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option>
+						<option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option>
+						<option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option>
+						<option value="29">29</option><option value="30">30</option><option value="31">31</option>
+					</select>
+					
+					<label for="select-choice-year">Year</label>
+					<select name="select-choice-year" id="select-choice-year">
+						<option>Year</option>
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+						<option value="2017">2017</option>
+						<option value="2018">2018</option>
+					</select>
+				</fieldset>
+			</div>
+		</form>
+		<a data-role="button" data-theme="b" onclick="addNewCard()">Add card</a>
+	</div>
+</div>
+
 
 <!--product page-->
 <div id="product" data-role="page">
@@ -442,6 +395,14 @@
 			<a id="product-content"></a>
 		</div>
 		
+		<!-- quantity popup -->
+		<div data-role="popup" id="qtypopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<h3>How many?</h3>
+			<a id="my-quantity"></a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
+		</div>
+		
+		<!-- bid popup -->
 		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 			<h3>Place Bid?</h3>
 			<a id="my-bid"></a>
@@ -449,6 +410,7 @@
 		</div>
 				
 		<ul id="product-description" data-role="listview" data-inset="true"></ul>
+			
 	</div>
 </div>
 
@@ -462,7 +424,7 @@
 		<div data-role="controlgroup" data-inset="true">
 			<a href='#changeavatar' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change avatar</a>
 			<a href='#changepassword' data-role='button'  data-icon='arrow-r' data-iconpos='right' data-theme='c' data-rel='popup' data-position-to='window' data-transition='pop'>Change password</a>
-			<a href='#manageaddress' data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
+			<a href='#manage-addresses' data-role="button" data-icon="arrow-r" data-iconpos="right">Manage addresses</a>
 			<a href="#manage-credit-cards" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="getCreditCards(localStorage.getItem('id'))">Manage credit cards</a>
 			<a href="#" data-role="button" data-icon="arrow-r" data-iconpos="right">Close account</a>
 		</div>
@@ -492,8 +454,157 @@
 
 	<div data-role="content">
 		<ul id="credit-card-list" data-role="listview" data-inset="true"></ul>
+		<a href="#add-card" data-role="button" data-theme="b" data-icon="plus" data-iconpos="right" data-rel='popup' data-position-to='window' data-transition='pop'>Add a credit card</a>
+	</div>
+	
+	<!--add credit card popup-->
+	<div data-role="popup" id="add-card" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+	<h3>Add Card</h3>
+	<form id='newcard-form'>
+		<label for="card-holder-name">Card holder name:</label>
+		<input type="text" name="card-holder-name" id="card-holder-name" data-mini="true" maxlength="30" placeholder="John D. Smith"/>
+		<label for="card-num">Card number:</label>
+		<input type="text" name="card-num" id="card-num" data-mini="true" maxlength="19" placeholder="0000-0000-0000-0000"/>
+		<label for="ccv">CCV:</label>
+		<input type="text" name="ccv" id="ccv" data-mini="true" maxlength="3" placeholder="123"/>
+		
+		<div data-role="fieldcontain">
+			<fieldset data-role="controlgroup" data-type="horizontal">
+				<legend>Expiration date:</legend>
+				<label for="select-choice-month">Month</label>
+				<select name="select-choice-month" id="select-choice-month">
+					<option>Month</option>
+					<option value="0">Jan</option><option value="1" >Feb</option><option value="2" >Mar</option>
+					<option value="3">Apr</option><option value="4" >May</option><option value="5" >Jun</option>
+					<option value="6">Jul</option><option value="7" >Aug</option><option value="8" >Sep</option>
+					<option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+				</select>
+				
+				<!--label for="select-choice-day">Day</label>
+				<select name="select-choice-day" id="select-choice-day">
+					<option>Day</option>
+					<option value="1" >1</option> <option value="2" >2</option> <option value="3" >3</option> <option value="4" >4</option> <option value="5" >5</option> <option value="6" >6</option> <option value="7" >7</option>
+					<option value="8" >8</option> <option value="9" >9</option> <option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option>
+					<option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option>
+					<option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option>
+					<option value="29">29</option><option value="30">30</option><option value="31">31</option>
+				</select-->
+				
+				<label for="select-choice-year">Year</label>
+				<select name="select-choice-year" id="select-choice-year">
+					<option>Year</option>
+					<option value="2013">2013</option>
+					<option value="2014">2014</option>
+					<option value="2015">2015</option>
+					<option value="2016">2016</option>
+					<option value="2017">2017</option>
+					<option value="2018">2018</option>
+				</select>
+			</fieldset>
+		</div>
+	</form>
+	
+	<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-inline="true">Cancel</a>
+	<a href="#manage-credit-cards" data-role="button" data-theme="b" onclick="addNewCard()" data-transition="fade" data-inline="true">Add card</a>
+</div>
+</div>
+
+<!--manage addresses page-->
+<div id="manage-addresses" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>My Addresses</h2>
+	</div>
+
+	<div data-role="content">
+		<ul id="address-list" data-role="listview" data-inset="true"></ul>
+		<a href="#add-address" data-role="button" data-theme="b" data-icon="plus" data-iconpos="right" data-rel='popup' data-position-to='window' data-transition='pop'>Add a new address</a>
+	</div>
+	
+	<!--add address popup-->
+	<div data-role="popup" id="add-address" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+		<h3>Add Address</h3>
+		<form id='newaddress-form'>
+		<label for="address-line1">Street Address:</label>
+		<input type="text" name="address-line1" id="address-line1" data-mini="true" maxlength="30" placeholder="P. Sherman 42"/>
+		<label for="address-line2" class="ui-hidden-accessible">Address Line 2:</label>
+		<input type="text" name="address-line2" id="address-line2" data-mini="true" maxlength="30" placeholder="Wallaby Way"/>
+		<label for="address-city">City:</label>
+		<input type="text" name="address-city" id="address-city" data-mini="true" maxlength="30" placeholder="Sydney"/>
+		<label for="address-zip">Zip Code:</label>
+		<input type="text" name="address-zip" id="address-zip" data-mini="true" maxlength="16" placeholder="00682-9998"/>
+		
+		<div data-role="fieldcontain">
+			<fieldset data-role="controlgroup" data-inset="true">
+				<legend>Country:</legend>
+				<label for="select-choice-country">Country</label>
+				<select name="select-choice-country" id="select-choice-country">
+					<option value="US">United States</option>
+				</select>
+				
+				<label for="select-choice-state">Select State:</label>
+				<select name="select-choice-state" id="select-choice-state">
+					<option value="AL">Alabama</option>
+					<option value="AK">Alaska</option>
+					<option value="AZ">Arizona</option>
+					<option value="AR">Arkansas</option>
+					<option value="CA">California</option>
+					<option value="CO">Colorado</option>
+					<option value="CT">Connecticut</option>
+					<option value="DE">Delaware</option>
+					<option value="FL">Florida</option>
+					<option value="GA">Georgia</option>
+					<option value="HI">Hawaii</option>
+					<option value="ID">Idaho</option>
+					<option value="IL">Illinois</option>
+					<option value="IN">Indiana</option>
+					<option value="IA">Iowa</option>
+					<option value="KS">Kansas</option>
+					<option value="KY">Kentucky</option>
+					<option value="LA">Louisiana</option>
+					<option value="ME">Maine</option>
+					<option value="MD">Maryland</option>
+					<option value="MA">Massachusetts</option>
+					<option value="MI">Michigan</option>
+					<option value="MN">Minnesota</option>
+					<option value="MS">Mississippi</option>
+					<option value="MO">Missouri</option>
+					<option value="MT">Montana</option>
+					<option value="NE">Nebraska</option>
+					<option value="NV">Nevada</option>
+					<option value="NH">New Hampshire</option>
+					<option value="NJ">New Jersey</option>
+					<option value="NM">New Mexico</option>
+					<option value="NY">New York</option>
+					<option value="NC">North Carolina</option>
+					<option value="ND">North Dakota</option>
+					<option value="OH">Ohio</option>
+					<option value="OK">Oklahoma</option>
+					<option value="OR">Oregon</option>
+					<option value="PA">Pennsylvania</option>
+					<option value="RI">Rhode Island</option>
+					<option value="SC">South Carolina</option>
+					<option value="SD">South Dakota</option>
+					<option value="TN">Tennessee</option>
+					<option value="TX">Texas</option>
+					<option value="UT">Utah</option>
+					<option value="VT">Vermont</option>
+					<option value="VA">Virginia</option>
+					<option value="WA">Washington</option>
+					<option value="WV">West Virginia</option>
+					<option value="WI">Wisconsin</option>
+					<option value="WY">Wyoming</option>
+				</select>
+			</fieldset>
+			<a data-mini="true">Sorry! We are still in beta and currently only support the US.</a>
+		</div>
+	</form>
+	
+		<a data-role="button" data-rel="back" data-inline="true" data-inline="true">Cancel</a>
+		<a href="#manage-addresses" data-role="button" data-theme="b" onclick="addNewAddress()" data-transition="fade" data-inline="true">Add address</a>
 	</div>
 </div>
+
 
 
 <!-- current biddings page --> 
@@ -904,6 +1015,7 @@
 	<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
 		<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
 	<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
+
 		<a href="#browse" onclick="placeOrder()" style="color: white;">Place Order</a></div>
 	</div>
 	
