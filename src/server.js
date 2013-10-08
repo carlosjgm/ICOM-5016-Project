@@ -445,7 +445,7 @@ app.del('/product/:id', function(req, res) {
 //user login-------------------------------------------------
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
-  	if(req.body.username == "" || req.bodypassword == ""){
+  	if(req.body.username == "" || req.body.password == ""){
 		res.statusCode = 400;
 		res.send('The form has missing fields.');
 	}

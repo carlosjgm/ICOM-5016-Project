@@ -29,6 +29,7 @@ $(document).on('pagebeforeshow', '#cart', function(){
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
+	
 	if(user != null)
 			$(buttonid).replaceWith("<a id='" + buttonid + "' href='" + pagepanel + "' data-role='button' data-icon='bars' data-mini='true'"
 				+ "data-inline='true'>" + user + "</a>");	
@@ -525,7 +526,7 @@ function browseCategories(category){
 					+ "</p></a></li>");
 					
 			}
-			list.listview("refresh");	
+			list.listview("refresh");
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){

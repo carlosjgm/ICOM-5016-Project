@@ -146,7 +146,7 @@
 		</div>
 		
 		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" data-icon="check" onclick='logout()'>Log out</a>
+			<a data-rel="back" data-role="button" data-theme="a" data-icon="check" onclick='logout()'>Log out</a>
 		</div>
 		
 	</div>
@@ -163,29 +163,28 @@
 		<div class="content-primary">
 			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
 		</div>
-	</div>
-	<!-- login popup -->
-	<div data-role="popup" id="login" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
-		<p hidden id="invalid"></p>
-		<div data-role="content">	
-			<form id='login-form'>
-				<ul data-role="listview" data-inset="true" data-filter="false">
-					<li data-role="list-divider">Login</li>
-					<label for="username" class="ui-hidden-accessible">Username:</label>
-					<li><input id="username" name="username" type="text" placeholder="Username"/></li>
-					<label for="password" class="ui-hidden-accessible">Password:</label>
-					<li><input id="password" name="password" type="password" placeholder="Password"/></li>
-					<input type="button" data-theme='b' onclick="login()" value="Login" />
-					<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>
-					
-				</ul>
-				<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
-			</form>
-			<br/><a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
-			<a href="#register">Register</a>
-		</div>
-	</div>
 	
+		<!-- login popup -->
+		<div data-role="popup" id="login" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<p hidden id="invalid"></p>
+			<div data-role="content">	
+				<form id='login-form'>
+					<ul data-role="listview" data-inset="true" data-filter="false">
+						<li data-role="list-divider">Login</li>
+						<label for="username" class="ui-hidden-accessible">Username:</label>
+						<li><input id="username" name="username" type="text" placeholder="Username"/></li>
+						<label for="password" class="ui-hidden-accessible">Password:</label>
+						<li><input id="password" name="password" type="password" placeholder="Password"/></li>
+						<input type="button" data-theme='b' onclick="login()" value="Login" />
+						<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>					
+					</ul>
+				</form>
+				<br/><a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
+				<a href="#register">Register</a>
+			</div>
+		</div>
+	
+	</div>
 </div>
 
 <!--reset password page -->
@@ -204,7 +203,7 @@
 <!--register user page-->
 <div id="register" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a href="#login" data-icon="back" >Back</a>
+		<a data-rel="back" data-icon="back" >Back</a>
 		<h2>Register</h2>
 	</div>
 	<p hidden id="register-invalid"></p>
@@ -274,7 +273,7 @@
 					</li>
 								
 					<li class="ui-body ui-body-b">
-						<fieldset class="ui-grid-a">
+						<fieldset>
 							<a data-role="button" onclick="register()" data-theme="b">Submit</a>
 						</fieldset>
 					</li>
@@ -918,7 +917,6 @@
 </div>
 
 <!-- end checkout -->
-
 
 </body>
 </html>
