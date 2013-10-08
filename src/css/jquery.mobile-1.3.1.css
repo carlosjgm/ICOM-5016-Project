@@ -3414,3 +3414,10 @@ a:hover, a:visited, a:link, a:active
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
 }
+
+ input[type='button']
+ {
+ 	border-radius:10px;
+ 	background-color:#39c; 
+ 	color:#fff;
+ }

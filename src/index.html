@@ -349,7 +349,7 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
+					<li><a href="#catalogpage" onclick="getCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
@@ -409,7 +409,7 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
+					<li><a href="#catalogpage" onclick="getCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
@@ -503,9 +503,11 @@
 		<h2>Current Biddings</h2>
 	</div>
 	
-	<div data-role="content">
-		<ul id="bidding-list" data-role="listview" data-inset="true"></ul>
+	<div data-role="listview">
+		<ul id="bidding-list"></ul>
 	</div>
+	
+
 	
 </div>
 <!-- end biddings page -->
@@ -546,7 +548,7 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
+					<li><a href="#catalogpage" onclick="getCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
@@ -908,6 +910,34 @@
 </div>
 
 <!-- end checkout -->
+
+
+<!-- Seller Catalog -->
+
+<div id="catalogpage" data-role="page" data-theme="c">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Seller Page</h2>    	
+	</div>
+	
+	<div style="float: left; margin-left: 10px; margin-top:10px; "><b style="font-size: 2em;">
+		<script>document.write(localStorage.getItem("username"))</script></b>
+		<br/>current rating: 76%</div> 
+	<div id="#ratings" data-role="button" data-mini="true" data-theme="b" style="float: left; width: 100px; margin-top: 15px;">rate user</div>
+	
+	
+	<div data-role="controlgroup">
+		<div data-role="button" data-theme="b" style="width:100%; margin-top:80px; text-align: center;">
+			<b>Products Catalog</b></div>
+			
+			<div data-role="listview">
+				<ul id="catalog"></ul>
+			</div>
+	</div>
+	
+</div>
+<!-- end catalog -->
+
 
 
 </body>
