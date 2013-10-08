@@ -12,27 +12,180 @@
 
 <body> 
 
-<!--login page -->
-<div id="login" data-role="page">
-	<div data-role="header">
-		<a href="#browse" data-role="button" data-icon="home" >Browse</a>
-		<h1>Login</h1>
-	</div>
-	<p hidden id="invalid"></p>
-	<div data-role="content">	
-		<form id='login-form'>
-			<ul data-role="listview" data-inset="true" data-filter="false">
-				<label for="username" class="ui-hidden-accessible">Username:</label>
-				<li><input id="username" name="username" type="text" placeholder="Username"/></li>
-				<label for="password" class="ui-hidden-accessible">Password:</label>
-				<li><input id="password" name="password" type="password" placeholder="Password"/></li>
+<!--browse page -->
+<div id="browse" data-role="page">
+	<!--left panel-->
+	<div data-role="panel" id="browse-panel" data-position="left" data-display="reveal" data-theme="a">
+		<h3>Search by Category</h3>
+		<div data-role="collapsible-set">
+			<ul data-role="listview" data-theme="a" data-inset="true">
+				<li><a onclick="browseCategories('all'); closePanel('browse-panel')">All</a></li>
 			</ul>
-			<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
-			<input type="button" data-theme='b' onclick="login()" value="Login" /><br />
-		</form>
-		<a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
-		<a href="#register">Register</a>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Books</h4>
+				<ul data-role="listview">
+					<li><a onclick="browseCategories('books-children'); closePanel('browse-panel')">Children</a></li>
+					<li><a onclick="browseCategories('books-fiction'); closePanel('browse-panel')">Fiction</a></li>
+					<li><a onclick="browseCategories('books-technology'); closePanel('browse-panel')">Technology</a></li>
+					<li><a onclick="browseCategories('books-business'); closePanel('browse-panel')">Business</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Electronics</h4>
+				<ul data-role="listview">
+					<li><a onclick="browseCategories('electronics-tv'); closePanel('browse-panel')">TV</a></li>
+					<li><a onclick="browseCategories('electronics-audio'); closePanel('browse-panel')">Audio</a></li>
+					<li><a onclick="browseCategories('electronics-phones'); closePanel('browse-panel')">Phones</a></li>
+					<li><a onclick="browseCategories('electronics-cameras'); closePanel('browse-panel')">Cameras</a></li>
+					<li><a onclick="browseCategories('electronics-video'); closePanel('browse-panel')">Video</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Computers</h4>
+				<ul data-role="listview">
+					<li><a onclick="browseCategories('computers-laptops'); closePanel('browse-panel')">Laptops</a></li>
+					<li><a onclick="browseCategories('computers-desktops'); closePanel('browse-panel')">Desktops</a></li>
+					<li><a onclick="browseCategories('computers-tablets'); closePanel('browse-panel')">Tablets</a></li>
+					<li><a onclick="browseCategories('computers-printers'); closePanel('browse-panel')">Printers</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Clothing</h4>
+				<ul id="custom-listview" data-role="listview">
+					<li class="custom-li-first"><a onclick="browseCategories('clothing-children'); closePanel('browse-panel')">Children</a></li>
+					<li class="custom-li">
+						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+								<h4>Men</h4>
+								<ul data-role="listview">
+									<li><a onclick="browseCategories('clothing-men-shirts'); closePanel('browse-panel')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-men-pants'); closePanel('browse-panel')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-men-socks'); closePanel('browse-panel')">Socks</a></li>
+								</ul>
+							</div>
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+								<h4>Women</h4>
+								<ul data-role="listview">
+									<li><a onclick="browseCategories('clothing-women-shirts'); closePanel('browse-panel')">Shirts</a></li>
+									<li><a onclick="browseCategories('clothing-women-pants'); closePanel('browse-panel')">Pants</a></li>
+									<li><a onclick="browseCategories('clothing-women-dresses'); closePanel('browse-panel')">Dresses</a></li>
+								</ul>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Shoes</h4>
+				<ul data-role="listview">
+					<li><a onclick="browseCategories('shoes-children'); closePanel('browse-panel')">Children</a></li>
+					<li><a onclick="browseCategories('shoes-women'); closePanel('browse-panel')">Women</a></li>
+					<li><a onclick="browseCategories('shoes-men'); closePanel('browse-panel')">Men</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
+				<h4>Sports</h4>
+				<ul id="custom-listview" data-role="listview">
+					<li class="custom-li-first"><a onclick="browseCategories('sports-fishing'); closePanel('browse-panel')">Fishing</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baseball'); closePanel('browse-panel')">Baseball</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-golf'); closePanel('browse-panel')">Golf</a></li>
+					<li class="custom-li-first"><a onclick="browseCategories('sports-baskeball'); closePanel('browse-panel')">Basketball</a></li>
+					<li class="custom-li">
+						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
+							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
+								<h4>Bicycles</h4>
+								<ul data-role="listview">
+									<li><a onclick="browseCategories('sports-bicycles-frames'); closePanel('browse-panel')">Frames</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-wheels'); closePanel('browse-panel')">Wheels</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-helmet'); closePanel('browse-panel')">Helmet</a></li>
+									<li><a onclick="browseCategories('sports-bicycles-parts'); closePanel('browse-panel')">Parts</a></li>
+								</ul>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
+	<!--end left panel-->
+
+	<!-- right Panel -->
+	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
+		<div data-role="collapsible-set">	
+			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
+				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
+				<script>document.write(localStorage.getItem("username"))</script><br/>
+				Mike Wazouski<br/>
+				Rating %
+				</h4>
+				<ul data-role="listview">
+					<li>Address: P. Sherman 42 Wallaby Way, Sydney</li>
+					<li>Credit Card: 9874-6851-3547-5862</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div data-role="collapsible-set">
+			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
+				<h4>My Sales</h4>
+				<ul data-role="listview">
+					<li><a href="#">Catalog</a></li>
+					<li><a href="#sales">Sales Report</a></li>
+				</ul>
+			</div>
+			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
+			</div>
+		</div>
+			
+		<div data-role="controlgroup">
+			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
+			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
+			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
+		</div>
+		
+		<div data-role="controlgroup">
+			<a href="#log-out" data-role="button" data-theme="a" data-icon="check" onclick='logout()'>Log out</a>
+		</div>
+		
+	</div>
+	<!-- end right panel -->
+
+	<div data-role="header" data-theme="a" data-position="fixed">
+    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
+    	<a id="browse-pid"></a>
+    	<script>profilebutton("#browse-pid","#browse-account-panel");</script>
+    	<h4>Browse</h4>
+	</div>
+	<!--list of products being sold-->
+	<div data-role="content">
+		<div class="content-primary">
+			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+		</div>
+	</div>
+	<!-- login popup -->
+	<div data-role="popup" id="login" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+		<p hidden id="invalid"></p>
+		<div data-role="content">	
+			<form id='login-form'>
+				<ul data-role="listview" data-inset="true" data-filter="false">
+					<li data-role="list-divider">Login</li>
+					<label for="username" class="ui-hidden-accessible">Username:</label>
+					<li><input id="username" name="username" type="text" placeholder="Username"/></li>
+					<label for="password" class="ui-hidden-accessible">Password:</label>
+					<li><input id="password" name="password" type="password" placeholder="Password"/></li>
+					<input type="button" data-theme='b' onclick="login()" value="Login" />
+					<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>
+					
+				</ul>
+				<script>document.write("<input name='URL' value='" + window.location.href + "#browse' style='display: none' />");</script>
+			</form>
+			<br/><a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
+			<a href="#register">Register</a>
+		</div>
+	</div>
+	
 </div>
 
 <!--reset password page -->
@@ -184,159 +337,6 @@
 	</div>
 </div>
 
-<!--browse page -->
-<div id="browse" data-role="page">
-	<!--left panel-->
-	<div data-role="panel" id="browse-panel" data-position="left" data-display="reveal" data-theme="a">
-		<h3>Search by Category</h3>
-		<div data-role="collapsible-set">
-			<ul data-role="listview" data-theme="a" data-inset="true">
-				<li><a onclick="browseCategories('all'); closePanel('browse-panel')">All</a></li>
-			</ul>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Books</h4>
-				<ul data-role="listview">
-					<li><a onclick="browseCategories('books-children'); closePanel('browse-panel')">Children</a></li>
-					<li><a onclick="browseCategories('books-fiction'); closePanel('browse-panel')">Fiction</a></li>
-					<li><a onclick="browseCategories('books-technology'); closePanel('browse-panel')">Technology</a></li>
-					<li><a onclick="browseCategories('books-business'); closePanel('browse-panel')">Business</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Electronics</h4>
-				<ul data-role="listview">
-					<li><a onclick="browseCategories('electronics-tv'); closePanel('browse-panel')">TV</a></li>
-					<li><a onclick="browseCategories('electronics-audio'); closePanel('browse-panel')">Audio</a></li>
-					<li><a onclick="browseCategories('electronics-phones'); closePanel('browse-panel')">Phones</a></li>
-					<li><a onclick="browseCategories('electronics-cameras'); closePanel('browse-panel')">Cameras</a></li>
-					<li><a onclick="browseCategories('electronics-video'); closePanel('browse-panel')">Video</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Computers</h4>
-				<ul data-role="listview">
-					<li><a onclick="browseCategories('computers-laptops'); closePanel('browse-panel')">Laptops</a></li>
-					<li><a onclick="browseCategories('computers-desktops'); closePanel('browse-panel')">Desktops</a></li>
-					<li><a onclick="browseCategories('computers-tablets'); closePanel('browse-panel')">Tablets</a></li>
-					<li><a onclick="browseCategories('computers-printers'); closePanel('browse-panel')">Printers</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Clothing</h4>
-				<ul id="custom-listview" data-role="listview">
-					<li class="custom-li-first"><a onclick="browseCategories('clothing-children'); closePanel('browse-panel')">Children</a></li>
-					<li class="custom-li">
-						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
-								<h4>Men</h4>
-								<ul data-role="listview">
-									<li><a onclick="browseCategories('clothing-men-shirts'); closePanel('browse-panel')">Shirts</a></li>
-									<li><a onclick="browseCategories('clothing-men-pants'); closePanel('browse-panel')">Pants</a></li>
-									<li><a onclick="browseCategories('clothing-men-socks'); closePanel('browse-panel')">Socks</a></li>
-								</ul>
-							</div>
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
-								<h4>Women</h4>
-								<ul data-role="listview">
-									<li><a onclick="browseCategories('clothing-women-shirts'); closePanel('browse-panel')">Shirts</a></li>
-									<li><a onclick="browseCategories('clothing-women-pants'); closePanel('browse-panel')">Pants</a></li>
-									<li><a onclick="browseCategories('clothing-women-dresses'); closePanel('browse-panel')">Dresses</a></li>
-								</ul>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Shoes</h4>
-				<ul data-role="listview">
-					<li><a onclick="browseCategories('shoes-children'); closePanel('browse-panel')">Children</a></li>
-					<li><a onclick="browseCategories('shoes-women'); closePanel('browse-panel')">Women</a></li>
-					<li><a onclick="browseCategories('shoes-men'); closePanel('browse-panel')">Men</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed="true" data-theme="a" data-content-theme="c" data-inset="true">
-				<h4>Sports</h4>
-				<ul id="custom-listview" data-role="listview">
-					<li class="custom-li-first"><a onclick="browseCategories('sports-fishing'); closePanel('browse-panel')">Fishing</a></li>
-					<li class="custom-li-first"><a onclick="browseCategories('sports-baseball'); closePanel('browse-panel')">Baseball</a></li>
-					<li class="custom-li-first"><a onclick="browseCategories('sports-golf'); closePanel('browse-panel')">Golf</a></li>
-					<li class="custom-li-first"><a onclick="browseCategories('sports-baskeball'); closePanel('browse-panel')">Basketball</a></li>
-					<li class="custom-li">
-						<div data-role="collapsible-set" class="custom-collapsible" data-inset="false">
-							<div data-role="collapsible" class="custom-collapsible" data-collapsed="true" data-content-theme="d" data-inset="false">
-								<h4>Bicycles</h4>
-								<ul data-role="listview">
-									<li><a onclick="browseCategories('sports-bicycles-frames'); closePanel('browse-panel')">Frames</a></li>
-									<li><a onclick="browseCategories('sports-bicycles-wheels'); closePanel('browse-panel')">Wheels</a></li>
-									<li><a onclick="browseCategories('sports-bicycles-helmet'); closePanel('browse-panel')">Helmet</a></li>
-									<li><a onclick="browseCategories('sports-bicycles-parts'); closePanel('browse-panel')">Parts</a></li>
-								</ul>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<!--end left panel-->
-
-	<!-- right Panel -->
-	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
-		<div data-role="collapsible-set">	
-			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
-				<script>document.write(localStorage.getItem("username"))</script><br/>
-				Mike Wazouski<br/>
-				Rating %
-				</h4>
-				<ul data-role="listview">
-					<li>Address: P. Sherman 42 Wallaby Way, Sydney</li>
-					<li>Credit Card: 9874-6851-3547-5862</li>
-				</ul>
-			</div>
-		</div>
-		
-		<div data-role="collapsible-set">
-			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
-				<h4>My Sales</h4>
-				<ul data-role="listview">
-					<li><a href="#">Catalog</a></li>
-					<li><a href="#sales">Sales Report</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: white;">Ratings</a></h4>
-			</div>
-		</div>
-			
-		<div data-role="controlgroup">
-			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
-			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
-			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
-		</div>
-		
-		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
-		</div>
-		
-	</div>
-	<!-- end right panel -->
-
-	<div data-role="header" data-theme="a" data-position="fixed">
-    	<a href="#browse-panel" data-role="button" data-icon="grid" data-mini="true" data-inline="true">Categories</a>
-    	<a id="browse-pid"></a>
-    	<script>profilebutton("#browse-pid","#browse-account-panel");</script>
-    	<h4>Browse</h4>
-	</div>
-	<!--list of products being sold-->
-	<div data-role="content">
-		<div class="content-primary">
-			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
-		</div>
-	</div>
-</div>
 
 <!--product page-->
 <div id="product" data-role="page">
@@ -346,7 +346,7 @@
 		<div data-role="collapsible-set">	
 			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
 				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
+				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
 				<script>document.write(localStorage.getItem("username"))</script><br/>
 				Mike Wazouski<br/>
 				Rating %
@@ -378,7 +378,7 @@
 		</div>
 		
 		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
+			<a href="#log-out" data-role="button" data-theme="a" data-icon="check" onclick='logout()'>Log out</a>
 		</div>
 		
 	</div>
@@ -395,6 +395,14 @@
 			<a id="product-content"></a>
 		</div>
 		
+		<!-- quantity popup -->
+		<div data-role="popup" id="qtypopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<h3>How many?</h3>
+			<a id="my-quantity"></a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>	
+		</div>
+		
+		<!-- bid popup -->
 		<div data-role="popup" id="bidpopup" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 			<h3>Place Bid?</h3>
 			<a id="my-bid"></a>
@@ -402,6 +410,7 @@
 		</div>
 				
 		<ul id="product-description" data-role="listview" data-inset="true"></ul>
+			
 	</div>
 </div>
 
@@ -597,6 +606,22 @@
 </div>
 
 
+
+<!-- current biddings page --> 
+<div id="bidding" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Current Biddings</h2>
+	</div>
+	
+	<div data-role="content">
+		<ul id="bidding-list" data-role="listview" data-inset="true"></ul>
+	</div>
+	
+</div>
+<!-- end biddings page -->
+
+
 <!--administrator page-->
 <div id="admin" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
@@ -616,7 +641,7 @@
 		<div data-role="collapsible-set">	
 			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
 				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding:0px 20px 0px 0px" width="65" height="65" border="0px" />
+				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
 				<script>document.write(localStorage.getItem("username"))</script><br/>
 				Mike Wazouski<br/>
 				Rating %
@@ -648,7 +673,7 @@
 		</div>
 		
 		<div data-role="controlgroup">
-			<a href="#log-out" data-role="button" data-theme="a" onclick='logout()'>Log out</a>
+			<a href="#log-out" data-role="button" data-theme="a" data-icon="check" onclick='logout()'>Log out</a>
 		</div>
 		
 	</div>
@@ -988,7 +1013,8 @@
 	<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
 		<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
 	<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
-		<a href="#placeorder" style="color: white;">Place Order</a></div>
+
+		<a href="#browse" onclick="placeOrder()" style="color: white;">Place Order</a></div>
 	</div>
 	
 </div>

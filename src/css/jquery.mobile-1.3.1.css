@@ -3411,6 +3411,6 @@ a:hover, a:visited, a:link, a:active
         left: 0;
         right: 0;
         bottom: 0px;
-        overflow: scroll;
+        overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
 }
