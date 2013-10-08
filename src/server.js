@@ -22,13 +22,13 @@ var User = users.User;
 var addresses = require('./appjs/address');
 var Address = addresses.Address;
 
-//User(username, password, email)
+//User(username, password, email, avatar, fname, lname)
 var userList = new Array(
-	new User("carlosjgm", "123", "carlosjgm@gmail.com"),
-	new User("susyspider", "456", "susy@spider.com"),
-	new User("randaniel", "789", "randaniel@me.com"),
-	new User("user", "user", "user@icom5016.com"),
-	new User("admin", "admin", "admin@icom5016.com")
+	new User("carlosjgm", "123", "carlosjgm@gmail.com","https://1.gravatar.com/avatar/a233505ac10fa50960aa0ebda04a23de?d=https%3A%2F%2Fidenticons.github.com%2F30ec72c3236786979cfee2cd1c44f026.png&s=420","Carlos", "Gomez"),
+	new User("susyspider", "456", "susy@spider.com", "https://0.gravatar.com/avatar/5cd0cbb1047736241484fcc0c7743c59?d=https%3A%2F%2Fidenticons.github.com%2F2025acdb9222d589321cad8cefaca448.png&s=420","Susana", "Galicia"),
+	new User("randaniel", "789", "randaniel@me.com", "https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png", "Randy", "Soto"),
+	new User("user", "user", "user@icom5016.com", "http://th05.deviantart.net/fs71/PRE/f/2012/191/6/0/no_face_wants_a_hug_by_shiriisy-d56qc10.png", "No", "Face"),
+	new User("admin", "admin", "admin@icom5016.com", "http://th05.deviantart.net/fs71/PRE/f/2012/191/6/0/no_face_wants_a_hug_by_shiriisy-d56qc10.png", "Noh", "Face")
 );
 
 var userNextId = 0;
@@ -495,7 +495,7 @@ app.del('/product/:id', function(req, res) {
 //user login-------------------------------------------------
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
-  	if(req.body.username == "" || req.bodypassword == ""){
+  	if(req.body.username == "" || req.body.password == ""){
 		res.statusCode = 400;
 		res.send('The form has missing fields.');
 	}
@@ -513,7 +513,7 @@ app.post("/login", function(req, res){
 		}	
 		else if(userList[target].password == req.body.password) {	
 			res.statusCode = 200;
-			res.json({"id":userList[target].id});
+			res.json({"id":userList[target].id,"fname":userList[target].fname,"lname":userList[target].lname,"avatar":userList[target].avatar});
 		}
 		else{
 			res.statusCode = 404;

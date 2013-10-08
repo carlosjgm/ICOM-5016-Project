@@ -112,17 +112,19 @@
 	<!-- right Panel -->
 	<div data-role="panel" id="browse-account-panel" data-position="right" data-display="reveal" data-theme="a">
 		<div data-role="collapsible-set">	
-			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
-				<script>document.write(localStorage.getItem("username"))</script><br/>
-				Mike Wazouski<br/>
-				Rating %
+			<div id="profile" class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+					<h4><script>
+					document.write('<img src="'+localStorage.getItem("avatar")+'" style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />')
+					</script>
+					<script>document.write(localStorage.getItem("username"))</script><br/>
+					<script>document.write(localStorage.getItem("fname")) + document.write(" ") + document.write(localStorage.getItem("lname"))</script><br/>
 				</h4>
-				<ul data-role="listview">
-					<li>Address: P. Sherman 42 Wallaby Way, Sydney</li>
-					<li>Credit Card: 9874-6851-3547-5862</li>
-				</ul>
+
+				<!-- <ul data-role='listview'>
+					<li id='primary-address'></li>
+					<li id='primary-card'></li>
+				</ul> -->
+
 			</div>
 		</div>
 		
@@ -352,8 +354,8 @@
 				Rating %
 				</h4>
 				<ul data-role="listview">
-					<li>Address: P. Sherman 42 Wallaby Way, Sydney</li>
-					<li>Credit Card: 9874-6851-3547-5862</li>
+					<li id="primary-address"></li>
+					<li id="primary-card"></li>
 				</ul>
 			</div>
 		</div>
@@ -417,7 +419,7 @@
 <!--account settings page-->
 <div id="account-settings" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
-		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<a href="index.html" data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>My Account Settings</h2>
 	</div>
 	<div data-role="content">
@@ -433,15 +435,15 @@
 	<div data-role="popup" id="changeavatar" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 		<h3>Change Avatar</h3>
 		<input type='text' id='updavatar' name='updavatar' data-mini='true' placeholder='Image URL' />
-		<a onclick='updateAvatar()' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Submit</a>
-		<a data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
+		<a onclick='updateAvatar()' data-role='button' data-rel='back' data-theme='b' data-inline='true' data-mini='true'>Submit</a>
+		<a href="#account-settings" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
 	</div>
 	<!--change password-->
 	<div data-role="popup" id="changepassword" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
 		<h3>Change Password</h3>
 		<input type='password' id='updpassword' name='updpassword' data-mini='true' placeholder='New Password' />
-		<a onclick='updatePassword()' data-role='button' data-rel='back' data-theme='b' data-icon='check' data-inline='true' data-mini='true'>Submit</a>
-		<a data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
+		<a onclick='updatePassword()' data-role='button' data-rel='back' data-theme='b' data-inline='true' data-mini='true'>Submit</a>
+		<a href="#account-setings" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancel</a>
 	</div>
 </div>
 
@@ -643,12 +645,12 @@
 				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
 				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
 				<script>document.write(localStorage.getItem("username"))</script><br/>
-				Mike Wazouski<br/>
-				Rating %
+				<br/>
+				<!--rating-->
 				</h4>
 				<ul data-role="listview">
-					<li>Address: P. Sherman 42 Wallaby Way, Sydney</li>
-					<li>Credit Card: 9874-6851-3547-5862</li>
+					<li id="primary-address"></li>
+					<li id="primary-card"></li>
 				</ul>
 			</div>
 		</div>

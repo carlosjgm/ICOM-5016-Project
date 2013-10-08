@@ -1,10 +1,10 @@
-function User(username, password, email){
+function User(username, password, email, avatar, fname, lname){
 	this.id = "";
 	this.username = username;
 	this.password = password;
-	this.avatar;
-	this.fname;
-	this.lname;
+	this.avatar = avatar;
+	this.fname = fname;
+	this.lname = lname;
 	this.email = email;
 	this.selling = new Array();
 	this.bidding = new Array();

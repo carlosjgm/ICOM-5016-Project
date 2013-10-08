@@ -59,7 +59,11 @@ function login(){
 			localStorage.setItem("username", document.getElementById("username").value);
 			localStorage.setItem("password", document.getElementById("password").value);
 			localStorage.setItem("id", data.id);
+			localStorage.setItem("fname", data.fname);
+			localStorage.setItem("lname", data.lname);
+			localStorage.setItem("avatar", data.avatar);
 			$.mobile.loading("hide");
+			$.mobile.changePage("#browse", {reloadPage : true});
 			$.mobile.changePage("#browse", {reloadPage : true});
 		},
 		error: function(data, textStatus, jqXHR){
@@ -83,6 +87,8 @@ function logout(){
 	localStorage.removeItem("username");
 	localStorage.removeItem("password");
 	localStorage.removeItem("id");
+	localStorage.removeItem("fname");
+	localStorage.removeItem("lname");
 	$.mobile.changePage("#browse", {reloadPage : true, transition : "none"});
 };
 
@@ -192,6 +198,35 @@ function getCreditCards(id){
 		}
 	});	
 };
+
+function getPrimaryAddress(id){
+	$.mobile.loading("show");
+	$.ajax({
+		url : "http://localhost:8888/addresses/"+ id,
+		method: 'get',
+		success : function(data, textStatus, jqXHR){
+			var addressList = data.addresses; //check later
+			var list = $("#credit-card-list");
+			list.empty();
+			var card;
+			
+			for (var i=0; i < cardList.length; ++i){
+			card = cardList[i];
+				list.append("<li><a>"
+					+ "<h3>Card Holder Name: " + card.holdername + "</h3>"
+					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.carnum[12]+card.carnum[13]+card.carnum[14]+card.carnum[15]+ "</p>"
+					+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
+					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.carnum +")'>Remove card</a></a></li>");
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert("You have no credit cards :(");			
+		}
+	});	
+};
 /**/
 
 function getAddresses(id){
@@ -208,7 +243,7 @@ function getAddresses(id){
 			for (var i=0; i < addressList.length; ++i){
 			address = addressList[i];
 				list.append("<li><a>"
-					//+ "<h3>" + localStorage.getItem("fname")+ " " + localStorage.getItem("lname") + "</h3>"
+					+ "<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
 					+ "<p>" + address.line1 + "<br/>" + address.line2 + "</p>"
 					+ "<p>" + address.city + ", " + address.state + "</p>"
 					+ "<p>" + address.country + ", " + address.zipcode
@@ -288,6 +323,11 @@ function updatePassword(){
 		}
 	});
 };
+
+function getAvatar()
+{	console.log("get avatar request received")
+	return document.write(localStorage.getItem('avatar'));
+}
 
 //updates avatar
 function updateAvatar(){
