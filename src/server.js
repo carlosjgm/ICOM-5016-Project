@@ -1,5 +1,9 @@
 var express = require('express');
 var app = express();
+var pg = require('pg');
+
+// Database connection string: pg://<username>:<password>@host:port/dbname 
+var conString = "pg://postgres:123@localhost:5432/icom5016";
 
 //Initialize server data****************************************************************************************************
 //products-----------------------------------------------------------------------------------------
@@ -333,7 +337,7 @@ app.del('/addresses/:index', function(req, res) {
 app.get('/browse/:category', function(req, res){
 	console.log("Get " + req.params.category + " products request received.");
 	
-	var templist = new Array();
+	/*var templist = new Array();
 	var product;
 	
 	//search by category
@@ -347,7 +351,24 @@ app.get('/browse/:category', function(req, res){
 	else
 		templist = productList;
 		
-	res.json({"products" : templist});
+	res.json({"products" : templist});*/
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	if(req.params.category == 'all')
+		var query = client.query("SELECT * FROM products");
+	else
+		var query = client.query("SELECT * FROM products WHERE pcategory = $1",[req.params.category]);
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+    });
+	query.on("end", function (result) {
+		var response = {"products" : result.rows};
+		client.end();
+  		res.json(response);
+ 	});
 });
 
 //get product by id-----------------------------------------------------

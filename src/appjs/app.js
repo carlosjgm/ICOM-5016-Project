@@ -721,10 +721,10 @@ function browseCategories(category){
 			var product;
 			for (var i=0; i < productList.length; ++i){
 				product = productList[i];
-				list.append("<li><a onclick='loadProductPage(" + product.id + ")'><img src='" + product.photo + "' />"
-					+ "<h3>" + product.name + "</h3>"
-					+ "<p> Brand: " + product.brand + "</p>"
-					+ "<p>Instant Price: $" + product.instantprice + ", Bid Price: $" + product.nextbidprice
+				list.append("<li><a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' />"
+					+ "<h3>" + product.pname + "</h3>"
+					+ "<p> Brand: " + product.pbrand + "</p>"
+					+ "<p>Instant Price: " + product.pinstantprice + ", Bid Price: " + product.pbidprice
 					+ "</p></a></li>");
 					
 			}
