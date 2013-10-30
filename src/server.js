@@ -337,22 +337,6 @@ app.del('/addresses/:index', function(req, res) {
 app.get('/browse/:category', function(req, res){
 	console.log("Get " + req.params.category + " products request received.");
 	
-	/*var templist = new Array();
-	var product;
-	
-	//search by category
-	if(req.params.category != 'all'){
-		for(var i=0;i<productList.length;i++){
-			product = productList[i];
-			if(product.category == req.params.category)
-				templist.push(product);
-		}
-	}
-	else
-		templist = productList;
-		
-	res.json({"products" : templist});*/
-	
 	var client = new pg.Client(conString);
 	client.connect();
 	
@@ -372,31 +356,24 @@ app.get('/browse/:category', function(req, res){
 });
 
 //get product by id-----------------------------------------------------
+//TODO return sellername instead of sellerid
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
-	if(productList.length <= req.params.id || req.params.id < 0){
-		res.statusCode = 404;
-		res.send('No such product found.');
-	}
-	else{
-		var id = req.params.id;
-		var target = -1;
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == id){
-				target = i;
-				break;	
-			}
-		}
-		if(target == -1){
-			res.statusCode = 404;
-			res.send('No such product found.');
-		}
-		else{
-			var product = productList[target];
-			res.statusCode = 200;
-			res.json({"product":product});	
-		}
-	}	
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM products WHERE pid = $1",[req.params.id]);
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+    });
+	query.on("end", function (result) {
+		var response = {"product" : result.rows[0]};
+		client.end();
+		res.statusCode = 200;
+  		res.json(response);
+	});	
 });
 
 //new product-------------------------------------------------
