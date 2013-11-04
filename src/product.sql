@@ -1,2 +1,0 @@
-﻿insert into products (pname,pcategory,pinstantprice,pdescription,pmodel,pphoto,pbrand,pdimensions,pseller,pbidprice)
-values ('Some Crappy Cologne', 'sports-fishing', 6.00, 'I got this for my birthday, but I dont really like how it smells', 'My Little Pony for Him', 'http://thatgirlything.files.wordpress.com/2011/09/pherlure_pheromone_perfume.jpg', 'Avon', '2x4x3', 2, 0.99)

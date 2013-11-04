@@ -553,7 +553,7 @@ function loadProductPage(id){
 			content.empty();
 			content.append("<img src='" + product.pphoto + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
 			content.append("<div style='text-align: left;'>" + product.pname + "</div>");
-			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.pseller + "</a></div>");
+			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.username + "</a></div>");
 			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: " + product.pbidprice + "</div></div>"); 
 			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -80px;'>" 
 				+ "<a data-role='button' href='#checkout' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.pid + ")'>Buy now</a>"
@@ -637,8 +637,8 @@ function submitSales(){
 				var sale;
 				for (var i=0; i < salesList.length; ++i){
 					sale = salesList[i];
-					list.append("<li><img src='" + sale.img + "'/> <h2>" + sale.name + "</h2> Seller: "+ sale.seller +  
-						", Buyer: " + sale.buyer + ", Revenue: $" + sale.revenue + "</li>");
+					list.append("<li><img src='" + sale.sphoto + "'/> <h2>" + sale.sname + "</h2> Seller: "+ sale.seller +  
+					", Buyer: " + sale.buyer + ", Quantity: " + sale.squantity + ", Revenue: " + sale.srevenue + "</li>");
 				}
 				$.mobile.loading("hide");
 				header.listview("refresh");
@@ -688,8 +688,8 @@ function salesCategories(category){
 			var sale;
 			for (var i=0; i < salesList.length; ++i){
 				sale = salesList[i];
-				list.append("<li><img src='" + sale.img + "'/> <h2>" + sale.name + "</h2> Seller: "+ sale.seller +  
-					", Buyer: " + sale.buyer + ", Quantity: " + sale.qty + ", Revenue: $" + sale.revenue + "</li>");
+				list.append("<li><img src='" + sale.sphoto + "'/> <h2>" + sale.sname + "</h2> Seller: "+ sale.seller +  
+					", Buyer: " + sale.buyer + ", Quantity: " + sale.squantity + ", Revenue: " + sale.srevenue + "</li>");
 			}
 			$.mobile.loading("hide");
 			header.listview("refresh");

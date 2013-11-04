@@ -97,25 +97,12 @@ app.use(function(req, res, next){
 });
 
 
-// Authenticator
-function authorized(user, pass) {
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == user){
-			if(userList[i].password == pass){
-				return true;
-			}
-			else
-				return false;
-		}
-	}
-	return false;
-};
-
 /*
  * REST API for credit cards*********************************************************************************************************************
  */
 
 //Create new credit card
+//TODO SQL
 app.post("/newcard/:id", function(req, res){
 	console.log("Add new card request received from user with id " + req.params.id);
 
@@ -178,6 +165,7 @@ app.post("/newcard/:id", function(req, res){
 });
 
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
+//TODO SQL
 app.get('/cards/:id', function(req, res){
 	console.log("Get the credit cards for user " + req.params.id + " request received.");
 	
@@ -207,6 +195,7 @@ app.get('/cards/:id', function(req, res){
 });
 
 //remove card by card num-------------------------------------------------------
+//TODO SQL
 app.del('/cards/:carnum', function(req, res) {
 	var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
 	console.log("Delete card ending in " + lastfour + " request received.");
@@ -243,6 +232,7 @@ app.del('/cards/:carnum', function(req, res) {
  */
 
 //Create new address
+//TODO SQL
 app.post("/newaddress/:id", function(req, res){
 	console.log("Add new card request received from user with id " + req.params.id);
 
@@ -284,6 +274,7 @@ app.post("/newaddress/:id", function(req, res){
 });
 
 //Get all addresses associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
+//TODO SQL
 app.get('/addresses/:id', function(req, res){
 	console.log("Get the addresses for user " + req.params.id + " request received.");
 	
@@ -310,6 +301,7 @@ app.get('/addresses/:id', function(req, res){
 });
 
 //Remove address by card num-------------------------------------------------------
+//TODO SQL
 app.del('/addresses/:index', function(req, res) {
 	console.log("Delete address request received.");
 	
@@ -356,14 +348,13 @@ app.get('/browse/:category', function(req, res){
 });
 
 //get product by id-----------------------------------------------------
-//TODO return sellername instead of sellerid
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT * FROM products WHERE pid = $1",[req.params.id]);
+	var query = client.query("SELECT products.*, users.username FROM products,users WHERE products.pid = $1 AND products.pseller=users.uid ",[req.params.id]);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -378,6 +369,7 @@ app.get('/product/:id', function(req, res){
 
 //new product-------------------------------------------------
 //TODO authorize user
+//TODO SQL
 app.post('/newproduct', function(req, res) {
 	console.log("Add new product request received.");
 	
@@ -415,6 +407,7 @@ app.post('/newproduct', function(req, res) {
 
 //update product-------------------------------------------------
 //TODO authorize user
+//TODO SQL
 app.post('/product/:id', function(req, res) {
 	console.log("Update product " + req.params.id + "request received.");
 	if (productList.length <= req.params.id || req.params.id < 0){
@@ -461,6 +454,7 @@ app.post('/product/:id', function(req, res) {
 
 //delete product by id-------------------------------------------------------
 //TODO authorize user
+//TODO SQL
 app.del('/product/:id', function(req, res) {
 	console.log("Delete product " + req.params.id + "request received.");
 	if(productList.length <= req.params.id || req.params.id < 0) {
@@ -491,6 +485,7 @@ app.del('/product/:id', function(req, res) {
 
 //REST API for users**************************************************************************************************************************
 //user login-------------------------------------------------
+//TODO SQL
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
   	if(req.body.username == "" || req.body.password == ""){
@@ -521,6 +516,7 @@ app.post("/login", function(req, res){
 });
 
 //user register-------------------------------------------------
+//TODO SQL
 app.post("/register", function(req, res){
 	console.log("Registration request received for " + req.body.newusername);
   	if(req.body.newusername == "" || req.body.newpassword == "" || req.body.newemail == ""){
@@ -576,6 +572,7 @@ app.post("/register", function(req, res){
 });
 
 //password reset-------------------------------------------------
+//TODO SQL
 app.post("/reset", function(req, res){
 	console.log("Reset request received for " + req.body.resetemail);
   	if(req.body.resetemail == ""){
@@ -606,6 +603,7 @@ app.post("/reset", function(req, res){
 });
 
 //update password--------------------------------------------------
+//TODO SQL
 app.post("/password", function(req,res){
 	console.log("Change password request received from " + req.body.username);
 	if(req.body.updpassword == "")
@@ -627,6 +625,7 @@ app.post("/password", function(req,res){
 });
 
 //update avatar--------------------------------------------------
+//TODO SQL
 app.post("/avatar", function(req,res){
 	console.log("Change avatar request received from " + req.body.username);
 	if(req.body.updavatar == "")
@@ -649,6 +648,7 @@ app.post("/avatar", function(req,res){
 
 //user profile-------------------------------------------------
 //TODO authorize user
+//TODO SQL
 app.get("/user/:username", function(req, res){
 	console.log("Get " + req.params.username + " request received.");
 	
@@ -673,6 +673,7 @@ app.get("/user/:username", function(req, res){
 //user product methods****************************************************************************8
 //bid on item-------------------------------------------------------------
 //TODO authorize user
+//TODO SQL
 app.post("/bid/:id", function(req, res){
 	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
 		
@@ -760,6 +761,7 @@ app.post("/bid/:id", function(req, res){
 
 
 //add item to cart
+//TODO SQL
 app.post("/addtocart", function(req,res){
 	
 	if(req.body.qty == 0 || req.body.qty == ""){
@@ -814,6 +816,7 @@ app.post("/addtocart", function(req,res){
 
 //places order
 //TODO remove item from cart if not found
+//TODO SQL
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -858,6 +861,7 @@ app.post("/placeorder", function(req,res){
 
 //returns items in user cart
 //TODO remove item from cart if not found
+//TODO SQL
 app.post("/loadcart", function(req,res){
 	console.log("Get " + req.body.username + "'s cart request received.");
 	
@@ -895,53 +899,44 @@ app.post("/loadcart", function(req,res){
 });
 
 //return sales report based on date and category
-//TODO authorize user
 app.post("/sales", function(req,res){
 	var fromDate = new Date(req.body.fromDate);
 	var toDate = new Date(req.body.toDate);
 	
-	console.log("Sales report. Category: " + req.body.category + ". From: " + fromDate.toDateString()
-					+ ". To: " + toDate.toDateString());
-					
-	if(fromDate.getFullYear=="" || toDate.getFullYear==""){
-		res.statusCode = 400;
-		res.send("Incorrect year format");
+	fromDate = fromDate.getFullYear() + "-" + (fromDate.getMonth()+1) + "-" + fromDate.getDate(); 
+	toDate = toDate.getFullYear() + "-" + (toDate.getMonth()+1) + "-" + toDate.getDate();
+	
+	console.log("Sales report. Category: " + req.body.category + ". From: " + fromDate
+				+ ". To: " + toDate);
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	if(req.body['category']==null || req.body['category']=='all'){
+		var temp = "SELECT sales.*,seller.username as seller,buyer.username as buyer FROM sales,users as seller, users as buyer WHERE sdate >= DATE '" + fromDate + "' AND sdate <= DATE '" + toDate + "' AND seller.uid=sseller AND buyer.uid=sbuyer";
+		var query = client.query(temp);
 	}
 	
 	else{
-		if(req.body['category']==null)
-			req.body['category']='all';
-			
-		var templist = new Array(), result = new Array();
-		var sale, temp, totalrevenue=0;
-		
-		//search by category
-		if(req.body.category != 'all'){
-			for(var i=0;i<salesList.length;i++){
-				sale = salesList[i];
-				if(sale.category == req.body['category'])
-					templist.push(sale);
-			}
-		}
-		else
-			templist = salesList;
-			
-		//search by date
-		for(var i=0;i<templist.length;i++){
-			sale = templist[i];
-			if(checkSalesDate(fromDate,toDate,sale.date)){
-				totalrevenue += sale.revenue;
-				result.push(sale);
-			}
-		}	
-			
-		res.statusCode = 200;
-		res.json({"sales":result,"totalRevenue":totalrevenue,"totalSales":result.length});
+		var temp = "SELECT sales.*,seller.username as seller,buyer.username as buyer FROM sales,users as seller, users as buyer WHERE scategory = '" + req.body['category'] + "' AND sdate >= DATE '" + fromDate + "' AND sdate <= DATE '" + toDate + "' AND seller.uid=sseller AND buyer.uid=sbuyer";
+		var query = client.query(temp);
 	}
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+    });
+	query.on("end", function (result) {
+		var totalrevenue = 0;
+		for(var i=0;i<result.rows.length;i++)
+			totalrevenue += parseFloat(result.rows[i].srevenue.slice(1));
+		client.end();
+		res.statusCode = 200;
+  		res.json({"sales":result.rows,"totalRevenue":totalrevenue,"totalSales":result.rows.length});
+	});	
 });
 
 
 //bidding list
+//TODO SQL
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
 	
@@ -979,6 +974,7 @@ app.post("/loadbids", function(req,res){
 });
 
 //Seller Catalog
+//TODO SQL
 app.post("/catalog", function(req,res){
 	console.log("Get " + req.body.username + "'s catalog request received.");
 	
@@ -1010,11 +1006,6 @@ app.post("/catalog", function(req,res){
 	}
 });
 
-
-//returns true if item date is between fromDate and toDate
-function checkSalesDate(fromDate,toDate,saleDate){
-	return fromDate <= saleDate && toDate >= saleDate;
-};
 
 console.log("Server started. Listening on port 8888.");
 app.listen(8888);
