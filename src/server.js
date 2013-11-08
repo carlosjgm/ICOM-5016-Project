@@ -96,7 +96,6 @@ app.use(function(req, res, next){
 	next();
 });
 
-
 /*
  * REST API for credit cards*********************************************************************************************************************
  */
@@ -485,34 +484,34 @@ app.del('/product/:id', function(req, res) {
 
 //REST API for users**************************************************************************************************************************
 //user login-------------------------------------------------
-//TODO SQL
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
-  	if(req.body.username == "" || req.body.password == ""){
+	if(req.body.username == "" || req.body.password == ""){
 		res.statusCode = 400;
 		res.send('The form has missing fields.');
 	}
 	else{
-		var target = -1;
-		for (var i=0; i < userList.length; ++i){
-			if (userList[i].username == req.body.username){
-				target = i;
-				break;	
+		var client = new pg.Client(conString);
+		client.connect();
+		
+		var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+		
+		query.on("row", function (row, result) {
+	    	result.addRow(row);
+	    });
+		query.on("end", function (result) {
+			if(result.rows.length == 1 && result.rows[0].upassword == req.body.password){
+				var response = {"user":result.rows[0]};
+				client.end();
+				res.statusCode = 200;
+				res.json(response);
 			}
+			else{
+				res.statusCode = 404;
+				res.send("Username/password entered not valid.");	
+				}
+		 	});			
 		}
-		if (target == -1){
-			res.statusCode = 404;
-			res.send("Username/password entered not valid.");			
-		}	
-		else if(userList[target].password == req.body.password) {	
-			res.statusCode = 200;
-			res.json({"id":userList[target].id,"fname":userList[target].fname,"lname":userList[target].lname,"avatar":userList[target].avatar});
-		}
-		else{
-			res.statusCode = 404;
-			res.send("Username/password entered not valid.");
-		}
-	}
 });
 
 //user register-------------------------------------------------
