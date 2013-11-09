@@ -55,6 +55,7 @@ function login(){
 	var formData = form.serializeArray();
 	var logdata = ConverToJSON(formData);
 	var logdatajson = JSON.stringify(logdata);
+	
 	$.ajax({
 		url : "http://localhost:8888/login" ,
 		method: 'post',
@@ -117,10 +118,15 @@ function register(){
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data,textStatus,jqXHR){
-			localStorage.setItem("username", document.getElementById("newusername").value);
-			localStorage.setItem("password", document.getElementById("newpassword").value);
+			var user = data.user;
+			localStorage.setItem("username", user.username);
+			localStorage.setItem("password", user.upassword);
+			localStorage.setItem("id", user.uid);
+			localStorage.setItem("fname", user.ufname);
+			localStorage.setItem("lname", user.ulname);
+			localStorage.setItem("avatar", user.uavatar);
 			$.mobile.loading("hide");
-			$.mobile.changePage("#browse", {reloadPage : true});
+			$.mobile.changePage("#browse",{reloadPage : true});
 		},
 		error : function(data,textStatus,jqXHR){
 			$("#register-invalid").replaceWith("<br /><p id='invalid' style='color:red'>"+data.responseText+"</p>");

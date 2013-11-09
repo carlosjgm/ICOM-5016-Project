@@ -87,6 +87,7 @@ for (var i=0; i < salesList.length; ++i){
 }
 
 //server configuration----------------------------------------------------------------------------------
+
 app.use(express.bodyParser());
 
 app.use(function(req, res, next){
@@ -237,7 +238,7 @@ app.post("/newaddress/:id", function(req, res){
 
   	if(req.params.id == "" || req.body['address-line1'] == "" || req.body['address-line2'] == "" || req.body['address-city'] == "" || req.body['address-zip'] == ""){
 		res.statusCode = 400;
-		res.send('Error 400: The form has missing fields.');
+		res.json('The form has missing fields.');
 	}
 		
 	else{
@@ -299,7 +300,7 @@ app.get('/addresses/:id', function(req, res){
 	res.json({"addresses" : templist});
 });
 
-//Remove address by card num-------------------------------------------------------
+//Remove address by addressid-------------------------------------------------------
 //TODO SQL
 app.del('/addresses/:index', function(req, res) {
 	console.log("Delete address request received.");
@@ -515,58 +516,56 @@ app.post("/login", function(req, res){
 });
 
 //user register-------------------------------------------------
-//TODO SQL
 app.post("/register", function(req, res){
 	console.log("Registration request received for " + req.body.newusername);
   	if(req.body.newusername == "" || req.body.newpassword == "" || req.body.newemail == ""){
 		res.statusCode = 400;
-		res.send('Error 400: The form has missing fields.');
+		res.json('The form has missing fields.');
 	}
 	else {
+				
+		var client = new pg.Client(conString);
+		client.connect();
 		
-		var useravailable = true;
-		var emailavailable = true;
-		for (var i=0; i < userList.length; i++){
-			if(userList[i].username == req.body.newusername){
-				useravailable = false;
-				break;	
+		var query = client.query("SELECT username FROM users WHERE username = '" + req.body.newusername + "'");		
+		query.on("row", function (row, result) {
+	    	result.addRow(row);
+	    });
+		query.on("end", function (result) {
+			if(result.rows.length != 0){
+				client.end();
+				res.statusCode = 400;
+				res.json("Username not available.");
 			}
-			if(userList[i].email == req.body.newemail){
-				emailavailable = false;
-				break;
+			else{
+				query2 = client.query("SELECT uemail FROM users WHERE uemail = '" + req.body.newemail + "'");
+				query2.on("row", function (row, result) {
+		    		result.addRow(row);
+			    });
+				query2.on("end", function (result) {
+					if(result.rows.length != 0){
+						client.end();
+						res.statusCode = 400;
+						res.json("Email already in use.");
+					}
+					else{
+						query3 = client.query("INSERT INTO users (username,upassword,uemail,ufname,ulname,utype)"
+											+ "VALUES ('"+req.body.newusername+"','"+req.body.newpassword+"','"+
+											req.body.newemail+"','"+req.body.newfname+"','"+req.body.newlname+"','user') "+
+											"RETURNING *");
+						query3.on("row", function (row, result){
+							result.addRow(row);
+						});
+						query3.on("end", function (result) {
+							var response = {"user":result.rows[0]};
+							client.end();
+							res.status = 200;
+							res.json(response);	
+						});
+					}
+				});
 			}
-		}
-		
-		if(!useravailable){
-			res.statusCode = 400;
-			res.send("Username not available.");
-		}
-		
-		else if(!emailavailable){
-			res.statusCode = 400;
-			res.send("Email already in use.");
-		}
-		
-		else{
-			var newUser = new User(req.body.newusername, req.body.newpassword, req.body.newemail);
-			newUser.id = userNextId++;
-			newUser.fname = req.body.newfname;
-			newUser.lname = req.body.newlname;
-			newUser.email = req.body.newemail;
-			newUser.address.push(new Address(
-				req.body.newaddress1,
-				req.body.newaddress2,
-				req.body.newcity,
-				req.body.newselectcountry,
-				req.body.newzipcode,
-				req.body.newselectstate));
-			newUser.telephone = req.body.newphonenum;
-			
-			userList.push(newUser);
-			
-			res.statusCode = 200;
-			res.json(true);
-		}
+		});			
 	}
 });
 
@@ -646,7 +645,7 @@ app.post("/avatar", function(req,res){
 });
 
 //user profile-------------------------------------------------
-//TODO authorize user
+//TODO REMOVE ??
 //TODO SQL
 app.get("/user/:username", function(req, res){
 	console.log("Get " + req.params.username + " request received.");
