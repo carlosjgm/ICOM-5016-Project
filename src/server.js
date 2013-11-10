@@ -630,10 +630,7 @@ app.post("/password", function(req,res){
 				res.status = 401;
 				res.json(false);
 			}
-		});
-		
-		
-		
+		});		
 	}
 });
 
@@ -644,18 +641,29 @@ app.post("/avatar", function(req,res){
 	if(req.body.updavatar == "")
 		res.json(400,"Please enter an URL.");
 	else {
-		for (var i=0; i < userList.length; ++i){
-			if (userList[i].username == req.body.username){
-				if(userList[i].password == req.body.password){
-					userList[i].avatar = req.body.updavatar;
-					res.json(200,"Avatar updated.");
-				}
-				else
-				//TODO send to login page
-					res.json(400,"Invalid username/password.");
+		var client = new pg.Client(conString);
+		client.connect();
+		
+		var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+		query.on("row", function(row,result){
+			result.addRow(row);
+		});
+		query.on("end", function(result){
+			if(result.rows[0].upassword == req.body.password){
+				var query2 = client.query("UPDATE users SET uavatar = '" + req.body.updavatar + "'" +
+					"WHERE username = '" + req.body.username + "'");
+				query2.on("end", function(result){
+					client.end();
+					res.status = 200;
+					res.json(true);
+				});				
 			}
-		}
-		res.json(400,"Invalid username/password.");
+			else{
+				client.end();
+				res.status = 401;
+				res.json(false);
+			}
+		});		
 	}
 });
 

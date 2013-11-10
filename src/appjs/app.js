@@ -342,8 +342,10 @@ function updateAvatar(){
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){
+			localStorage.setItem("avatar", document.getElementById("updavatar").value);
 			$.mobile.loading("hide");
-			alert("Avatar changed.");
+			alert("Avatar updated.");
+			$.mobile.changePage("#browse", {reloadPage : true});
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
