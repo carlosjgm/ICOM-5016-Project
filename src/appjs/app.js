@@ -83,12 +83,6 @@ function login(){
 	
 };
 
-//sends to login 
-function authorize(){
-	alert("Please log in.");
-	$.mobile.changePage("#login");
-};
-
 //logout from account
 //goes to browse page
 function logout(){
@@ -336,11 +330,6 @@ function updatePassword(){
 		}
 	});
 };
-
-function getAvatar()
-{	console.log("get avatar request received")
-	return document.write(localStorage.getItem('avatar'));
-}
 
 //updates avatar
 function updateAvatar(){
