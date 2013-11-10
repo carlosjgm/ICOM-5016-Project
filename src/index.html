@@ -178,30 +178,32 @@
 						<li><input id="username" name="username" type="text" placeholder="Username"/></li>
 						<label for="password" class="ui-hidden-accessible">Password:</label>
 						<li><input id="password" name="password" type="password" placeholder="Password"/></li>
-						<input type="button" data-theme='b' onclick="login()" value="Login" />
+						<a type="button" data-theme='b' onclick="login()" > Login </a>
 						<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>					
 					</ul>
 				</form>
-				<br/><a href="#reset" data-rel="dialog">Did you forget username/password?</a><br /><br />
+				<br/><a href='#reset' data-rel='popup' data-position-to='window' data-transition='pop'>Did you forget username/password?</a><br /><br />
 				<a href="#register">Register</a>
 			</div>
 		</div>
-	
+		
+		<!-- reset popup -->
+		<div data-role="popup" id="reset" data-theme="d" data-overlay-theme="b" class="ui-content" style="max-width:340px;">
+			<div data-role="content">
+				<form id='reset-form'>
+					<ul data-role="listview" data-inset="true" data-filter="false">
+						<li data-role="list-divider">Reset</li>
+						<label for="resetemail" class="ui-hidden-accessible">Email:</label>
+						<li><input id="resetemail" name="resetemail" type="email" placeholder="Email"/> </li>
+						<a type="button" data-theme="b" onclick="reset()" > Reset </a>
+						<a data-rel="back" data-role="button" data-theme='a'>Cancel</a>
+					</ul>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
 
-<!--reset password page -->
-<div id="reset" data-role="page">
-	<div data-role="header">
-		<h1>Reset</h1>
-	</div>
-	<div data-role="content">
-		<form id='reset-form' action='http://localhost:8888/reset/' method='post'>
-			<input id="resetemail" name="resetemail" type="email" placeholder="Email"/> 
-			<input type='submit' value='Reset'/><br />
-		</form>
-	</div>
-</div>
 		
 <!--register user page-->
 <div id="register" data-role="page">

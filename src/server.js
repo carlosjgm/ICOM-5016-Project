@@ -335,7 +335,7 @@ app.get('/browse/:category', function(req, res){
 	if(req.params.category == 'all')
 		var query = client.query("SELECT * FROM products");
 	else
-		var query = client.query("SELECT * FROM products WHERE pcategory = $1",[req.params.category]);
+		var query = client.query("SELECT products.* FROM products,categories WHERE pcategoryid = catid AND catname = '" + req.params.category + "'");
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -488,8 +488,7 @@ app.del('/product/:id', function(req, res) {
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
 	if(req.body.username == "" || req.body.password == ""){
-		res.statusCode = 400;
-		res.send('The form has missing fields.');
+		res.json(400,'The form has missing fields.');
 	}
 	else{
 		var client = new pg.Client(conString);
@@ -504,12 +503,11 @@ app.post("/login", function(req, res){
 			if(result.rows.length == 1 && result.rows[0].upassword == req.body.password){
 				var response = {"user":result.rows[0]};
 				client.end();
-				res.statusCode = 200;
-				res.json(response);
+				res.json(200,response);
 			}
 			else{
 				res.statusCode = 404;
-				res.send("Username/password entered not valid.");	
+				res.json(404,"Username/password entered not valid.");	
 				}
 		 	});			
 		}
@@ -519,8 +517,7 @@ app.post("/login", function(req, res){
 app.post("/register", function(req, res){
 	console.log("Registration request received for " + req.body.newusername);
   	if(req.body.newusername == "" || req.body.newpassword == "" || req.body.newemail == ""){
-		res.statusCode = 400;
-		res.json('The form has missing fields.');
+		res.json(400,'The form has missing fields.');
 	}
 	else {
 				
@@ -534,8 +531,7 @@ app.post("/register", function(req, res){
 		query.on("end", function (result) {
 			if(result.rows.length != 0){
 				client.end();
-				res.statusCode = 400;
-				res.json("Username not available.");
+				res.json(400,"Username not available.");
 			}
 			else{
 				query2 = client.query("SELECT uemail FROM users WHERE uemail = '" + req.body.newemail + "'");
@@ -545,8 +541,7 @@ app.post("/register", function(req, res){
 				query2.on("end", function (result) {
 					if(result.rows.length != 0){
 						client.end();
-						res.statusCode = 400;
-						res.json("Email already in use.");
+						res.json(400,"Email already in use.");
 					}
 					else{
 						query3 = client.query("INSERT INTO users (username,upassword,uemail,ufname,ulname,utype)"
@@ -559,8 +554,7 @@ app.post("/register", function(req, res){
 						query3.on("end", function (result) {
 							var response = {"user":result.rows[0]};
 							client.end();
-							res.status = 200;
-							res.json(response);	
+							res.json(200,response);	
 						});
 					}
 				});
@@ -570,32 +564,30 @@ app.post("/register", function(req, res){
 });
 
 //password reset-------------------------------------------------
-//TODO SQL
 app.post("/reset", function(req, res){
 	console.log("Reset request received for " + req.body.resetemail);
-  	if(req.body.resetemail == ""){
-		res.statusCode = 400;
-		res.send('Error 400: The form has missing fields.');
-	}
+  	if(req.body.resetemail == "")
+		res.json(400,"The form has missing fields.");
+	
 	else{
-		var target = -1;
-		for (var i=0; i < userList.length; i++){
-			if(userList[i].email == req.body.resetemail){
-				target = i;
-				break;
+		var client = new pg.Client(conString);
+		client.connect();
+		
+		var query = client.query("SELECT * FROM users WHERE uemail = '" + req.body.resetemail + "'");
+		query.on("row", function(row,result){
+			result.addRow(row);
+		});
+		query.on("end", function(result){
+			if(result.rows.length == 0){
+				client.end();
+				res.json(400, "Invalid email.");
 			}
-		}
-		
-		if(target == -1){
-			res.statusCode = 404;
-			res.send("Error 404: No such email found.");
-		}
-		
-		else{
-			var user = userList[target];
-			res.statusCode = 200;
-			res.send("Username: " + user.username + "<br />Password: " + user.password);
-		}
+			else{
+				var response = {"user":result.rows[0]};
+				client.end();				
+				res.json(200,response);								
+			}
+		});		
 	}
 	
 });
@@ -604,8 +596,7 @@ app.post("/reset", function(req, res){
 app.post("/password", function(req,res){
 	console.log("Change password request received from " + req.body.username);
 	if(req.body.updpassword == ""){
-		res.status = 400;
-		res.json("Please enter a password.");
+		res.json(400,"Please enter a password.");
 	}
 	else {		
 		var client = new pg.Client(conString);
@@ -621,21 +612,18 @@ app.post("/password", function(req,res){
 					"WHERE username = '" + req.body.username + "'");
 				query2.on("end", function(result){
 					client.end();
-					res.status = 200;
-					res.json("Password updated.");
+					res.json(200,"Password updated.");
 				});				
 			}
 			else{
 				client.end();
-				res.status = 401;
-				res.json(false);
+				res.json(401,false);
 			}
 		});		
 	}
 });
 
 //update avatar--------------------------------------------------
-//TODO SQL
 app.post("/avatar", function(req,res){
 	console.log("Change avatar request received from " + req.body.username);
 	if(req.body.updavatar == "")
@@ -654,42 +642,17 @@ app.post("/avatar", function(req,res){
 					"WHERE username = '" + req.body.username + "'");
 				query2.on("end", function(result){
 					client.end();
-					res.status = 200;
-					res.json(true);
+					res.json(200,true);
 				});				
 			}
 			else{
 				client.end();
-				res.status = 401;
-				res.json(false);
+				res.json(401,false);
 			}
 		});		
 	}
 });
 
-//user profile-------------------------------------------------
-//TODO REMOVE ??
-//TODO SQL
-app.get("/user/:username", function(req, res){
-	console.log("Get " + req.params.username + " request received.");
-	
-	var target = -1;
-	for (var i=0; i < userList.length; i++){
-		if(userList[i].username == req.params.username){
-			target = i;
-			break;	
-		}
-	}
-	
-	if(target == -1){
-		res.statusCode = 404;
-		res.send('Error 404: No such user found.');
-	}
-	else{
-		res.statusCode = 200;
-		res.json(userList[target]);	
-	}	
-});
 
 //user product methods****************************************************************************8
 //bid on item-------------------------------------------------------------
@@ -934,12 +897,16 @@ app.post("/sales", function(req,res){
 	client.connect();
 	
 	if(req.body['category']==null || req.body['category']=='all'){
-		var temp = "SELECT sales.*,seller.username as seller,buyer.username as buyer FROM sales,users as seller, users as buyer WHERE sdate >= DATE '" + fromDate + "' AND sdate <= DATE '" + toDate + "' AND seller.uid=sseller AND buyer.uid=sbuyer";
+		var temp = "SELECT idate, buyer.username as buyer, seller.username as seller, sname, squantity, sprice FROM invoices,invoicecontent,sales,users as seller,users as buyer" +
+					" WHERE idate >= DATE '" + fromDate + "' AND idate <= DATE '" + toDate + "'" +
+					" AND seller.uid=isellerid AND buyer.uid=ibuyerid AND invoiceid=iid AND saleid=sid";
 		var query = client.query(temp);
 	}
 	
 	else{
-		var temp = "SELECT sales.*,seller.username as seller,buyer.username as buyer FROM sales,users as seller, users as buyer WHERE scategory = '" + req.body['category'] + "' AND sdate >= DATE '" + fromDate + "' AND sdate <= DATE '" + toDate + "' AND seller.uid=sseller AND buyer.uid=sbuyer";
+		var temp = "SELECT idate, buyer.username as buyer, seller.username as seller, sname, squantity, sprice FROM invoices,invoicecontent,sales,categories,users as seller,users as buyer" +
+					" WHERE idate >= DATE '" + fromDate + "' AND idate <= DATE '" + toDate + "'" +
+					" AND seller.uid=isellerid AND buyer.uid=ibuyerid AND invoiceid=iid AND saleid=sid AND scategoryid=catid AND catname='" + req.body.category + "'";
 		var query = client.query(temp);
 	}
 	query.on("row", function (row, result) {
@@ -948,7 +915,7 @@ app.post("/sales", function(req,res){
 	query.on("end", function (result) {
 		var totalrevenue = 0;
 		for(var i=0;i<result.rows.length;i++)
-			totalrevenue += parseFloat(result.rows[i].srevenue.slice(1));
+			totalrevenue += parseFloat(result.rows[i].sprice.slice(1))*result.rows[i].squantity;
 		client.end();
 		res.statusCode = 200;
   		res.json({"sales":result.rows,"totalRevenue":totalrevenue,"totalSales":result.rows.length});
