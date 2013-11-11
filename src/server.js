@@ -820,11 +820,8 @@ app.post("/bid/:id", function(req, res){
 });
 
 
-
 //add item to cart
-//TODO SQL
 app.post("/addtocart", function(req,res){
-	
 	if(req.body.qty == 0 || req.body.qty == ""){
 		res.statusCode = 400;
 		res.json("Please specify a quantity");
@@ -832,47 +829,76 @@ app.post("/addtocart", function(req,res){
 	
 	console.log("Add item " + req.body.id + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
-			res.statusCode = 404;
-			res.json("Invalid username/password.");
-	}	
-	else{
-		
-		//item already in cart
-		var done = false;
-		for(var i=0;i < userList[target].cart.length;i++){
-			if(userList[target].cart[i].id == req.body.id){
-				userList[target].cart[i].qty += req.body.qty;
-				done = true;
-				res.statusCode = 200;
-				res.json(true);
-			}
-		}		
-		
-		//new item
-		if(!done){
-			//search for product
-			for (var i=0; i < productList.length; ++i){
-				if (productList[i].id == req.body.id){
-					userList[target].cart.push({"id":productList[i].id,"qty":req.body.qty});
-					res.statusCode = 200;
-					res.json(true);
-				}
-			}
-			res.statusCode = 404;
-			res.json("Item not found.");
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check user
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
 		}
-	}
+		
+		else{
+			//search for product
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.id);
+					
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				//product was found
+				if(result.rows.length > 0){
+					var query3 = client.query("SELECT * FROM carts WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+			
+					query3.on("row", function (row, result) {
+						result.addRow(row);
+					});
+			
+					query3.on("end", function (result) {
+						//item already in cart
+						if(result.rows.length > 0){
+							var query4 = client.query("UPDATE carts SET cquantity = cquantity + "+req.body.qty+" WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+							
+							query4.on("row", function (row, result) {
+								result.addRow(row);
+							});
+							
+							query4.on("end", function (result) {
+								client.end();
+								res.json(200,'Cart was updated.');
+							});	
+						}
+						//new item
+						else{
+							var query4 = client.query("INSERT INTO carts VALUES("+req.params.id+","+req.body.id+","+req.body.qty+");");
+							
+							query4.on("row", function (row, result) {
+								result.addRow(row);
+							});
+							
+							query4.on("end", function (result) {
+								client.end();
+								res.json(200,'Cart was updated.');
+							});	
+						}
+					});
+				}			
+				//product not found
+				else{
+					client.end();
+					res.json(404,'Product was not found.');
+				}	
+			});
+		}
+	});
 });
 
 //places order
@@ -958,12 +984,14 @@ app.post("/loadcart", function(req,res){
 					
 					query3.on("end", function (result) {
 						var totalPrice = result.rows[0];
+						client.end();
 						res.statusCode = 200;
 						res.json({"cart":productList,"total":totalPrice});
 					});
 				}
 				
 				else{
+					client.end();
 					res.json(200,"You have no items on your cart.");
 				}
 			});
