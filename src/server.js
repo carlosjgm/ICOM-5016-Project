@@ -186,7 +186,8 @@ app.get('/cards/:id', function(req, res){
 });
 
 //remove card by card num-------------------------------------------------------
-//TODO [fix] SQL :S
+//TODO [fix] SQL
+//BTW the attribute ccnum in creditcards should be a char(16) instead of an int, since it's a 16-digit number
 app.del('/cards/:carnum', function(req, res) {
 	var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
 	console.log("Delete card ending in " + lastfour + " request received.");
@@ -194,18 +195,34 @@ app.del('/cards/:carnum', function(req, res) {
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	var query = client.query("DELETE * FROM creditcards WHERE userid = "+req.params.id+" AND ccnum = '"+req.params.carnum+"'");
+	//check that the user has a credit card with the specified cardnum
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccnum = '"+req.params.carnum+"'");
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
    	});
 	
 	query.on("end", function (result) {
-		var removed = result;
-		client.end();
-		res.statusCode = 200;
-		res.send('Card ending in '+ lastfour +' was removed.');
-		res.json({"card" : removed});
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.send('Unable to proceed, you have no credit cards with that number.'); 
+		}
+		else{
+			var query2 = client.query("DELETE FROM creditcards WHERE userid = "+req.params.id +" AND ccnum ='"+req.params.carnum+"'");
+	
+			query2.on("row", function (row, result) {
+		    	result.deleteRow(row); //?
+		   	});
+		   	
+		   	query2.on("end", function (result) {
+				var removed = result.rows[0];
+				client.end();
+				res.statusCode = 200;
+				res.send('Card ending in '+ lastfour +' was successfully removed.');
+				res.json({"card" : removed});
+			});
+		}
 	});
 });
 
@@ -271,25 +288,42 @@ app.get('/addresses/:id', function(req, res){
 });
 
 //Remove address by addressid-------------------------------------------------------
-//TODO SQL
+//TODO [fix] SQL [delete]
 app.del('/addresses/:index', function(req, res) {
 	console.log("Delete address request received.");
+
+	var client = new pg.Client(conString);
+	client.connect();
 	
-	if(addresses.length == 0) {
-		res.statusCode = 404;
-		res.send('No such address found');
-	}
-	else{
-		if (req.params.index >= addresses.length){
+	//check if the user has addresses
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id);
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0) {
+			client.end();
 			res.statusCode = 404;
-			res.send("No such address found.");			
-		}	
-		else {	
-			var removed = addresses.splice(req.params.index, 1);
-			res.statusCode = 200;
-			res.json({"address" : removed});
+			res.send('Cannot delete a non-existing address!'); //this might never happen, but just in case xD
 		}
-	}
+		else{
+			var query2 = client.query("DELETE FROM addresses WHERE userid = "+req.params.id+" AND aid = "+req.params.index);
+			
+			query2.on("row", function (row, result) {
+		    	result.deleteRow(row); //? not sure if it's done like this... :/
+		   	});
+		   	
+		   	query2.on("end", function (result) {
+				var removed = result.rows[0];
+				client.end();
+				res.statusCode = 200;
+				res.send('Address was removed.');
+				res.json({"address" : removed});
+			});
+		}
+	});
 });
 
 
