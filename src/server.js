@@ -102,7 +102,6 @@ app.use(function(req, res, next){
  */
 
 //Create new credit card
-//TODO SQL
 app.post("/newcard/:id", function(req, res){
 	console.log("Add new card request received from user with id " + req.params.id);
 
@@ -322,6 +321,7 @@ app.del('/addresses/:index', function(req, res) {
 //REST API for products**************************************************************************************************************************
 
 //browse product by category------------------------------------------------------
+//TODO add auction information
 app.get('/browse/:category', function(req, res){
 	console.log("Get " + req.params.category + " products request received.");
 	
@@ -344,14 +344,14 @@ app.get('/browse/:category', function(req, res){
 });
 
 //get product by id-----------------------------------------------------
-//TODO user must be logged in to see product details
+//TODO add auction information
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT products.*, users.username FROM products,users WHERE products.pid = $1 AND products.pseller=users.uid ",[req.params.id]);
+	var query = client.query("SELECT products.*, users.username FROM products,users WHERE products.pid = $1 AND products.psellerid=users.uid ",[req.params.id]);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -364,7 +364,6 @@ app.get('/product/:id', function(req, res){
 });
 
 //new product-------------------------------------------------
-//TODO authorize user
 app.post('/newproduct', function(req, res) {
 	console.log("Add new product request received.");
 	
@@ -437,46 +436,20 @@ app.post('/newproduct', function(req, res) {
 //TODO SQL
 app.post('/product/:id', function(req, res) {
 	console.log("Update product " + req.params.id + "request received.");
+	
 	if (productList.length <= req.params.id || req.params.id < 0){
-		res.statusCode = 404;
-		res.send("Error 404: No such product found.");
+		res.json(404,"No such product found.");
 	}
+	
+	
 	
   	else if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
   	|| req.body.description=="" || req.body.model == "" || req.body.photo==""
 	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="") {
-		res.statusCode = 400;
-		res.send('Error 400: Product form is missing fields.');
+		res.json(400, "Product form is missing fields.");
 	}
 	
-	else{
-		var id = req.params.id;
-		var target = -1;
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == id){
-				target = i;
-				break;	
-			}
-		}
-		if (target == -1){
-			res.statusCode = 404;
-			res.send("Error 404: No such product found.");			
-		}	
-		else {	
-			var theproduct = productList[target];
-			theproduct.name = req.body.name;
-			theproduct.category = req.body.category;
-			theproduct.instantprice = req.body.instantprice;
-			theproduct.description = req.body.description;
-			theproduct.model = req.body.model;
-			theproduct.photo = req.body.photo;
-			theproduct.brand = req.body.brand;
-			theproduct.dimensions = req.body.dimensions;
-			theproduct.seller = req.body.seller;
-			res.statusCode = 200;
-			res.redirect(req.body.URL);
-		}
-	}
+	
 });
 
 //delete product by id-------------------------------------------------------
@@ -989,36 +962,34 @@ app.post("/loadbids", function(req,res){
 });
 
 //Seller Catalog
-//TODO SQL
 app.post("/catalog", function(req,res){
-	console.log("Get " + req.body.username + "'s catalog request received.");
+	console.log("Get " + req.body.sellername + "'s catalog request received.");
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
-			res.statusCode = 404;
-			res.json("Invalid username/password.");
-	}	
-	else{
-		var tempList = new Array();
-		
-			for(var j=0; j< productList.length; j++){
-				if(productList[j].seller==userList[target].username){
-					tempList.push(productList[j]);
-				}
-			
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+	query.on("row", function(row,result){
+		result.addRow(row);
+	});
+	query.on("end", function(result){
+		if(result.rows[0].upassword == req.body.password){
+			var query2 = client.query("SELECT products.* FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
+			query2.on("row", function(row,result){
+				result.addRow(row);
+				console.log(JSON.stringify(row));
+			});
+			query2.on("end", function(result){
+				client.end();
+				res.json(200,{"products":result.rows});
+			});
 		}
-		res.statusCode=200;
-		res.json({"cat":tempList});
-	}
+		else{
+			client.end();
+			res.json(401,false);
+		}
+	});
+	
 });
 
 
