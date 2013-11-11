@@ -128,8 +128,8 @@ app.post("/newcard/:id", function(req, res){
    		
 		query.on("end", function (result) {
 			if(result.rows.length != 0){
-					client.end();
-					res.json(400,'You have already registered this card.');
+				client.end();
+				res.json(400,'You have already registered this card.');
 			}
 			else{
 				
@@ -137,7 +137,7 @@ app.post("/newcard/:id", function(req, res){
 				
 				if ((req.body['select-choice-year'] < today.getFullYear()) || ((req.body['select-choice-year'] == today.getFullYear()) && (req.body['select-choice-month'] < today.getMonth()))){
 					client.end();
-					res.json(400,"The credit card you are trying to register has expired! :(");
+					res.json(400,"Oh no! The credit card you are trying to register has expired! :(");
 				}
 				else{
 					var query2 = client.query("INSERT INTO creditcards (userid,ccholdername,ccnum,ccv,ccexpmonth,ccexpyear)" + 
@@ -148,7 +148,7 @@ app.post("/newcard/:id", function(req, res){
 					});
 					
 					query2.on("end", function (result) {
-						var response = {"user":result.rows[0]};
+						var response = {"card":result.rows[0]};
 						client.end();
 						res.json(200,response);	
 					});
@@ -160,66 +160,105 @@ app.post("/newcard/:id", function(req, res){
 });
 
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-//TODO SQL
 app.get('/cards/:id', function(req, res){
 	console.log("Get the credit cards for user " + req.params.id + " request received.");
-	
-	var templist = new Array();
-	var card;
-	
-	//search by id
-	
-	if(cCardUsers.length == 0){
-		res.statusCode = 404;
-		res.json('There are no credit cards');
-		
-	}
-	if(req.params.id != ''){ //need to change this to 'if id exists in table, then...'
-		for(var i=0;i<cCardUsers.length;i++){
-			card = cCardUsers[i];
-			//console.log(JSON.stringify(card));
 
-			if(card.id == req.params.id)
-				templist.push(card);
-		}
-	}
-	else
-		templist = cCardUsers;
+	var client = new pg.Client(conString);
+	client.connect();
 		
-	res.json({"cards" : templist});
+	var query = client.query("SELECT userid, ccholdername, ccnum, ccexpmonth, ccexpyear FROM creditcards WHERE userid = "+req.params.id);
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'You have no credit cards.');
+		}
+		else{
+			var response = {"cards" : result.rows};
+			client.end();
+			res.json(response);
+		}
+	});
 });
 
 //remove card by card num-------------------------------------------------------
-//TODO SQL
+//TODO [fix] SQL
+//BTW the attribute ccnum in creditcards should be a char(16) instead of an int, since it's a 16-digit number
 app.del('/cards/:carnum', function(req, res) {
 	var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
 	console.log("Delete card ending in " + lastfour + " request received.");
 	
-	if(cCardUsers.length == 0) {
-		res.statusCode = 404;
-		res.send('No such card found');
-	}
-	else{
-		var carnum = req.params.carnum;
-		var target = -1;
+	var client = new pg.Client(conString);
+	client.connect();
 		
-		for (var i=0; i < cCardUsers.length; ++i){
-			if (cCardUsers[i].carnum == carnum){
-				target = i;
-				break;	
-			}
-		}
-		if (target == -1){
+	//check that the user has a credit card with the specified cardnum
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccnum = '"+req.params.carnum+"'");
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
 			res.statusCode = 404;
-			res.send("No such card found.");			
-		}	
-		else {	
-			var removed = cCardUsers.splice(target, 1);
-			res.statusCode = 200;
-			//res.send('Card ending in '+ lastfour +' was removed.');
-			res.json({"card" : removed});
+			res.send('Unable to proceed, you have no credit cards with that number.'); 
 		}
-	}
+		else{
+			var query2 = client.query("DELETE FROM creditcards WHERE userid = "+req.params.id +" AND ccnum ='"+req.params.carnum+"'");
+	
+			query2.on("row", function (row, result) {
+		    	result.deleteRow(row); //?
+		   	});
+		   	
+		   	query2.on("end", function (result) {
+				var removed = result.rows[0];
+				client.end();
+				res.statusCode = 200;
+				res.send('Card ending in '+ lastfour +' was successfully removed.');
+				res.json({"card" : removed});
+			});
+		}
+	});
+});
+
+//Update credit card by ccid
+app.post("/cards/:id", function(req,res){
+
+	console.log("Update card request received."); //need req.body.ccid
+	
+	var client = new pg.Client(conString);
+	client.connect();
+		
+	//check that the card is already associated with the user
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccid = '"+req.body.ccid+"'");
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		//either card does not exist [404] or unauthorized user [401]
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.send('Unable to proceed; card not found.'); 
+		}
+		else{
+			var query2 = client.query("UPDATE creditcards SET ccholdername ='"+req.body['card-holder-name']+"', ccnum ='"+req.body['card-num']+"', ccv ="+req.body.ccv+
+										", ccexpmonth ='"+req.body['select-choice-month']+"', ccexpyear ='"+req.body['select-choice-month']+"' WHERE userid = "+req.params.id +
+										" AND ccid ='"+req.body.ccid+"'");
+		   	
+		   	query2.on("end", function (result) {
+				client.end();
+				res.json(200,true);
+			});
+		}
+	});
 });
 
 /*
@@ -227,7 +266,6 @@ app.del('/cards/:carnum', function(req, res) {
  */
 
 //Create new address
-//TODO SQL
 app.post("/newaddress/:id", function(req, res){
 	console.log("Add new card request received from user with id " + req.params.id);
 
@@ -237,86 +275,125 @@ app.post("/newaddress/:id", function(req, res){
 	}
 		
 	else{
-		var existingaddress = false;
+		var client = new pg.Client(conString);
+		client.connect();
 		
-		for(var i=0; i<addresses.length; ++i){
-			if((req.body['address-line1'] == addresses[i].line1) && (req.body['address-line2'] == addresses[i].line2) && (req.body['address-city'] == addresses[i].city) && (req.body['address-zip'] == addresses[i].zipcode) && (req.body['select-choice-country'] == addresses[i].country) && (req.body['select-choice-state'] == addresses[i].state)){
-				existingaddress = true;
-				break;
-			}
-		}
-
-		if(existingaddress){
-			res.statusCode = 400;
-			res.send("Address has already been registered.");
-		}
+		var query = client.query("INSERT INTO addresses (userid, aline1, aline2, acity, acountry, astate, azipcode) VALUES("+req.params.id +", '"+ req.body['address-line1'] + "', '"+
+									req.body['address-line2'] + "', '"+ req.body['address-city'] + "','"+req.body['select-choice-country']+ "','"+req.body['select-choice-state'] + 
+									"', '"+ req.body['address-zip'] +"');");
 		
-		var newAddress = new Address(req.params.id, req.body['address-line1'], req.body['address-line2'], req.body['address-city'], req.body['select-choice-country'], req.body['address-zip'], req.body['select-choice-state']);
-		newAddress.id = req.params.id;
-		newAddress.line1 = req.body['address-line1'];
-		newAddress.line2 = req.body['address-line2'];
-		newAddress.city = req.body['address-city'];
-		newAddress.country = req.body['select-choice-country'];
-		newAddress.zipcode = req.body['address-zip'];
-		newAddress.state = req.body['select-choice-state'];
-		
-		addresses.push(newAddress);
-		
-		res.statusCode = 200;
-		res.json(true);
+		query.on("row", function (row, result) {
+    		result.addRow(row);
+   		});
+	
+		query.on("end", function (result) {
+			var response = {"address":result.rows[0]};
+			client.end();
+			res.json(200,response);
+		});
 	}
-
 });
 
 //Get all addresses associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-//TODO SQL
 app.get('/addresses/:id', function(req, res){
 	console.log("Get the addresses for user " + req.params.id + " request received.");
 	
-	var templist = new Array();
-	var address;
+	var client = new pg.Client(conString);
+	client.connect();
+		
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id);
 	
-	if(addresses.length == 0){
-		res.statusCode = 404;
-		res.json('Address not found. Table is empty.');
-		
-	}
-	if(req.params.id != ''){
-		for(var i=0;i<addresses.length;i++){
-			address = addresses[i];
-			//console.log(JSON.stringify(card));
-			if(address.id == req.params.id)
-				templist.push(address);
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.json('You have not registered any addresses.');
 		}
-	}
-	else
-		templist = addresses;
-		
-	res.json({"addresses" : templist});
+		else {
+			var response = {"addresses" : result.rows};
+			client.end();
+			res.statusCode = 200;
+  			res.json(response);		
+		}
+	});
 });
 
 //Remove address by addressid-------------------------------------------------------
-//TODO SQL
+//TODO [fix] SQL [delete]
 app.del('/addresses/:index', function(req, res) {
 	console.log("Delete address request received.");
+
+	var client = new pg.Client(conString);
+	client.connect();
 	
-	if(addresses.length == 0) {
-		res.statusCode = 404;
-		res.send('No such address found');
-	}
-	else{
-		if (req.params.index >= addresses.length){
+	//check if the user has addresses
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id);
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0) {
+			client.end();
 			res.statusCode = 404;
-			res.send("No such address found.");			
-		}	
-		else {	
-			var removed = addresses.splice(req.params.index, 1);
-			res.statusCode = 200;
-			res.json({"address" : removed});
+			res.send('Cannot delete a non-existing address!'); //this might never happen, but just in case xD
 		}
-	}
+		else{
+			var query2 = client.query("DELETE FROM addresses WHERE userid = "+req.params.id+" AND aid = "+req.params.index);
+			
+			query2.on("row", function (row, result) {
+		    	result.deleteRow(row); //? not sure if it's done like this... :/
+		   	});
+		   	
+		   	query2.on("end", function (result) {
+				var removed = result.rows[0];
+				client.end();
+				res.statusCode = 200;
+				res.send('Address was removed.');
+				res.json({"address" : removed});
+			});
+		}
+	});
 });
 
+//Update address by aid
+app.post("/addresses/:id", function(req,res){
+
+	console.log("Update address request received."); //need req.body.aid
+	
+	var client = new pg.Client(conString);
+	client.connect();
+		
+	//check that the card is already associated with the user
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id+" AND aid = '"+req.body.aid+"'");
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.send('Unable to proceed; address not found.'); 
+		}
+		else{
+			var query2 = client.query("UPDATE addresses SET aline1 ='"+req.body['address-line1']+"', aline2 ='"+req.body['address-line2']+"', acity ='"+req.body['address-city']+"', acountry ="+req.body['select-choice-country']+
+										", astate ='"+req.body['select-choice-state']+"', azipcode ='"+req.body['address-zip']+"' WHERE userid = "+req.params.id +
+										" AND aid ='"+req.body.aid+"'");
+		   	
+		   	query2.on("end", function (result) {
+				client.end();
+				res.json(200,true);
+			});
+		}
+	});
+});
 
 //REST API for products**************************************************************************************************************************
 
@@ -924,41 +1001,42 @@ app.post("/sales", function(req,res){
 
 
 //bidding list
-//TODO SQL
+//TODO some things are shady in here... Is this function supposed to get the products bidded on by the current user? If so, search should be by uid (req.params.id)
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
+
+	var client = new pg.Client(conString);
+	client.connect();
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
+	var query = client.query("SELECT * FROM users WHERE username = '"+req.body.username+"' AND upassword ='"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
 			res.statusCode = 404;
 			res.json("Invalid username/password.");
-	}	
-	
-	else{
-		
-		var tempList = new Array();
-		for(var i=0; i< userList[target].bidding.length; i++){
-			for(var j=0; j< productList.length; j++){
-				if(productList[j].id==userList[target].bidding[i].id){
-					tempList.push(productList[j]);
-				}
-			}
 		}
-				
-		res.statusCode=200;
-		res.json({"bid":tempList});
+		else{
+			//select columns
+			var query2 = client.query("SELECT * FROM users, bids, products WHERE (users.uid = bids.bidderid) AND (bids.pid = products.pid) AND username = '"+req.body.username+
+										"' AND upassword ='"+req.body.password+"'");
+			
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query.on("end", function (result) {
+				client.end();
+				res.statusCode=200;
+				res.json({"bids" : result.rows});
+			});
+		}
+	});
 	
-	
-	}
 });
 
 //Seller Catalog
