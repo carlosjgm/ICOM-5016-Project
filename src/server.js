@@ -226,6 +226,41 @@ app.del('/cards/:carnum', function(req, res) {
 	});
 });
 
+//Update credit card by ccid
+app.post("/cards/:id", function(req,res){
+
+	console.log("Update card request received."); //need req.body.ccid
+	
+	var client = new pg.Client(conString);
+	client.connect();
+		
+	//check that the card is already associated with the user
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccid = '"+req.body.ccid+"'");
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		//either card does not exist [404] or unauthorized user [401]
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.send('Unable to proceed; card not found.'); 
+		}
+		else{
+			var query2 = client.query("UPDATE creditcards SET ccholdername ='"+req.body['card-holder-name']+"', ccnum ='"+req.body['card-num']+"', ccv ="+req.body.ccv+
+										", ccexpmonth ='"+req.body['select-choice-month']+"', ccexpyear ='"+req.body['select-choice-month']+"' WHERE userid = "+req.params.id +
+										" AND ccid ='"+req.body.ccid+"'");
+		   	
+		   	query2.on("end", function (result) {
+				client.end();
+				res.json(200,true);
+			});
+		}
+	});
+});
+
 /*
  * REST API for addresses*********************************************************************************************************************
  */
@@ -326,6 +361,39 @@ app.del('/addresses/:index', function(req, res) {
 	});
 });
 
+//Update address by aid
+app.post("/addresses/:id", function(req,res){
+
+	console.log("Update address request received."); //need req.body.aid
+	
+	var client = new pg.Client(conString);
+	client.connect();
+		
+	//check that the card is already associated with the user
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id+" AND aid = '"+req.body.aid+"'");
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+   	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.send('Unable to proceed; address not found.'); 
+		}
+		else{
+			var query2 = client.query("UPDATE addresses SET aline1 ='"+req.body['address-line1']+"', aline2 ='"+req.body['address-line2']+"', acity ='"+req.body['address-city']+"', acountry ="+req.body['select-choice-country']+
+										", astate ='"+req.body['select-choice-state']+"', azipcode ='"+req.body['address-zip']+"' WHERE userid = "+req.params.id +
+										" AND aid ='"+req.body.aid+"'");
+		   	
+		   	query2.on("end", function (result) {
+				client.end();
+				res.json(200,true);
+			});
+		}
+	});
+});
 
 //REST API for products**************************************************************************************************************************
 
