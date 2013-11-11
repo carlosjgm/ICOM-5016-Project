@@ -134,6 +134,7 @@ function reset(){
 //submits registration-form
 //goes to #browse if successful
 //TODO use express-mailer to send email 
+//TODO handle addresses
 function register(){
 	$.mobile.loading("show");
 	var form = $("#registration-form");
@@ -574,6 +575,36 @@ function placebid(id){
 		});	
 };
 
+//adds new product
+function newProduct(){
+	$.mobile.loading("show");
+	var form = $("#newproduct-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);	
+	logdata = addAuth(logdata);	
+	
+	logdata.newauctstart = new Date(logdata["newfromauctyear"],logdata["newfromauctmonth"],logdata["newfromauctday"]);
+	logdata.newauctend = new Date(logdata["newtoauctyear"],logdata["newtoauctmonth"],logdata["newtoauctday"]);
+	
+	var logdatajson = JSON.stringify(logdata);
+	$.ajax({
+		url : "http://localhost:8888/newproduct/",
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert("Product added.");
+			$.mobile.changePage("#browse", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+};
+
 //loads product page
 //fills #product-content and goes to #product
 function loadProductPage(id){
@@ -758,8 +789,8 @@ function browseCategories(category){
 				product = productList[i];
 				list.append("<li><a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' />"
 					+ "<h3>" + product.pname + "</h3>"
-					+ "<p> Brand: " + product.pbrand + "</p>"
-					+ "<p>Instant Price: " + product.pprice + ", Bid Price: " + product.pbidprice
+					+ "<p> <strong>Brand:</strong> " + product.pbrand + "</p>"
+					+ "<p><strong>Instant Price: </strong>" + product.pprice + "</p><p><strong>Bid Price: </strong>" + product.pbidprice
 					+ "</p></a></li>");
 					
 			}

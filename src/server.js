@@ -343,11 +343,12 @@ app.get('/browse/:category', function(req, res){
 	query.on("end", function (result) {
 		var response = {"products" : result.rows};
 		client.end();
-  		res.json(response);
+  		res.json(200,response);
  	});
 });
 
 //get product by id-----------------------------------------------------
+//TODO user must be logged in to see product details
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
 	
@@ -362,47 +363,77 @@ app.get('/product/:id', function(req, res){
 	query.on("end", function (result) {
 		var response = {"product" : result.rows[0]};
 		client.end();
-		res.statusCode = 200;
-  		res.json(response);
+  		res.json(200,response);
 	});	
 });
 
 //new product-------------------------------------------------
 //TODO authorize user
-//TODO SQL
 app.post('/newproduct', function(req, res) {
 	console.log("Add new product request received.");
 	
-  	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
-  	|| req.body.description=="" || req.body.model == "" 
-  	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="" || req.body.bid=="") {
-		res.statusCode = 400;
-		res.send('Product form is missing fields.');
-	}
-	else if(req.body.instantprice < req.body.bid){
-		res.statusCode = 400;
-		res.send("Product instant price must be greater than bid price.");
+  	if(req.body.newproductname=="" || req.body.newproductcategory=="" || req.body.newproductprice==""
+  	|| req.body.newproductdescription=="" || req.body.newproductmodel == "" 
+  	|| req.body.newproductbrand=="" || req.body.newproductdimensions=="" || req.body.newproductquantity=="") {
+		res.json(400,"Product form is missing fields.");
 	}
 	else{
-		var newProduct = new Product(req.body.name, req.body.category, req.body.instantprice, req.body.description, req.body.model,
-			req.body.photo,	req.body.brand, req.body.dimensions, req.body.seller, req.body.bid);
+		if(req.body.forbid != undefined && (parseFloat(req.body.newproductprice,10) < parseFloat(req.body.newproductbidprice,10)))
+			res.json(400,"Product price must be greater than bid price.");
+		else{
+			var client = new pg.Client(conString);
+			client.connect();
 			
-		newProduct.id = productNextId++;
-		newProduct.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
-		
-		productList.push(newProduct);
-		
-		//add new product to selling list of seller
-		var target;
-		for(var i=0; i < userList.length; i++)
-			if(userList[i].username == req.body.seller){
-				userList[i].selling.push(productNextId - 1);
-				break;
-			}
-			
-		res.statusCode = 200;
-		res.redirect(req.body.URL);		
-	}
+			var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+			query.on("row", function(row,result){
+				result.addRow(row);
+			});
+			query.on("end", function(result){
+				if(result.rows[0].upassword == req.body.password){
+					var sellerid = result.rows[0].uid;
+					var query2 = client.query("SELECT catid FROM categories WHERE catname = '" + req.body.newproductcategory + "'");
+					query2.on("row", function(row,result){
+						result.addRow(row);
+					});
+					query2.on("end", function(result){	
+						var categoryid = result.rows[0].catid;			
+						var query3 = client.query("INSERT INTO products (pname,pdescription,pmodel,pphoto,pbrand,pdimensions,psellerid,pcategoryid,pprice,pquantity)" +
+										"VALUES ('"+req.body.newproductname+"','"+req.body.newproductdescription+"','"+req.body.newproductmodel+"','"+req.body.newproductphoto +
+										"','"+req.body.newproductbrand+"','"+req.body.newproductdimensions+"','"+sellerid+"','"+categoryid+"','"+req.body.newproductprice +
+										"','"+req.body.newproductquantity+"') RETURNING pid");
+						query3.on("row", function(row,result){
+							result.addRow(row);
+						});
+						query3.on("end", function(result){	
+							if(req.body.forbid != undefined){
+								var startDate = new Date(req.body.newauctstart);
+								var endDate = new Date(req.body.newauctend);									
+								startDate = startDate.getFullYear() + "-" + (startDate.getMonth()+1) + "-" + startDate.getDate(); 
+								endDate = endDate.getFullYear() + "-" + (endDate.getMonth()+1) + "-" + endDate.getDate();
+								
+								var itemid = result.rows[0].pid;
+								var query4= client.query("INSERT INTO auction (aucstart,aucend,aucstartbid,aucitemid)" +
+									" VALUES ('"+startDate+"','"+endDate+"','" +
+									req.body.newproductbidprice+"','"+itemid+"')");
+								query4.on("end", function(row,result){
+									client.end();
+									res.json(200,true);
+								});									
+							}
+							else{
+								client.end();
+								res.json(200,true);
+							}
+						});
+					});			
+				}
+				else{
+					client.end();
+					res.json(401,false);
+				}
+			});						
+		}	
+	}	
 });
 
 //update product-------------------------------------------------
