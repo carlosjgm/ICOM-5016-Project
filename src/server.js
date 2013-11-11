@@ -959,41 +959,42 @@ app.post("/sales", function(req,res){
 
 
 //bidding list
-//TODO SQL
+//TODO some things are shady in here... Is this function supposed to get the products bidded on by the current user? If so, search should be by uid (req.params.id)
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
+
+	var client = new pg.Client(conString);
+	client.connect();
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
+	var query = client.query("SELECT * FROM users WHERE username = '"+req.body.username+"' AND upassword ='"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
 			res.statusCode = 404;
 			res.json("Invalid username/password.");
-	}	
-	
-	else{
-		
-		var tempList = new Array();
-		for(var i=0; i< userList[target].bidding.length; i++){
-			for(var j=0; j< productList.length; j++){
-				if(productList[j].id==userList[target].bidding[i].id){
-					tempList.push(productList[j]);
-				}
-			}
 		}
-				
-		res.statusCode=200;
-		res.json({"bid":tempList});
+		else{
+			//select columns
+			var query2 = client.query("SELECT * FROM users, bids, products WHERE (users.uid = bids.bidderid) AND (bids.pid = products.pid) AND username = '"+req.body.username+
+										"' AND upassword ='"+req.body.password+"'");
+			
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query.on("end", function (result) {
+				client.end();
+				res.statusCode=200;
+				res.json({"bids" : result.rows});
+			});
+		}
+	});
 	
-	
-	}
 });
 
 //Seller Catalog
