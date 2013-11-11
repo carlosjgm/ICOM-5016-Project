@@ -117,50 +117,46 @@ app.post("/newcard/:id", function(req, res){
 	}
 	
 	else {
-		var existingcard = false;
-		var expiredcard = false;
-		var today = new Date();
 		
-		console.log("Form has no missing fields");
+		var client = new pg.Client(conString);
+		client.connect();
 		
-		for (var i=0; i < cCardUsers.length; i++){
-			if(cCardUsers[i].id == req.params.id){
-				if (cCardUsers[i].carnum == req.body['card-num']){
-					existingcard = true;
-					break;
-				}
-					
+		var query = client.query("SELECT userid, ccnum FROM creditcards WHERE ccnum ='"+req.body['card-num'] +"' AND userid = "+req.params.id);
+		
+		query.on("row", function (row, result) {
+    		result.addRow(row);
+   		});
+   		
+		query.on("end", function (result) {
+			if(result.rows.length != 0){
+					client.end();
+					res.json(400,'You have already registered this card.');
+			}
+			else{
+				
+				var today = new Date();
+				
 				if ((req.body['select-choice-year'] < today.getFullYear()) || ((req.body['select-choice-year'] == today.getFullYear()) && (req.body['select-choice-month'] < today.getMonth()))){
-					expiredcard = true;
-					break;	
+					client.end();
+					res.json(400,"The credit card you are trying to register has expired! :(");
+				}
+				else{
+					var query2 = client.query("INSERT INTO creditcards (userid,ccholdername,ccnum,ccv,ccexpmonth,ccexpyear)" + 
+												"VALUES("+req.params.id+", '"+req.body['card-holder-name']+"', '"+req.body['card-num']+"', "+req.body.ccv+", '"+req.body['select-choice-month']+"', '"+req.body['select-choice-month']+"');");
+					
+					query2.on("row", function (row, result){
+							result.addRow(row);
+					});
+					
+					query2.on("end", function (result) {
+						var response = {"user":result.rows[0]};
+						client.end();
+						res.json(200,response);	
+					});
+					
 				}
 			}
-		}
-		
-		if(existingcard){
-			res.statusCode = 400;
-			res.send("Card has already been registered.");
-		}
-		
-		else if(expiredcard){
-			res.statusCode = 400;
-			res.send("Card is old, go get a new one! >:|");
-		}
-		
-		else{					//
-			var newCard = new creditCards(req.params.id, req.body['card-holder-name'], req.body['card-num'], req.body.ccv, req.body['select-choice-month'], req.body['select-choice-year']);
-			newCard.id = req.params.id;
-			newCard.holdername = req.body['card-holder-name'];
-			newCard.carnum = req.body['card-num'];
-			newCard.ccv = req.body.ccv;
-			newCard.expmonth = req.body['select-choice-month'];
-			newCard.expyear = req.body['select-choice-year'];
-			
-			cCardUsers.push(newCard);
-			
-			res.statusCode = 200;
-			res.json(true);
-		}
+		});
 	}
 });
 
