@@ -135,7 +135,7 @@ app.post("/newcard/:id", function(req, res){
 				
 				var today = new Date();
 				
-				if ((req.body['select-choice-year'] < today.getFullYear()) || ((req.body['select-choice-year'] == today.getFullYear()) && (req.body['select-choice-month'] < today.getMonth()))){
+				if ((req.body['select-choice-year'] < today.getFullYear()) || ((req.body['select-choice-year'] == today.getFullYear()) && (req.body['select-choice-month'] <= today.getMonth()))){ 
 					client.end();
 					res.json(400,"Oh no! The credit card you are trying to register has expired! :(");
 				}
@@ -922,41 +922,53 @@ app.post("/placeorder", function(req,res){
 
 //returns items in user cart
 //TODO remove item from cart if not found
-//TODO SQL
 app.post("/loadcart", function(req,res){
 	console.log("Get " + req.body.username + "'s cart request received.");
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
-			res.statusCode = 404;
-			res.json("Invalid username/password.");
-	}	
+	var client = new pg.Client(conString);
+	client.connect();
 	
-	else{
-		var tempList = userList[target].cart;
-		var cartList = new Array();
-		var total = 0;
-		//search for items
-		for(var j=0; j < tempList.length; j++){			
-			for (var i=0; i < productList.length; ++i){
-				if (productList[i].id == tempList[j].id){
-					cartList.push({"name":productList[i].name,"id":productList[i].id,"instantprice":productList[i].instantprice, "qty":tempList[j].qty});
-					total += productList[i].instantprice * tempList[j].qty;
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
+		}
+		
+		else{
+			var query2 = client.query("SELECT * FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
+			
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				if(result.rows.length > 0){
+					var productList = result.rows;
+					var query3 = client.query("SELECT SUM(pprice) FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
+					
+					query3.on("row", function (row, result) {
+						result.addRow(row);
+					});
+					
+					query3.on("end", function (result) {
+						var totalPrice = result.rows[0];
+						res.statusCode = 200;
+						res.json({"cart":productList,"total":totalPrice});
+					});
 				}
-			}	
-		}	
-		res.statusCode = 200;
-		res.json({"cart":cartList,"total":total});
-	}
+				
+				else{
+					res.json(200,"You have no items on your cart.");
+				}
+			});
+		}
+	});
 });
 
 //return sales report based on date and category
