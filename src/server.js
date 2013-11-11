@@ -1000,7 +1000,7 @@ app.post("/sales", function(req,res){
 });
 
 
-//bidding list
+//user bidding list
 //TODO some things are shady in here... Is this function supposed to get the products bidded on by the current user? If so, search should be by uid (req.params.id)
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
@@ -1038,6 +1038,44 @@ app.post("/loadbids", function(req,res){
 	});
 	
 });
+
+//product bids list
+app.post("/loadproductbids", function(req,res){
+	console.log("Get bids for product "+ req.body.pid +"request received.");
+
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM users WHERE username = '"+req.body.username+"' AND upassword ='"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.statusCode = 404;
+			res.json("Invalid username/password.");
+		}
+		else{
+			//select columns
+			var query = client.query("SELECT * FROM product, bids WHERE (bids.pid = products.pid) AND (product.pid = " + req.body.pid + ")");
+			
+			query.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query.on("end", function (result) {
+				client.end();
+				res.statusCode=200;
+				res.json({"bids" : result.rows});
+			});
+		}
+	});
+	
+});
+
 
 //Seller Catalog
 app.post("/catalog", function(req,res){

@@ -490,6 +490,42 @@ function loadBids(){
 };
 
 
+function loadProductBids(){	
+	$.mobile.loading("show");
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	$.ajax({
+		url : "http://localhost:8888/loadproductbids",
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var bidList = data.bid;
+			var content = $("#product-bidding-list");
+			content.empty();
+			var bidItem;
+			for (var i=0; i < bidList.length; ++i){
+				bidItem = bidList[i];
+				
+			content.append("<img src='" + bidItem.photo + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />");
+			content.append("<div style='text-align: left;'><b>" + bidItem.name + "</b></div>");
+			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + bidItem.seller + "</a></div>");
+			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Current bid: $" + bidItem.nextbidprice + "</div></div>"); 
+			content.append("<div data-type='vertical' style='float: right; margin-top: -50px;'>"
+				+ "<input type='button' href='#bidpopup' data-theme='e' data-rel='popup' data-position-to='window' data-transition='pop' value='Increase Bid'/></div></li><br/><hr style='margin-left: -41px;'>");			
+			}
+			
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
+
 //Get Catalog Items
 function getCatalogItems(user){	
 	$.mobile.loading("show");
