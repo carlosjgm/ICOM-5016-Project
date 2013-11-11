@@ -119,12 +119,6 @@
 					<script>document.write(localStorage.getItem("username"))</script><br/>
 					<script>document.write(localStorage.getItem("fname")) + document.write(" ") + document.write(localStorage.getItem("lname"))</script><br/>
 				</h4>
-
-				<!-- <ul data-role='listview'>
-					<li id='primary-address'></li>
-					<li id='primary-card'></li>
-				</ul> -->
-
 			</div>
 		</div>
 		
@@ -143,6 +137,7 @@
 		</div>
 			
 		<div data-role="controlgroup">
+			<a href="#newproduct" data-role="button" data-icon="plus" data-theme="a" style="text-align: left;">New Product</a>
 			<a href="#cart" data-role="button" data-icon="refresh" data-theme="a" style="text-align: left;">Shopping Cart</a>
 			<a href="#bidding" data-role="button" data-icon="edit" data-theme="a" style="text-align: left;">Bidding</a>
 			<a href="#account-settings" data-role="button" data-icon="gear" data-theme="a" style="text-align: left;">Account Settings</a>
@@ -204,6 +199,211 @@
 	</div>
 </div>
 
+<!--new product-->
+<div id="newproduct" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" >Back</a>
+		<h2>New Product</h2>
+	</div>
+	<div data-role="content">
+		<form id='newproduct-form'>
+				<ul data-role="listview">
+					<li data-role="fieldcontain">
+						<label for="newproductname">Name:</label>
+						<input id="newproductname" name="newproductname" type="text" placeholder="Name" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductcategory">Category</label>
+						<select name="newproductcategory" id="newproductcategory">
+							 <option value="books-children"> Books: Children </option>
+							 <option value="books-fiction"> Books: Fiction </option>
+							 <option value="books-technology"> Books: Technology </option>
+							 <option value="books-business"> Books: Business </option>
+							
+							 <option value="electronics-tv"> Electronics: TV </option>
+							 <option value="electronics-audio"> Electronics: Audio </option>
+							 <option value="electronics-phones"> Electronics: Phones </option>
+							 <option value="electronics-cameras"> Electronics: Cameras </option>
+							 <option value="electronics-video"> Electronics: Video </option>
+							
+							 <option value="computers-laptops"> Computers: Laptops </option>
+							 <option value="computers-desktops"> Computers: Desktops </option>
+							 <option value="computers-tablets"> Computers: Tablets </option>
+							 <option value="computers-printers"> Computers: Printers </option>
+							
+							 <option value="clothing-children"> Clothing: Children </option>
+							 <option value="clothing-men-shirts"> Clothing: Shirts </option>
+							 <option value="clothing-men-pants"> Clothing: Pants </option>
+							 <option value="clothing-men-socks"> Clothing: Socks </option>
+							 <option value="clothing-women-shirts"> Clothing: Shirts </option>
+							 <option value="clothing-women-pants"> Clothing: Pants </option>
+							 <option value="clothing-women-dresses"> Clothing: Dresses </option>
+						</select>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductinstantprice">Price:</label>
+						<input id="newproductinstantprice" name="newproductprice"  type="number" placeholder="Price" />
+					</li>
+					<li data-role="fieldcontain">		
+						<label for="newproductquantity">Quantity:</label>
+						<input id="newproductquantity" name="newproductquantity" type="number" placeholder="Quantity"/>
+					</li>
+					<li data-role="fieldcontain">		
+						<label for="newproductdescription">Description:</label>
+						<input id="newproductdescription" name="newproductdescription" type="text" placeholder="Description"/>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductmodel">Model:</label>
+						<input id="newproductmodel" name="newproductmodel" type="text" placeholder="Model"/>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductphoto">Photo:</label>
+						<input id="newproductphoto" name="newproductphoto" type="text" placeholder="Image"/>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductbrand">Brand:</label>
+						<input id="newproductbrand" name="newproductbrand" type="text" placeholder="Brand"/>
+					</li>
+					<li data-role="fieldcontain">
+						<label for="newproductdimensions">Dimensions:</label>
+						<input id="newproductdimensions" name="newproductdimensions" type="text" placeholder="Dimensions"/>
+					</li>
+					
+					<li data-role="fieldcontain" data-type="horizontal">	
+  						<label for="forbid">Allow bids</label> 	
+						<input type="checkbox" name="forbid" id="forbid" class="custom" value=true /> 
+						<input id="newproductbidprice" name="newproductbidprice" type="number" placeholder="Starting bid"/>		   					  							
+					</li>		
+					<li data-role="fieldcontain">
+						<fieldset data-role="controlgroup" data-type="horizontal">
+							<legend>Start</legend>
+							<label for="newfromauctmonth">Month</label>
+							<select name="newfromauctmonth" id="newfromauctmonth">
+								<option value="0">Jan</option>
+								<option value="1">Feb</option>
+								<option value="2">Mar</option>
+								<option value="3">Apr</option>
+								<option value="4">May</option>
+								<option value="5">Jun</option>
+								<option value="6">Jul</option>
+								<option value="7">Aug</option>
+								<option value="8">Sep</option>
+								<option value="9">Oct</option>
+								<option value="10">Nov</option>
+								<option value="11">Dec</option>
+							</select>
+							
+							<label for="newfromauctday">Day</label>
+							<select name="newfromauctday" id="newfromauctday">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+							</select>
+							
+							<label for="newfromauctyear" class="ui-hidden-accessible">Year</label>
+							<select name="newfromauctyear">
+								<option>2015</option><option>2014</option><option>2013</option>
+							</select>
+						</fieldset>
+					</li>
+					<li data-role="fieldcontain">	
+						<fieldset data-role="controlgroup" data-type="horizontal">
+							<legend>End</legend>
+							<label for="newtoauctmonth" class="ui-hidden-accessible">Month</label>
+							<select name="newtoauctmonth" id="newtoauctmonth">
+								<option value="0">Jan</option>
+								<option value="1">Feb</option>
+								<option value="2">Mar</option>
+								<option value="3">Apr</option>
+								<option value="4">May</option>
+								<option value="5">Jun</option>
+								<option value="6">Jul</option>
+								<option value="7">Aug</option>
+								<option value="8">Sep</option>
+								<option value="9">Oct</option>
+								<option value="10">Nov</option>
+								<option value="11">Dec</option>
+							</select>
+							
+							<label for="newtoauctday" class="ui-hidden-accessible">Day</label>
+							<select name="newtoauctday" id="newtoauctday">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+							</select>
+							
+							<label for="newtoauctyear" class="ui-hidden-accessible">Year</label>
+							<select name="newtoauctyear">
+								<option>2015</option><option>2014</option><option>2013</option>
+							</select>
+						</fieldset>
+					</li> 		
+					<li class="ui-body ui-body-b">
+						<fieldset>
+							<a data-role="button" onclick="newProduct()" data-theme="b">Submit</a>
+						</fieldset>
+					</li>
+				</ul>
+			</form>
+		
+	</div>
+</div>
 		
 <!--register user page-->
 <div id="register" data-role="page">
@@ -236,7 +436,7 @@
 						<label for="newlname">Last Name:</label>
 						<input id="newlname" name="newlname" type="text" />
 					</li>
-					<li data-role="fieldcontain">
+					<!--<li data-role="fieldcontain">
 						<label for="newselectcountry" class="select">Country/Region:</label>
 						<select name="newselectcountry" id="newselectcountry">
 							<option value="us">United States</option>
@@ -271,7 +471,7 @@
 							<option value="md">Maryland</option>
 							<option value="ee">Everywhere else</option>
 						</select>
-					</li>
+					</li>-->
 								
 					<li class="ui-body ui-body-b">
 						<fieldset>

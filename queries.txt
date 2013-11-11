@@ -1,0 +1,67 @@
+
+User Bids
+query = client.query("
+	SELECT *
+	FROM (user NATURAL JOIN bids)
+	WHERE uid = " + req.body.uid);
+
+
+Product Bids
+query = client.query("
+	SELECT *
+	FROM (products NATURAL JOIN bids)
+	WHERE products.pid = " + req.body.pid);
+
+
+Shopping Cart
+query = client.query("
+	SELECT *
+	FROM (user NATURAL JOIN cart)
+	WHERE uid = " + req.params.uid);
+
+
+Selling(Catalog)
+query1 = client.query("
+	SELECT uid, username
+	FROM users NATURAL JOIN sales
+	WHERE users.uid = sales.sellerid
+	GROUP BY uid");
+
+query2 = client.query("
+	SELECT *
+	FROM product
+	WHERE seller = " + req.body.seller);
+
+(OR if sales table is updated with sellerid then...)
+query = client.query("
+	SELECT *
+	FROM sales
+	WHERE sellerid= " + req.body.sellerid);
+
+
+Seller Page (history)
+	
+
+Place Bid
+query = client.query("
+	INSERT INTO bids(bid, uid, bprice)
+	VALUES (" + req.body.bid + ", " + req.params.uid + ", " + req.body.bprice);
+
+
+Rate Seller
+query = client.query("
+	INSERT INTO ratings(sid(userid renamed to sellerid), uid, rating, rdate)
+	VALUES (" + req.body.sid + ", " + req.params.uid + ", " + req.body.rating + ", " + req.body.date);
+
+
+Add Credit Card
+query = client.query("
+	INSERT INTO creditcards(uid, holdername, ccnum, ccv, expmonth, expyear)
+	VALUES (" + req.params.uid + ", '" + req.body.holdername + "', '" + req.body['card-num'] + "', " + req.body.ccv + ", '" + req.body.expmonth + "', '" + req.body.expyear + "'");
+
+
+Remove Credit Card
+query = client.query("
+	DELETE 
+	FROM creditcards
+	WHERE ccnum = '" + req.params['card-num'] + "'");
