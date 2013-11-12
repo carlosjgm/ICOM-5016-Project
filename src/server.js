@@ -509,54 +509,118 @@ app.post('/newproduct', function(req, res) {
 });
 
 //update product-------------------------------------------------
-//TODO authorize user
-//TODO SQL
-app.post('/product/:id', function(req, res) {
-	console.log("Update product " + req.params.id + "request received.");
+app.post('/product/:pid', function(req, res) {
 	
-	if (productList.length <= req.params.id || req.params.id < 0){
-		res.json(404,"No such product found.");
-	}
-	
-	
-	
-  	else if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
+	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
   	|| req.body.description=="" || req.body.model == "" || req.body.photo==""
-	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="") {
+	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller==""
+	|| req.body.quantity=="") {
 		res.json(400, "Product form is missing fields.");
 	}
 	
+	console.log("Update product " + req.body.pid + "request received.");
 	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check that product exists
+	var query = client.query("SELECT * FROM products WHERE pid="+req.body.pid);
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length > 0){
+			client.end();
+			res.json(404,"No such product found.");
+		}
+		else{
+			//check that user is seller of the product
+			var query2 = client.query("SELECT * FROM products WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
+			
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				//user is not seller of the product
+				if(result.rows.length == 0){
+					client.end();
+					res.json(401,"You are not authorized to update this product.");
+				}
+				else{
+					//(pname, pdescription, pmodel, pphoto, pbrand, pdimensions, pcategoryid, pprice, pquantity)
+					var query3 = client.query("UPDATE products SET pname = '"+req.body.name+"', pdescription = '"+req.body.description+"', pmodel = '"+req.body.model+
+												"', pphoto = '"+req.body.photo+"', pbrand = '"+req.body.brand+"', pdimensions = '"+req.body.dimension+"', pcategoryid = "+req.body.category+", pprice = '"+
+												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
+			
+					query3.on("row", function (row, result) {
+						result.addRow(row);
+					});
+					
+					query3.on("end", function (result) {
+						client.end();
+						res.json(200,"Product was updated.");
+					});
+				}
+			});	
+		}
+	});
 });
 
 //delete product by id-------------------------------------------------------
-//TODO authorize user
-//TODO SQL
-app.del('/product/:id', function(req, res) {
-	console.log("Delete product " + req.params.id + "request received.");
-	if(productList.length <= req.params.id || req.params.id < 0) {
-		res.statusCode = 404;
-		res.send('No such product found');
-	}
-	else{
-		var id = req.params.id;
-		var target = -1;
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == id){
-				target = i;
-				break;	
-			}
-		}
-		if (target == -1){
+//TODO add functionality for admins
+//TODO verify delete
+app.del('/products/:pid', function(req, res) {
+	console.log("Delete product " + req.body.pid + "request received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM products WHERE pid ="+req.body.pid);
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		//product not found
+		if(result.rows.length == 0){
+			client.end();
 			res.statusCode = 404;
-			res.send("No such product found.");			
-		}	
-		else {	
-			var removed = productList.splice(req.params.id, 1);
-			res.statusCode = 200;
-			res.json({"product" : removed});
+			res.send('No such product found.');
 		}
-	}
+		else{
+			//if found, check that user is authorized (either seller or admin)
+
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.pid+" AND pseller = "+req.params.id);
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				if(result.rows.length == 0){
+					//user is a normal user but not the seller
+					client.end();
+					res.send(401,"Unable to delete product, user is not authorized");
+				}
+				else{
+					//if user is authorized, proceed to delete product
+					var query3 = client.query("DELETE FROM products WHERE pid ="+req.body.pid);
+
+					query3.on("row", function (row, result) {
+						result.deleteRow(row); //productList.deleteRow(row) ?
+					});
+					
+					query3.on("end", function (result) {
+						client.end();
+						res.send(200,'Product was removed.');
+					});
+				}
+			});	
+		}
+	});
 });
 
 
@@ -913,11 +977,8 @@ app.post("/bid/:id", function(req, res){
 // });
 
 
-
 //add item to cart
-//TODO SQL
 app.post("/addtocart", function(req,res){
-	
 	if(req.body.qty == 0 || req.body.qty == ""){
 		res.statusCode = 400;
 		res.json("Please specify a quantity");
@@ -925,47 +986,76 @@ app.post("/addtocart", function(req,res){
 	
 	console.log("Add item " + req.body.id + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
-			res.statusCode = 404;
-			res.json("Invalid username/password.");
-	}	
-	else{
-		
-		//item already in cart
-		var done = false;
-		for(var i=0;i < userList[target].cart.length;i++){
-			if(userList[target].cart[i].id == req.body.id){
-				userList[target].cart[i].qty += req.body.qty;
-				done = true;
-				res.statusCode = 200;
-				res.json(true);
-			}
-		}		
-		
-		//new item
-		if(!done){
-			//search for product
-			for (var i=0; i < productList.length; ++i){
-				if (productList[i].id == req.body.id){
-					userList[target].cart.push({"id":productList[i].id,"qty":req.body.qty});
-					res.statusCode = 200;
-					res.json(true);
-				}
-			}
-			res.statusCode = 404;
-			res.json("Item not found.");
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check user
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
 		}
-	}
+		
+		else{
+			//search for product
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.id);
+					
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				//product was found
+				if(result.rows.length > 0){
+					var query3 = client.query("SELECT * FROM carts WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+			
+					query3.on("row", function (row, result) {
+						result.addRow(row);
+					});
+			
+					query3.on("end", function (result) {
+						//item already in cart
+						if(result.rows.length > 0){
+							var query4 = client.query("UPDATE carts SET cquantity = cquantity + "+req.body.qty+" WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+							
+							query4.on("row", function (row, result) {
+								result.addRow(row);
+							});
+							
+							query4.on("end", function (result) {
+								client.end();
+								res.json(200,'Cart was updated.');
+							});	
+						}
+						//new item
+						else{
+							var query4 = client.query("INSERT INTO carts VALUES("+req.params.id+","+req.body.id+","+req.body.qty+");");
+							
+							query4.on("row", function (row, result) {
+								result.addRow(row);
+							});
+							
+							query4.on("end", function (result) {
+								client.end();
+								res.json(200,'Cart was updated.');
+							});	
+						}
+					});
+				}			
+				//product not found
+				else{
+					client.end();
+					res.json(404,'Product was not found.');
+				}	
+			});
+		}
+	});
 });
 
 //places order
@@ -1051,12 +1141,14 @@ app.post("/loadcart", function(req,res){
 					
 					query3.on("end", function (result) {
 						var totalPrice = result.rows[0];
+						client.end();
 						res.statusCode = 200;
 						res.json({"cart":productList,"total":totalPrice});
 					});
 				}
 				
 				else{
+					client.end();
 					res.json(200,"You have no items on your cart.");
 				}
 			});

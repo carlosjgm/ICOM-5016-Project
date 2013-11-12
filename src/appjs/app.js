@@ -193,6 +193,11 @@ function addNewCard(){
 	});
 };
 
+//TODO
+function updateCard(id){
+	
+};
+
 function removeCard(carnum){
 	$.mobile.loading("show");
 	
@@ -325,6 +330,11 @@ function addNewAddress(){
 			alert(data.responseText);			
 		}
 	});
+};
+
+//TODO
+function updateAddress(id){
+	
 };
 
 function removeAddress(index){
@@ -635,6 +645,53 @@ function newProduct(){
 			$.mobile.loading("hide");
 			alert("Product added.");
 			$.mobile.changePage("#browse", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
+};
+
+//TODO 
+function updateProduct(pid){
+	$.mobile.loading("show");
+	
+	//req.body.name=="" || req.body.category=="" || req.body.instantprice==""
+	//|| req.body.description=="" || req.body.model == "" || req.body.photo==""
+	//|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller
+	
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"":document.getElementById("").value});
+	$.ajax({
+		url : "http://localhost:8888/product/" + pid,
+		method: 'post',
+		data : data,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){			
+			localStorage.setItem("", document.getElementById("").value);
+			$.mobile.loading("hide");
+			alert("Product updated.");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
+//TODO 
+function removeProduct(pid){
+	$.mobile.loading("show");
+	
+	$.ajax({
+		url : "http://localhost:8888/products/"+pid,
+		method: 'delete',
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			//$.mobile.changePage("#manage-products", {reloadPage : true});
 		},
 		error : function(data,textStatus,jqXHR){
 			$.mobile.loading("hide");
