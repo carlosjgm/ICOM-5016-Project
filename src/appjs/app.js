@@ -10,12 +10,12 @@ $(document).on('pagebeforeshow', "#sales", function() {
 
 //load credit card list
 $(document).on('pagebeforeshow', "#manage-credit-cards", function() {
-	getCreditCards(localStorage["id"]);
+	getCreditCards();
 });
 
 //load address list
 $(document).on('pagebeforeshow', "#manage-addresses", function() {
-	getAddresses(localStorage["id"]);
+	getAddresses();
 });
 
 //load bidding list
@@ -52,6 +52,7 @@ function profilebutton(buttonid,pagepanel){
 function addAuth(data){
 	data.username = localStorage["username"];
 	data.password = localStorage["password"];
+	data.id = localStorage["id"];
 	return data;
 }
 
@@ -173,10 +174,13 @@ function addNewCard(){
 	var form = $("#newcard-form");
 	var formData = form.serializeArray();
 	var logdata = ConverToJSON(formData);
+	//
+	logdata = addAuth(logdata);
 	var logdatajson = JSON.stringify(logdata);
+
 	
 	$.ajax({
-		url : "http://localhost:8888/newcard/"+localStorage.getItem("id"),
+		url : "http://localhost:8888/newcard/",
 		method: 'post',
 		data : logdatajson,
 		contentType: "application/json",
@@ -198,11 +202,11 @@ function updateCard(id){
 	
 };
 
-function removeCard(carnum){
+function removeCard(ccid){
 	$.mobile.loading("show");
 	
 	$.ajax({
-		url : "http://localhost:8888/cards/"+carnum,
+		url : "http://localhost:8888/cards/"+ccid,
 		method: 'delete',
 		contentType: "application/json",
 		dataType: "json",
@@ -219,11 +223,17 @@ function removeCard(carnum){
 };
 
 //Gets all credit cards associated with one user
-function getCreditCards(id){
+function getCreditCards(){	
 	$.mobile.loading("show");
+	
+	var data = new Object();
+	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
+	
 	$.ajax({
-		url : "http://localhost:8888/cards/"+ id,
+		url : "http://localhost:8888/cards/",
 		method: 'get',
+		data: jsondata,
 		success : function(data, textStatus, jqXHR){
 			var cardList = data.cards; //check later
 			var list = $("#credit-card-list");
@@ -233,10 +243,10 @@ function getCreditCards(id){
 			for (var i=0; i < cardList.length; ++i){
 			card = cardList[i];
 				list.append("<li><a>"
-					+ "<h3>Card Holder Name: " + card.holdername + "</h3>"
-					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.carnum[12]+card.carnum[13]+card.carnum[14]+card.carnum[15]+ "</p>"
-					+ "<p>Expiration Date: " + card.expmonth + "/" + card.expyear
-					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.carnum +")'>Remove card</a></a></li>");
+					+ "<h3>Card Holder Name: " + card.ccholdername + "</h3>"
+					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.ccnum[12]+card.ccnum[13]+card.ccnum[14]+card.ccnum[15]+ "</p>"
+					+ "<p>Expiration Date: " + card.ccexpmonth + "/" + card.ccexpyear
+					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.ccnum +")'>Remove card</a></a></li>");
 			}
 			list.listview("refresh");	
 			$.mobile.loading("hide");

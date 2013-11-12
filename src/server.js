@@ -102,8 +102,8 @@ app.use(function(req, res, next){
  */
 
 //Create new credit card
-app.post("/newcard/:id", function(req, res){
-	console.log("Add new card request received from user with id " + req.params.id);
+app.post("/newcard/", function(req, res){
+	console.log("Add new card request received from user "+req.body.username);
 
   	if(req.body['card-holder-name'] == "" || req.body['card-num'] == "" || req.body.ccv == "" || req.body['select-choice-month'] == "Month" || req.body['select-choice-year'] == "Year"){
 		res.statusCode = 400;
@@ -120,7 +120,7 @@ app.post("/newcard/:id", function(req, res){
 		var client = new pg.Client(conString);
 		client.connect();
 		
-		var query = client.query("SELECT userid, ccnum FROM creditcards WHERE ccnum ='"+req.body['card-num'] +"' AND userid = "+req.params.id);
+		var query = client.query("SELECT * FROM creditcards WHERE ccnum ='"+req.body['card-num'] +"' AND userid = "+req.body.id);
 		
 		query.on("row", function (row, result) {
     		result.addRow(row);
@@ -139,9 +139,10 @@ app.post("/newcard/:id", function(req, res){
 					client.end();
 					res.json(400,"Oh no! The credit card you are trying to register has expired! :(");
 				}
+				
 				else{
 					var query2 = client.query("INSERT INTO creditcards (userid,ccholdername,ccnum,ccv,ccexpmonth,ccexpyear)" + 
-												"VALUES("+req.params.id+", '"+req.body['card-holder-name']+"', '"+req.body['card-num']+"', "+req.body.ccv+", '"+req.body['select-choice-month']+"', '"+req.body['select-choice-month']+"');");
+												"VALUES("+req.body.id+", '"+req.body['card-holder-name']+"', '"+req.body['card-num']+"', "+req.body.ccv+", '"+req.body['select-choice-month']+"', '"+req.body['select-choice-month']+"');");
 					
 					query2.on("row", function (row, result){
 							result.addRow(row);
@@ -160,8 +161,8 @@ app.post("/newcard/:id", function(req, res){
 });
 
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-app.get('/cards/:id', function(req, res){
-	console.log("Get the credit cards for user " + req.params.id + " request received.");
+app.get('/cards/', function(req, res){
+	console.log("Get the credit cards for user " + req.body.id + " request received.");
 
 	var client = new pg.Client(conString);
 	client.connect();
@@ -188,9 +189,10 @@ app.get('/cards/:id', function(req, res){
 //remove card by card num-------------------------------------------------------
 //TODO [fix] SQL
 //BTW the attribute ccnum in creditcards should be a char(16) instead of an int, since it's a 16-digit number
-app.del('/cards/:carnum', function(req, res) {
-	var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
-	console.log("Delete card ending in " + lastfour + " request received.");
+app.del('/cards/:ccid', function(req, res) {
+	//var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
+	//console.log("Delete card ending in " + lastfour + " request received.");
+	console.log("Delete card " + req.params.ccid + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
