@@ -570,33 +570,57 @@ app.post('/product/:pid', function(req, res) {
 });
 
 //delete product by id-------------------------------------------------------
-//TODO authorize user
-//TODO SQL
-app.del('/product/:id', function(req, res) {
-	console.log("Delete product " + req.params.id + "request received.");
-	if(productList.length <= req.params.id || req.params.id < 0) {
-		res.statusCode = 404;
-		res.send('No such product found');
-	}
-	else{
-		var id = req.params.id;
-		var target = -1;
-		for (var i=0; i < productList.length; ++i){
-			if (productList[i].id == id){
-				target = i;
-				break;	
-			}
-		}
-		if (target == -1){
+//TODO add functionality for admins
+//TODO verify delete
+app.del('/products/:pid', function(req, res) {
+	console.log("Delete product " + req.body.pid + "request received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM products WHERE pid ="+req.body.pid);
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		//product not found
+		if(result.rows.length == 0){
+			client.end();
 			res.statusCode = 404;
-			res.send("No such product found.");			
-		}	
-		else {	
-			var removed = productList.splice(req.params.id, 1);
-			res.statusCode = 200;
-			res.json({"product" : removed});
+			res.send('No such product found.');
 		}
-	}
+		else{
+			//if found, check that user is authorized (either seller or admin)
+
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.pid+" AND pseller = "+req.params.id);
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				if(result.rows.length == 0){
+					//user is a normal user but not the seller
+					client.end();
+					res.send(401,"Unable to delete product, user is not authorized");
+				}
+				else{
+					//if user is authorized, proceed to delete product
+					var query3 = client.query("DELETE FROM products WHERE pid ="+req.body.pid);
+
+					query3.on("row", function (row, result) {
+						result.deleteRow(row); //productList.deleteRow(row) ?
+					});
+					
+					query3.on("end", function (result) {
+						client.end();
+						res.send(200,'Product was removed.');
+					});
+				}
+			});	
+		}
+	});
 });
 
 
