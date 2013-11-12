@@ -509,24 +509,64 @@ app.post('/newproduct', function(req, res) {
 });
 
 //update product-------------------------------------------------
-//TODO authorize user
-//TODO SQL
-app.post('/product/:id', function(req, res) {
-	console.log("Update product " + req.params.id + "request received.");
+app.post('/product/:pid', function(req, res) {
 	
-	if (productList.length <= req.params.id || req.params.id < 0){
-		res.json(404,"No such product found.");
-	}
-	
-	
-	
-  	else if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
+	if(req.body.name=="" || req.body.category=="" || req.body.instantprice==""
   	|| req.body.description=="" || req.body.model == "" || req.body.photo==""
-	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller=="") {
+	|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller==""
+	|| req.body.quantity=="") {
 		res.json(400, "Product form is missing fields.");
 	}
 	
+	console.log("Update product " + req.body.pid + "request received.");
 	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check that product exists
+	var query = client.query("SELECT * FROM products WHERE pid="+req.body.pid);
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length > 0){
+			client.end();
+			res.json(404,"No such product found.");
+		}
+		else{
+			//check that user is seller of the product
+			var query2 = client.query("SELECT * FROM products WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
+			
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				//user is not seller of the product
+				if(result.rows.length == 0){
+					client.end();
+					res.json(401,"You are not authorized to update this product.");
+				}
+				else{
+					//(pname, pdescription, pmodel, pphoto, pbrand, pdimensions, pcategoryid, pprice, pquantity)
+					var query3 = client.query("UPDATE products SET pname = '"+req.body.name+"', pdescription = '"+req.body.description+"', pmodel = '"+req.body.model+
+												"', pphoto = '"+req.body.photo+"', pbrand = '"+req.body.brand+"', pdimensions = '"+req.body.dimension+"', pcategoryid = "+req.body.category+", pprice = '"+
+												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
+			
+					query3.on("row", function (row, result) {
+						result.addRow(row);
+					});
+					
+					query3.on("end", function (result) {
+						client.end();
+						res.json(200,"Product was updated.");
+					});
+				}
+			});	
+		}
+	});
 });
 
 //delete product by id-------------------------------------------------------

@@ -193,6 +193,11 @@ function addNewCard(){
 	});
 };
 
+//TODO
+function updateCard(id){
+	
+};
+
 function removeCard(carnum){
 	$.mobile.loading("show");
 	
@@ -325,6 +330,11 @@ function addNewAddress(){
 			alert(data.responseText);			
 		}
 	});
+};
+
+//TODO
+function updateAddress(id){
+	
 };
 
 function removeAddress(index){
@@ -641,6 +651,11 @@ function newProduct(){
 			alert(data.responseText);			
 		}
 	});
+};
+
+//TODO 
+function updateProduct(id){
+	
 };
 
 //loads product page
