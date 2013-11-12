@@ -10,12 +10,12 @@ $(document).on('pagebeforeshow', "#sales", function() {
 
 //load credit card list
 $(document).on('pagebeforeshow', "#manage-credit-cards", function() {
-	getCreditCards(localStorage["id"]);
+	getCreditCards();
 });
 
 //load address list
 $(document).on('pagebeforeshow', "#manage-addresses", function() {
-	getAddresses(localStorage["id"]);
+	getAddresses();
 });
 
 //load bidding list
@@ -52,6 +52,7 @@ function profilebutton(buttonid,pagepanel){
 function addAuth(data){
 	data.username = localStorage["username"];
 	data.password = localStorage["password"];
+	data.id = localStorage["id"];
 	return data;
 }
 
@@ -174,9 +175,11 @@ function addNewCard(){
 	var formData = form.serializeArray();
 	var logdata = ConverToJSON(formData);
 	var logdatajson = JSON.stringify(logdata);
+	//
+	logdatajson = addAuth(logdatajson);
 	
 	$.ajax({
-		url : "http://localhost:8888/newcard/"+localStorage.getItem("id"),
+		url : "http://localhost:8888/newcard/",
 		method: 'post',
 		data : logdatajson,
 		contentType: "application/json",
@@ -198,11 +201,11 @@ function updateCard(id){
 	
 };
 
-function removeCard(carnum){
+function removeCard(ccid){
 	$.mobile.loading("show");
 	
 	$.ajax({
-		url : "http://localhost:8888/cards/"+carnum,
+		url : "http://localhost:8888/cards/"+ccid,
 		method: 'delete',
 		contentType: "application/json",
 		dataType: "json",
