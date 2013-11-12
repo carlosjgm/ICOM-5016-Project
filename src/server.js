@@ -161,13 +161,14 @@ app.post("/newcard/", function(req, res){
 });
 
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-app.get('/cards/', function(req, res){
+app.post('/cards/', function(req, res){
+	
 	console.log("Get the credit cards for user " + req.body.id + " request received.");
-
+	
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	var query = client.query("SELECT userid, ccholdername, ccnum, ccexpmonth, ccexpyear FROM creditcards WHERE userid = "+req.body.id);
+	var query = client.query("SELECT userid, ccid, ccholdername, ccnum, ccexpmonth, ccexpyear FROM creditcards WHERE userid = "+req.body.id);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -186,19 +187,16 @@ app.get('/cards/', function(req, res){
 	});
 });
 
-//remove card by card num-------------------------------------------------------
-//TODO [fix] SQL
-//BTW the attribute ccnum in creditcards should be a char(16) instead of an int, since it's a 16-digit number
+//remove card by ccid-------------------------------------------------------
 app.del('/cards/:ccid', function(req, res) {
-	//var lastfour = ""+req.params.carnum[12]+req.params.carnum[13]+req.params.carnum[14]+req.params.carnum[15];
-	//console.log("Delete card ending in " + lastfour + " request received.");
 	console.log("Delete card " + req.params.ccid + " request received.");
+	console.log(JSON.stringify(req.params));
 	
 	var client = new pg.Client(conString);
 	client.connect();
 		
 	//check that the user has a credit card with the specified cardnum
-	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccnum = '"+req.params.carnum+"'");
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.body.id+" AND ccid = "+req.params.ccid);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -208,21 +206,15 @@ app.del('/cards/:ccid', function(req, res) {
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
-			res.send('Unable to proceed, you have no credit cards with that number.'); 
+			res.send('Unable to proceed, credit card not found.'); 
 		}
 		else{
-			var query2 = client.query("DELETE FROM creditcards WHERE userid = "+req.params.id +" AND ccnum ='"+req.params.carnum+"'");
-	
-			query2.on("row", function (row, result) {
-		    	result.deleteRow(row); //?
-		   	});
-		   	
+			var query2 = client.query("DELETE FROM creditcards WHERE ccid ="+req.params.ccid);
+
 		   	query2.on("end", function (result) {
-				var removed = result.rows[0];
 				client.end();
 				res.statusCode = 200;
-				res.send('Card ending in '+ lastfour +' was successfully removed.');
-				res.json({"card" : removed});
+				res.send('Card '+ req.params.ccid +' was successfully removed.');
 			});
 		}
 	});

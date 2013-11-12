@@ -177,7 +177,6 @@ function addNewCard(){
 	//
 	logdata = addAuth(logdata);
 	var logdatajson = JSON.stringify(logdata);
-
 	
 	$.ajax({
 		url : "http://localhost:8888/newcard/",
@@ -199,14 +198,43 @@ function addNewCard(){
 
 //TODO
 function updateCard(ccid){
-	
-};
-
-function removeCard(ccid){
 	$.mobile.loading("show");
+	
+	//var form = $("#updatecard-form");
+	//var formData = form.serializeArray();
+	//var logdata = ConverToJSON(formData);
+	//logdata = addAuth(logdata);
+	//var logdatajson = JSON.stringify(logdata);
 	
 	$.ajax({
 		url : "http://localhost:8888/cards/"+ccid,
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-credit-cards", {reloadPage : true});
+			alert('Card updated.');
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
+//TODO fix refresh issue
+function removeCard(ccid){
+	$.mobile.loading("show");
+	
+	var data = new Object();
+	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
+	
+	$.ajax({
+		url : "http://localhost:8888/cards/"+ccid,
+		data : jsondata,
 		method: 'delete',
 		contentType: "application/json",
 		dataType: "json",
@@ -232,8 +260,10 @@ function getCreditCards(){
 	
 	$.ajax({
 		url : "http://localhost:8888/cards/",
-		method: 'get',
+		method: 'post',
 		data: jsondata,
+		contentType: "application/json",
+		dataType: "json",
 		success : function(data, textStatus, jqXHR){
 			var cardList = data.cards; //check later
 			var list = $("#credit-card-list");
@@ -246,7 +276,7 @@ function getCreditCards(){
 					+ "<h3>Card Holder Name: " + card.ccholdername + "</h3>"
 					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.ccnum[12]+card.ccnum[13]+card.ccnum[14]+card.ccnum[15]+ "</p>"
 					+ "<p>Expiration Date: " + card.ccexpmonth + "/" + card.ccexpyear
-					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.ccnum +")'>Remove card</a></a></li>");
+					+ "</p><a href='#manage-credit-cards' data-role='button' data-icon='delete' onclick='removeCard("+ card.ccid +")'>Remove card</a></a></li>");
 			}
 			list.listview("refresh");	
 			$.mobile.loading("hide");
