@@ -161,8 +161,8 @@ app.post("/newcard/", function(req, res){
 });
 
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-app.get('/cards/:id', function(req, res){
-	console.log("Get the credit cards for user " + req.params.id + " request received.");
+app.get('/cards/', function(req, res){
+	console.log("Get the credit cards for user " + req.body.id + " request received.");
 
 	var client = new pg.Client(conString);
 	client.connect();
