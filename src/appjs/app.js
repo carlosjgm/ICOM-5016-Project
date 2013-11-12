@@ -198,7 +198,7 @@ function addNewCard(){
 };
 
 //TODO
-function updateCard(id){
+function updateCard(ccid){
 	
 };
 

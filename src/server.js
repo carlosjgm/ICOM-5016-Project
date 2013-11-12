@@ -87,7 +87,7 @@ for (var i=0; i < salesList.length; ++i){
 }
 
 //server configuration----------------------------------------------------------------------------------
-
+//app.use(require('connect').bodyParser());
 app.use(express.bodyParser());
 
 app.use(function(req, res, next){
@@ -167,7 +167,7 @@ app.get('/cards/', function(req, res){
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	var query = client.query("SELECT userid, ccholdername, ccnum, ccexpmonth, ccexpyear FROM creditcards WHERE userid = "+req.params.id);
+	var query = client.query("SELECT userid, ccholdername, ccnum, ccexpmonth, ccexpyear FROM creditcards WHERE userid = "+req.body.id);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
