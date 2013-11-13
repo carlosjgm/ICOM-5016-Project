@@ -1166,6 +1166,85 @@ app.post("/catalog", function(req,res){
 	
 });
 
+//get ratings
+app.post("/ratings", function(req,res){
+	console.log("Get " + req.body.sellername + "'s ratings request received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+	query.on("row", function(row,result){
+		result.addRow(row);
+	});
+	query.on("end", function(result){
+		if(result.rows[0].upassword == req.body.password){
+			var query2 = client.query("SELECT username, rvalue FROM ratings,users WHERE users.username = '" + req.body.sellername + "' AND ratings.sellerid = users.uid");
+			query2.on("row", function(row,result){
+				result.addRow(row);
+				console.log(JSON.stringify(row));
+			});
+			query2.on("end", function(result){
+				client.end();
+				res.json(200,{"products":result.rows});
+			});
+		}
+		else{
+			client.end();
+			res.json(401,false);
+		}
+	});
+	
+});
+
+
+//add rating
+app.post("/addrating", function(req,res){
+	if(req.body.qty == 0 || req.body.qty == ""){
+		res.statusCode = 400;
+		res.json("Please specify a quantity");
+	}
+	
+	console.log("Add rating for seller " + req.body.sid + " from user " + req.body.id +  " request received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
+		}
+		
+		else{
+			var query2 = client.query("SELECT * FROM ratings WHERE raterid ="+req.body.uid);
+					
+			query2.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query2.on("end", function (result) {
+				//user has already rated once
+				if(result.rows.length == 1){
+					//TODO ??
+				}
+				
+				else{
+					client.query("INSERT INTO ratings (sellerid, raterid, rvalue) VALUES (" + req.body.sid + ", " + req.body.uid + ", " + req.body.rating + ") ");
+				}
+					
+			});	
+		}
+	});
+});
+
+
 //TODO
 //REST API for rating system********************************************************************
 
