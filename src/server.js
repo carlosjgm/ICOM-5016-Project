@@ -407,22 +407,49 @@ app.get('/browse/:category', function(req, res){
 });
 
 //get product by id-----------------------------------------------------
-//TODO add auction information
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT products.*, users.username FROM products,users WHERE products.pid = $1 AND products.psellerid=users.uid ",[req.params.id]);
+	//check if product is in auction
+	var query = client.query("SELECT * FROM auction WHERE auction.aucitemid ="+req.params.id);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
     });
+	
 	query.on("end", function (result) {
-		var response = {"product" : result.rows[0]};
-		client.end();
-  		res.json(200,response);
+		//product is in auction
+		if(result.rows.length > 0){
+			var query2 = client.query("SELECT products.*, users.username, auction.aucstartbid FROM products,users,auction WHERE "+
+										"products.pid = $1 AND products.psellerid=users.uid AND auction.aucitemid = products.pid",[req.params.id]);
+		
+			query2.on("row", function (row, result) {
+			    	result.addRow(row);
+			    });
+				query2.on("end", function (result) {
+					var response = {"product" : result.rows[0]};
+					client.end();
+			  		res.json(200,response);
+				});								
+			}
+		
+		//product is not an auction item
+		else{
+			var query2 = client.query("SELECT products.*, users.username FROM products,users WHERE products.pid = $1 AND products.psellerid=users.uid ",[req.params.id]);
+	
+			query2.on("row", function (row, result) {
+		    	result.addRow(row);
+		    });
+			query2.on("end", function (result) {
+				result.rows[0].aucstartbid = "N/A";
+				var response = {"product" : result.rows[0]};
+				client.end();
+		  		res.json(200,response);
+			});
+		}
 	});	
 });
 
@@ -523,7 +550,7 @@ app.post('/product/:pid', function(req, res) {
 		}
 		else{
 			//check that user is seller of the product
-			var query2 = client.query("SELECT * FROM products WHERE pseller = "+req.body.id+" AND pid ="+req.params.pid);
+			var query2 = client.query("SELECT * FROM products WHERE psellerid = "+req.body.id+" AND pid ="+req.params.pid);
 			
 			query2.on("row", function (row, result) {
 				result.addRow(row);
@@ -539,7 +566,7 @@ app.post('/product/:pid', function(req, res) {
 					//(pname, pdescription, pmodel, pphoto, pbrand, pdimensions, pcategoryid, pprice, pquantity)
 					var query3 = client.query("UPDATE products SET pname = '"+req.body.name+"', pdescription = '"+req.body.description+"', pmodel = '"+req.body.model+
 												"', pphoto = '"+req.body.photo+"', pbrand = '"+req.body.brand+"', pdimensions = '"+req.body.dimension+"', pcategoryid = "+req.body.category+", pprice = '"+
-												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE pseller ="+req.body.id+" AND pid="+req.body.params);
+												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE psellerid ="+req.body.id+" AND pid="+req.body.params);
 					
 					query3.on("end", function (result) {
 						client.end();
@@ -575,7 +602,7 @@ app.del('/products/:pid', function(req, res) {
 		}
 		else{
 			//if found, check that user is authorized (either seller or admin)
-			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.params.pid+" AND pseller = "+req.body.id);
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.params.pid+" AND psellerid = "+req.body.id);
 			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
@@ -775,7 +802,6 @@ app.post("/avatar", function(req,res){
 
 //user product methods****************************************************************************
 
-//TODO (maybe) check that auction has not ended already
 //bid on item-------------------------------------------------------------
 app.post("/bid/:pid", function(req, res){
 	console.log("Bid on item " + req.params.pid + " of $" + req.body.bid);
@@ -788,41 +814,56 @@ app.post("/bid/:pid", function(req, res){
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	//check if product exists
-	var query = client.query("SELECT * FROM products WHERE pid ="+req.params.pid);
+	//check if bidding on item is possible
+	var date = new Date();
+	var datejson = date.toJSON();
+	var today = datejson.substring(0,10);
+	
+	var query = client.query("SELECT products.pid, products.pprice, auction.* FROM products, auction WHERE pid = aucitemid AND aucitemid ="+req.params.pid+" AND aucstart <= '"+today+"' AND aucend > '"+today+"'");
 	
 	query.on("row", function (row, result) {
 		result.addRow(row);
 	});
 	
 	query.on("end", function (result) {
-		//product does not exist
+		//product is not currently in auction
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
-			res.send('No such product found.');
+			res.send('This product is not in auction.');
 		}
 		
 		else{
-			//if product exists, check current bids on item
+			//if product is on auction, check current bids on item
 			//save the item's instant price for future reference
 			
 			var instantPrice = result.rows[0].pprice;
 
-			var query2 = client.query("SELECT * FROM bids WHERE bids.pid ="+req.params.pid);
+			var query2 = client.query("SELECT bids.*, auction.aucitemid AS pid, auction.aucstartbid FROM bids, auction WHERE bids.pid = auction.aucitemid AND pid ="+req.params.pid);
 			
 			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
 			query2.on("end", function (result) {
+
+				//removing '$' character from monetary values
+				var instaPrice = instantPrice.substring(1);
+				var startingBid = (result.rows[0].aucstartbid).substring(1);
+				
+				//product has no bids
 				if(result.rows.length == 0){
-					//product has no bids
 					//check that bid price is lower than instant price
-					if(instantPrice <= req.body.bid){
+					if(instaPrice <= req.body.bid){
 						client.end();
-						res.send(400, 'Bid price must be lower than the instant price $' + instantPrice);
+						res.send(400, 'Bid price must be lower than the instant price ' + instantPrice);
 					}
+					//check that bid is at least the starting bid
+					else if(req.body.bid < startingBid){
+						client.end();
+						res.send(400, 'Bid price must be greater than the starting bid ' + result.rows[0].aucstartbid);
+					}
+					//bid value is a-okay, add to bids
 					else{
 						var query3 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
 								
@@ -837,9 +878,9 @@ app.post("/bid/:pid", function(req, res){
 					//product already has bids
 					
 					//bid entered is too high
-					if(instantPrice <= req.body.bid){
+					if(instaPrice <= req.body.bid){
 						client.end();
-						res.send(400, 'Bid price must be lower than the instant price $' + instantPrice);
+						res.send(400, 'Bid price must be lower than the instant price ' + instantPrice);
 					}
 				
 					else{
@@ -852,14 +893,18 @@ app.post("/bid/:pid", function(req, res){
 						
 						query3.on("end", function (result){
 							//bid entered not high enough
-							if(result.rows[0] >= req.body.bid){
+							
+							//removing '$' character from monetary values
+							var maxCurrentBid = (result.rows[0].max).substring(1);
+							
+							if(maxCurrentBid >= req.body.bid){
 								client.end();
 								res.statusCode = 400;
-								res.send('Bid price must be higher than $' + result.rows[0]+ '.');
+								res.send('Bid price must be higher than the current maximum bid ' + result.rows[0].max+ '.');
 							}
 							else{
 								//bid value is OK, create new entry in bids
-								var query4 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
+								var query4 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", '" + req.body.bid + "');");
 								
 								query4.on("end", function (result) {
 									res.statusCode = 200;

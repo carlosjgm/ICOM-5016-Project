@@ -681,13 +681,12 @@ function placeOrder(){
 function placebid(pid){
 	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
-
-	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"], "bid":bid});
+	var jsondata = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":localStorage["id"], "bid":bid});
 
 	$.ajax({
 			url : "http://localhost:8888/bid/" + pid ,
 			method: 'post',
-			data : data,
+			data : jsondata,
 			contentType: "application/json",
 			dataType: "json",
 			success : function(data, textStatus, jqXHR){
@@ -800,7 +799,7 @@ function loadProductPage(id){
 			content.append("<div style='text-align: left;'>" + product.pname + "</div>");
 			content.append("<div style='text-align: left;'>Price: " + product.pprice + "</div>");
 			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + product.username + "</a></div>");
-			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: " + product.pbidprice + "</div></div>"); 
+			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: " + product.aucstartbid + "</div></div>"); 
 			content.append("<div data-type='vertical' style='float: right; margin-right: -14px; margin-top: -100px;'>" 
 				+ "<a data-role='button' href='#checkout' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.pid + ")'>Buy now</a>"
 				+ "<a data-role='button' href='#qtypopup' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Add to cart</a>" 
