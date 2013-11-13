@@ -504,13 +504,13 @@ app.post('/product/:pid', function(req, res) {
 		res.json(400, "Product form is missing fields.");
 	}
 	
-	console.log("Update product " + req.body.pid + "request received.");
+	console.log("Update product " + req.params.pid + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
 	//check that product exists
-	var query = client.query("SELECT * FROM products WHERE pid="+req.body.pid);
+	var query = client.query("SELECT * FROM products WHERE pid ="+req.params.pid);
 	
 	query.on("row", function (row, result) {
 		result.addRow(row);
@@ -523,7 +523,7 @@ app.post('/product/:pid', function(req, res) {
 		}
 		else{
 			//check that user is seller of the product
-			var query2 = client.query("SELECT * FROM products WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
+			var query2 = client.query("SELECT * FROM products WHERE pseller = "+req.body.id+" AND pid ="+req.params.pid);
 			
 			query2.on("row", function (row, result) {
 				result.addRow(row);
@@ -539,15 +539,11 @@ app.post('/product/:pid', function(req, res) {
 					//(pname, pdescription, pmodel, pphoto, pbrand, pdimensions, pcategoryid, pprice, pquantity)
 					var query3 = client.query("UPDATE products SET pname = '"+req.body.name+"', pdescription = '"+req.body.description+"', pmodel = '"+req.body.model+
 												"', pphoto = '"+req.body.photo+"', pbrand = '"+req.body.brand+"', pdimensions = '"+req.body.dimension+"', pcategoryid = "+req.body.category+", pprice = '"+
-												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE pseller ="+req.params.id+" AND pid="+req.body.pid);
-			
-					query3.on("row", function (row, result) {
-						result.addRow(row);
-					});
+												req.body.instantprice+"', pquantity = "+req.body.quantity+" WHERE pseller ="+req.body.id+" AND pid="+req.body.params);
 					
 					query3.on("end", function (result) {
 						client.end();
-						res.json(200,"Product was updated.");
+						res.json(200,true);
 					});
 				}
 			});	
@@ -556,15 +552,15 @@ app.post('/product/:pid', function(req, res) {
 });
 
 //delete product by id-------------------------------------------------------
-//TODO add functionality for admins
-//TODO verify delete
+//TODO authorize admins (if user.type == admin)
 app.del('/products/:pid', function(req, res) {
-	console.log("Delete product " + req.body.pid + "request received.");
+	console.log("Delete product " + req.params.pid + "request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT * FROM products WHERE pid ="+req.body.pid);
+	//check that product exists
+	var query = client.query("SELECT * FROM products WHERE pid ="+req.params.pid);
 	
 	query.on("row", function (row, result) {
 		result.addRow(row);
@@ -579,8 +575,7 @@ app.del('/products/:pid', function(req, res) {
 		}
 		else{
 			//if found, check that user is authorized (either seller or admin)
-
-			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.pid+" AND pseller = "+req.params.id);
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.params.pid+" AND pseller = "+req.body.id);
 			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
@@ -592,16 +587,13 @@ app.del('/products/:pid', function(req, res) {
 					res.send(401,"Unable to delete product, user is not authorized");
 				}
 				else{
-					//if user is authorized, proceed to delete product
-					var query3 = client.query("DELETE FROM products WHERE pid ="+req.body.pid);
-
-					query3.on("row", function (row, result) {
-						result.deleteRow(row); //productList.deleteRow(row) ?
-					});
+					//if user is seller, proceed to delete product
+					var query3 = client.query("DELETE FROM products WHERE pid ="+req.params.pid);
 					
 					query3.on("end", function (result) {
 						client.end();
-						res.send(200,'Product was removed.');
+						console.log("Product deleted.");
+						res.send(200,true);
 					});
 				}
 			});	

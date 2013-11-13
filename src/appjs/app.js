@@ -732,19 +732,20 @@ function newProduct(){
 	});
 };
 
-//TODO 
+//TODO add updateproduct-form in index.html
 function updateProduct(pid){
 	$.mobile.loading("show");
-	
-	//req.body.name=="" || req.body.category=="" || req.body.instantprice==""
-	//|| req.body.description=="" || req.body.model == "" || req.body.photo==""
-	//|| req.body.brand=="" || req.body.dimensions=="" || req.body.seller
-	
-	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"":document.getElementById("").value});
+
+	var form = $("#updateproduct-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	logdata = addAuth(logdata);
+	var logdatajson = JSON.stringify(logdata);
+
 	$.ajax({
 		url : "http://localhost:8888/product/" + pid,
 		method: 'post',
-		data : data,
+		data : logdatajson,
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){			
@@ -763,9 +764,14 @@ function updateProduct(pid){
 function removeProduct(pid){
 	$.mobile.loading("show");
 	
+	var data = new Object();
+	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
+	
 	$.ajax({
 		url : "http://localhost:8888/products/"+pid,
 		method: 'delete',
+		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data,textStatus,jqXHR){
