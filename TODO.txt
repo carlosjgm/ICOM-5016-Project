@@ -1,0 +1,54 @@
+WE ARE MISSING...
+
+1. A way to announce winner of an auction once the auction ends.
+
+2. Checkout implementation. Should ask user for ccard to be used, and address where items are to be shipped to (get/set 
+    primary address and ccard?)
+
+3. Place order implementation. Create sale, invoice, invoicecontent entries, empty cart, decrement product quantity by 
+    the quantity just bought (products table). Do not allow buying more than is available.
+    
+4. Some seller page (catalog) buttons: remove product, update product, add products...
+
+5. Rate user form. 5-star-based. Calculate rating % and show in seller page. User can't self-rate. That's cheating.
+    Then again they can create fake accounts. Sigh. Oh-- VERIFY IP ADDRESS!! Nah, too much work. And they can still use 
+    different computers. NINJA FACE SCAN USING WEBCAM!! (okay, maybe some other day).
+
+6. A way to view the current bids on a particular item. Should probably be in product page. Hide if product is not in 
+    auction.
+
+7. One-click buy (I guess this DOES require a primary address and ccard). Should at least show an alert ("Are you 
+    ABSOLUTELY sure you want to buy this product? Quick summary: [Item][Total][primAddress][primCard] There is no going 
+    back D:"). It will be an on-steroids version of placeOrder() without the step-by-step process. Actually, it WILL be 
+    placeOrder() WITHOUT the checkout sequence.
+
+8. If a product is not in auction, info like starting bid, next bid, should not be shown. Instead, ONLY instant price 
+    should be shown.
+
+9. A way for users to see sellers' catalogs. (Basically catalogpage but with buy/bid-on buttons instead of update and 
+    remove ones);
+    
+10. List of user bids should probably show both your bid and the highest current bid.
+
+
+KNOWN ISSUES...
+
+1. Sometimes clicking back will leave you in limbo (particularly when managing ccards and addresses)
+
+2. Sometimes user avatar will be briefly shown between pages (linked to the previous one)
+
+
+STUFF TO THINK ABOUT...
+
+1. [Delete product] If a product is removed from products, should all entries containing the pid in carts, bids and 
+    auction be removed?
+
+2. [Place bid][Add to cart] Should sellers be allowed to buy or bid on their own items? (I guess it really doesn't make 
+    a difference since they can create fake accounts anyway. Sigh.)
+
+3. [Place order] If after placing an order that leaves a product's quantity == 0, should product be hidden in browse 
+    (so that sellers can later restock same item without having to fill out the form again) or should it be removed 
+    completely from products table?
+
+4. [Ratings] Will ratings be anonymous? Users shouldn't be able to rate seller more than once, but can edit the rating 
+    if they change their mind.

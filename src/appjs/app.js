@@ -227,7 +227,6 @@ function updateCard(ccid){
 	});
 };
 
-//TODO fix refresh issue
 function removeCard(ccid){
 	$.mobile.loading("show");
 	
@@ -761,7 +760,7 @@ function updateProduct(pid){
 	});
 };
 
-//TODO 
+//TODO from which page can sellers remove their products?
 function removeProduct(pid){
 	$.mobile.loading("show");
 	
@@ -808,7 +807,7 @@ function loadProductPage(id){
 				+ "<a data-role='button' href='#bidpopup' data-theme='c' data-icon='arrow-r' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Place bid</a></div>");
 			var bidpopup = $("#my-bid");
 			bidpopup.empty();
-			bidpopup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder=' " + product.pbidprice + "'/>");
+			bidpopup.append("<input type='number' id='offerbid' name='offerbid' data-mini='true' placeholder=' " + product.aucstartbid + "'/>");
 			bidpopup.append("<a onclick='placebid(" + product.pid + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true' data-mini='true'>Place bid</a>");
 			var qtypopup = $("#my-quantity");
 			qtypopup.empty();
