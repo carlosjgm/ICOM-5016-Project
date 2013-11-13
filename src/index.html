@@ -1237,7 +1237,34 @@
 	<div style="float: left; margin-left: 10px; margin-top:10px; "><b style="font-size: 2em;">
 		<script>document.write(localStorage.getItem("username"))</script></b>
 		<br/>current rating: 76%</div> 
-	<div id="#ratings" data-role="button" data-mini="true" data-theme="b" style="float: left; width: 100px; margin-top: 15px;">rate user</div>
+	<div id="#ratings" style="float: left; width: 100px; margin-top: 15px;"><a href="#ratingpopup" data-rel="popup" data-role="button" data-mini="true" data-theme="b">Rate User</a></div>
+	
+	
+<!-- Rating Pop-up -->
+<div data-role="popup" id="ratingpopup">
+	<fieldset data-role="controlgroup" data-inset="true">
+		<ul data-role="listview" data-inset="true" data-theme="b" data-icon="">
+		<li>Rate User</li>
+		</ul>
+		<input type="radio" name="rating" id="5" value="5" data-theme="a" checked="checked"/>
+			<label for="5"><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px>
+			 Outstanding</label>
+		<input type="radio" name="rating" id="4" value=" 4" data-theme="a"/>
+			<label for="4"><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px>
+			 Recommended</label>
+		<input type="radio" name="rating" id="3" value="3" data-theme="a"/>
+			<label for="3"><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px>
+			 Okay</label>
+		<input type="radio" name="rating" id="2" value="2" data-theme="a"/>
+			<label for="2"><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px>
+			 Disappointed</label>
+		<input type="radio" name="rating" id="1" value="1" data-theme="a"/>
+			<label for="1"><img src=https://cdn1.iconfinder.com/data/icons/SOPHISTIQUE/graphics/png/400/star.png width=20px height=20px>
+			 Poor</label>
+			 
+		<center><a onclick='submitRating(" + sid + ")' data-role='button' data-rel='back' data-theme='b'  data-inline='true'>Submit</a></center>
+	</fieldset>
+</div>
 	
 	
 	<div data-role="controlgroup">
@@ -1253,7 +1280,7 @@
 <!-- end catalog -->
 
 <!-- Ratings -->
-<div id="rating" data-role="page" data-theme="c">
+<div id="ratings" data-role="page" data-theme="c">
 	<div data-role="header" data-theme="a" data-position="fixed">
 		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Ratings</h2>    	

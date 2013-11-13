@@ -617,6 +617,41 @@ function loadProductBids(){
 	});	
 };
 
+//TODO needs checking
+/*function showRating(user){
+	$.mobile.loading("show");
+	var data = new Object();
+	data = addAuth(data);
+	data.sellername = user;
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/ratings",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var ratingList = data.rating;
+			var content = $("#ratings");
+			content.empty();
+			
+			for (var i=0; i < ratingList.length; ++i){
+				
+			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Current bid: $" + ratingList[i].rvalue + "</div>"); 	
+			}
+			
+			
+		content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+});
+*/
+
 //Get Catalog Items
 function getCatalogItems(user){	
 	$.mobile.loading("show");
@@ -681,6 +716,31 @@ function placeOrder(){
 
 //bid on item id
 function placebid(pid){
+	$.mobile.loading("show");
+	var bid = document.getElementById("offerbid").value;
+	var jsondata = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":localStorage["id"], "bid":bid});
+
+	$.ajax({
+			url : "http://localhost:8888/bid/" + pid ,
+			method: 'post',
+			data : jsondata,
+			contentType: "application/json",
+			dataType: "json",
+			success : function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert("Bid accepted.");				
+				loadProductPage(pid);
+			},
+			error: function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert(data.responseText);
+			}
+		});	
+};
+
+
+//sumbit rating
+function submitRating(uid){
 	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
 	var jsondata = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":localStorage["id"], "bid":bid});
