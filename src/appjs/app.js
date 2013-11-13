@@ -678,14 +678,14 @@ function placeOrder(){
 };
 
 //bid on item id
-function placebid(id){
+function placebid(pid){
 	$.mobile.loading("show");
 	var bid = document.getElementById("offerbid").value;
 
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"], "bid":bid});
 
 	$.ajax({
-			url : "http://localhost:8888/bid/" + id ,
+			url : "http://localhost:8888/bid/" + pid ,
 			method: 'post',
 			data : data,
 			contentType: "application/json",
@@ -693,7 +693,7 @@ function placebid(id){
 			success : function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
 				alert("Bid accepted.");				
-				loadProductPage(id);
+				loadProductPage(pid);
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");

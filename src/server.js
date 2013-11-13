@@ -773,187 +773,106 @@ app.post("/avatar", function(req,res){
 });
 
 
-//user product methods****************************************************************************8
+//user product methods****************************************************************************
+
+//TODO (maybe) check that auction has not ended already
 //bid on item-------------------------------------------------------------
-//TODO authorize user
-//TODO SQL
-app.post("/bid/:id", function(req, res){
-	console.log("Bid on item " + req.params.id + " of $" + req.body.bid);
+app.post("/bid/:pid", function(req, res){
+	console.log("Bid on item " + req.params.pid + " of $" + req.body.bid);
+	
+	if(req.body.bid == undefined || isNaN(req.body.bid)){
+		client.end();
+		res.send(400, "Please enter a valid bid value.");
+	}
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT * FROM products");
+	//check if product exists
+	var query = client.query("SELECT * FROM products WHERE pid ="+req.params.pid);
 	
 	query.on("row", function (row, result) {
 		result.addRow(row);
 	});
 	
 	query.on("end", function (result) {
-		if(result.rows.length <= req.params.id || req.params.id < 0){
+		//product does not exist
+		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
 			res.send('No such product found.');
 		}
 		
-		else if(req.body.bid == undefined || isNaN(req.body.bid)){
-			client.end();
-			res.send(400, "Please enter a valid bid value.");
-		}
-	
 		else{
-			var query = client.query("SELECT * FROM products, bid WHERE products.pid = bids.pid");
+			//if product exists, check current bids on item
+			//save the item's instant price for future reference
 			
-			query.on("row", function (row, result) {
+			var instantPrice = result.rows[0].pprice;
+
+			var query2 = client.query("SELECT * FROM bids WHERE bids.pid ="+req.params.pid);
+			
+			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
-			if(result.rows.length==0){
-				res.statusCode = 404;
-				res.send('No such product found.');
-			}
-			else if(result.rows[0].nextbidprice >= req.body.bid){
-				res.statusCode = 400;
-				res.send('Bid price must be higher than $' + result.rows[0].nextbidprice + '.');
-			}
-			else if(result.rows[0].instantprice <= req.body.bid){
-				res.send(400, 'Bid price must be lower than the instant price $' + result.rows[0].instantprice);
-			}
-		
-			else{
-				var item = result;
-				item.rows[0].nextbidprice = req.body.bid;
-				
-				//is it a bid from a new user?
-				var query2 = client.query("SELECT * FROM bidders");
-				query.on("row", function (row, result) {
-					result.addRow(row);
-				});
-				
-				var bidders = result;
-				
-				var query3 = client.query("SELECT * FROM bidders WHERE bidders.username=" + req.body.username);
-				query.on("row", function (row, result) {
-					result.addRow(row);
-				});
-				
-				var bidder = result;
-				
-				//new bidder, add him to bidder list and add item to user bids
-				if(bidder.rows.length == 0){
-					//add new user and item to the bids list
-					var query3 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.params.id +", " + req.body.pid +", " + req.body.bvalue + ")");		
-							
-					res.statusCode = 200;
-					res.json(true);
+			query2.on("end", function (result) {
+				if(result.rows.length == 0){
+					//product has no bids
+					//check that bid price is lower than instant price
+					if(instantPrice <= req.body.bid){
+						client.end();
+						res.send(400, 'Bid price must be lower than the instant price $' + instantPrice);
+					}
+					else{
+						var query3 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
+								
+						query3.on("end", function (result) {
+							client.end();
+							res.statusCode = 200;
+							res.send('Bid accepted.');
+						});
+					}
 				}
-				//previous bidder, update bid
 				else{
-					//update item bid price to bid price of user
-					item.bid = req.body.bid;
+					//product already has bids
 					
-					//update bid price in the bidding list of the user
-					var query4 = client.query("SELECT * FROM bids,users WHERE bidderid = " + req.params.id);
-					query.on("row", function (row, result) {
-						result.addRow(row);
-					});
-					
-					var userbids = result;
-					
-					var query5 = client.query("UPDATE bids SET bvalue = " + req.body.bvalue + "WHERE bids.bidderid = " + req.params.id);
-					
-					res.statusCode = 200;
-					res.json(true);
+					//bid entered is too high
+					if(instantPrice <= req.body.bid){
+						client.end();
+						res.send(400, 'Bid price must be lower than the instant price $' + instantPrice);
+					}
+				
+					else{
+						//bid is lower than instant price, now check that bid is higher than the current max bid
+						var query3 = client.query("SELECT MAX(bvalue) FROM bids WHERE pid = "+req.params.pid);
+						
+						query3.on("row", function (row, result) {
+							result.addRow(row);
+						});
+						
+						query3.on("end", function (result){
+							//bid entered not high enough
+							if(result.rows[0] >= req.body.bid){
+								client.end();
+								res.statusCode = 400;
+								res.send('Bid price must be higher than $' + result.rows[0]+ '.');
+							}
+							else{
+								//bid value is OK, create new entry in bids
+								var query4 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
+								
+								query4.on("end", function (result) {
+									res.statusCode = 200;
+									res.send('Bid accepted.');
+								});
+							}
+						});
+					}
 				}
-			}	
+			});
 		}
 	});
 });
-
-		
-	// if(productList.length <= req.params.id || req.params.id < 0){
-		// res.statusCode = 404;
-		// res.send('No such product found.');
-	// }
-// 	
-	// else if(req.body.bid == undefined || isNaN(req.body.bid))
-		// res.send(400,"Please enter a valid bid value.");
-// 		
-	// else{
-		// //find item being bidded on
-// 		
-// 		
-		// var id = req.params.id;
-		// var target = -1;
-		// for (var i=0; i < productList.length; ++i){
-			// if (productList[i].id == id){
-				// target = i;
-				// break;	
-			// }
-		// }
-// 		
-		// if(target == -1){
-			// res.statusCode = 404;
-			// res.send('No such product found.');
-		// }
-		// else if(productList[target].nextbidprice >= req.body.bid){
-			// res.statusCode = 400;
-			// res.send('Bid price must be higher than $' + productList[target].nextbidprice + '.');
-		// }
-		// else if(productList[target].instantprice <= req.body.bid)
-			// res.send(400, 'Bid price must be lower than the instant price $' + productList[target].instantprice);
-// 			
-		// else{
-			// var item = productList[target];
-// 			
-			// //update nextbid price
-			// item.nextbidprice = req.body.bid;
-// 			
-			// //is it a bid from a new user?
-			// target = -1;
-			// for(var i=0; i < item.bidders.length; i++){
-				// if(item.bidders[i].username == req.body.username){
-					// target = i;
-					// break;
-				// }
-			// }
-			// //new bidder, add him to bidder list and add item to user bids
-			// if(target == -1){
-				// //add new user to the bidder list of the item				
-				// item.bidders.push({"username" : req.body.username, "bid" : req.body.bid});
-// 				
-				// //add item to the bidding list of the user
-				// for(var i=0; i < userList.length; i++){
-					// if(userList[i].username == req.body.username){
-						// userList[i].bidding.push({"id" : id, "bid" : req.body.bid});
-						// break;
-					// }
-				// }
-				// res.statusCode = 200;
-				// res.json(true);
-			// }
-			// //previous bidder, update bid
-			// else{
-				// //update bid price of user
-				// item.bidders[target].bid = req.body.bid;
-// 				
-				// //update bid price in the bidding list of the user
-				// for(var i=0; i < userList.length; i++){
-					// if(userList[i].username == req.body.username)
-						// for(var j=0; j < userList[i].bidding.length; j++)
-							// if(userList[i].bidding[j].id == id){
-								// userList[i].bidding[j].bid = req.body.bid;
-								// break;
-							// }				
-				// }
-				// res.statusCode = 200;
-				// res.json(true);
-			// }
-		// }
-	// }
-// 	
-// });
-
 
 //add item to cart
 app.post("/addtocart", function(req,res){
