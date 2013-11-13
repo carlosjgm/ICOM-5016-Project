@@ -213,30 +213,30 @@ app.del('/cards/:ccid', function(req, res) {
 
 		   	query2.on("end", function (result) {
 				client.end();
-				res.statusCode = 200;
-				res.send('Card '+ req.params.ccid +' was successfully removed.');
+				console.log("Card removed.");
+				res.send(200, true);
 			});
 		}
 	});
 });
 
 //Update credit card by ccid
-app.post("/cards/:id", function(req,res){
+app.post("/cards/:ccid", function(req,res){
 
-	console.log("Update card request received."); //need req.body.ccid
+	console.log("Update card request received for card "+req.params.ccid);
 	
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	//check that the card is already associated with the user
-	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.params.id+" AND ccid = '"+req.body.ccid+"'");
+	//check that the card is associated with the userid
+	var query = client.query("SELECT * FROM creditcards WHERE userid = "+req.body.id+" AND ccid = "+req.params.ccid);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
    	});
 	
 	query.on("end", function (result) {
-		//either card does not exist [404] or unauthorized user [401]
+		//either card does not exist [404] or wrong userid [401]
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
@@ -244,8 +244,7 @@ app.post("/cards/:id", function(req,res){
 		}
 		else{
 			var query2 = client.query("UPDATE creditcards SET ccholdername ='"+req.body['card-holder-name']+"', ccnum ='"+req.body['card-num']+"', ccv ="+req.body.ccv+
-										", ccexpmonth ='"+req.body['select-choice-month']+"', ccexpyear ='"+req.body['select-choice-month']+"' WHERE userid = "+req.params.id +
-										" AND ccid ='"+req.body.ccid+"'");
+										", ccexpmonth ='"+req.body['select-choice-month']+"', ccexpyear ='"+req.body['select-choice-month']+"' WHERE ccid ="+req.params.ccid);
 		   	
 		   	query2.on("end", function (result) {
 				client.end();
@@ -260,10 +259,10 @@ app.post("/cards/:id", function(req,res){
  */
 
 //Create new address
-app.post("/newaddress/:id", function(req, res){
-	console.log("Add new card request received from user with id " + req.params.id);
+app.post("/newaddress/", function(req, res){
+	console.log("Add new address request received from user " + req.body.username);
 
-  	if(req.params.id == "" || req.body['address-line1'] == "" || req.body['address-line2'] == "" || req.body['address-city'] == "" || req.body['address-zip'] == ""){
+  	if(req.body.id == "" || req.body['address-line1'] == "" || req.body['address-line2'] == "" || req.body['address-city'] == "" || req.body['address-zip'] == ""){
 		res.statusCode = 400;
 		res.json('The form has missing fields.');
 	}
@@ -272,7 +271,7 @@ app.post("/newaddress/:id", function(req, res){
 		var client = new pg.Client(conString);
 		client.connect();
 		
-		var query = client.query("INSERT INTO addresses (userid, aline1, aline2, acity, acountry, astate, azipcode) VALUES("+req.params.id +", '"+ req.body['address-line1'] + "', '"+
+		var query = client.query("INSERT INTO addresses (userid, aline1, aline2, acity, acountry, astate, azipcode) VALUES("+req.body.id +", '"+ req.body['address-line1'] + "', '"+
 									req.body['address-line2'] + "', '"+ req.body['address-city'] + "','"+req.body['select-choice-country']+ "','"+req.body['select-choice-state'] + 
 									"', '"+ req.body['address-zip'] +"');");
 		
@@ -281,7 +280,7 @@ app.post("/newaddress/:id", function(req, res){
    		});
 	
 		query.on("end", function (result) {
-			var response = {"address":result.rows[0]};
+			var response = {"newaddress":result.rows[0]};
 			client.end();
 			res.json(200,response);
 		});
@@ -289,13 +288,13 @@ app.post("/newaddress/:id", function(req, res){
 });
 
 //Get all addresses associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
-app.get('/addresses/:id', function(req, res){
-	console.log("Get the addresses for user " + req.params.id + " request received.");
+app.post('/addresses/', function(req, res){
+	console.log("Get the addresses for user " + req.body.username + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id);
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.body.id);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -311,21 +310,20 @@ app.get('/addresses/:id', function(req, res){
 			var response = {"addresses" : result.rows};
 			client.end();
 			res.statusCode = 200;
-  			res.json(response);		
+  			res.json(response);
 		}
 	});
 });
 
 //Remove address by addressid-------------------------------------------------------
-//TODO [fix] SQL [delete]
-app.del('/addresses/:index', function(req, res) {
-	console.log("Delete address request received.");
+app.del('/addresses/:aid', function(req, res) {
+	console.log("Delete address request received from user "+req.body.username);
 
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	//check if the user has addresses
-	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id);
+	//check if userid is associated with aid
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.body.id+" AND aid ="+req.params.aid);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
@@ -338,33 +336,27 @@ app.del('/addresses/:index', function(req, res) {
 			res.send('Cannot delete a non-existing address!'); //this might never happen, but just in case xD
 		}
 		else{
-			var query2 = client.query("DELETE FROM addresses WHERE userid = "+req.params.id+" AND aid = "+req.params.index);
-			
-			query2.on("row", function (row, result) {
-		    	result.deleteRow(row); //? not sure if it's done like this... :/
-		   	});
+			var query2 = client.query("DELETE FROM addresses WHERE aid = "+req.params.aid);
 		   	
 		   	query2.on("end", function (result) {
-				var removed = result.rows[0];
 				client.end();
-				res.statusCode = 200;
-				res.send('Address was removed.');
-				res.json({"address" : removed});
+				console.log("Address removed.");
+				res.json(200,true);
 			});
 		}
 	});
 });
 
 //Update address by aid
-app.post("/addresses/:id", function(req,res){
+app.post("/address/:aid", function(req,res){
 
-	console.log("Update address request received."); //need req.body.aid
+	console.log("Update address request received from user "+req.body.username);
 	
 	var client = new pg.Client(conString);
 	client.connect();
 		
-	//check that the card is already associated with the user
-	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.params.id+" AND aid = '"+req.body.aid+"'");
+	//check that the address is associated with the userid
+	var query = client.query("SELECT * FROM addresses WHERE userid = "+req.body.id+" AND aid = "+req.params.aid);
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);

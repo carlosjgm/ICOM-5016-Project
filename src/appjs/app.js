@@ -196,7 +196,7 @@ function addNewCard(){
 	});
 };
 
-//TODO
+//TODO link with index.html
 function updateCard(ccid){
 	$.mobile.loading("show");
 	
@@ -288,6 +288,7 @@ function getCreditCards(){
 	});	
 };
 
+//TODO
 function getPrimaryAddress(id){
 	$.mobile.loading("show");
 	$.ajax({
@@ -316,47 +317,17 @@ function getPrimaryAddress(id){
 		}
 	});	
 };
-/**/
-
-function getAddresses(id){
-	$.mobile.loading("show");
-	$.ajax({
-		url : "http://localhost:8888/addresses/"+ id,
-		method: 'get',
-		success : function(data, textStatus, jqXHR){
-			var addressList = data.addresses; //check later
-			var list = $("#address-list");
-			list.empty();
-			var address;
-			
-			for (var i=0; i < addressList.length; ++i){
-			address = addressList[i];
-				list.append("<li><a>"
-					+ "<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
-					+ "<p>" + address.line1 + "<br/>" + address.line2 + "</p>"
-					+ "<p>" + address.city + ", " + address.state + "</p>"
-					+ "<p>" + address.country + ", " + address.zipcode
-					+ "</p><a href='#manage-addresses' data-role='button' data-icon='delete' onclick='removeAddress("+ i +")'>Remove address</a></a></li>");
-			}
-			list.listview("refresh");	
-			$.mobile.loading("hide");
-		},
-		error: function(data, textStatus, jqXHR){
-			$.mobile.loading("hide");
-			alert("You have no addresses :(");			
-		}
-	});	
-};
 
 function addNewAddress(){
 	$.mobile.loading("show");
 	var form = $("#newaddress-form");
 	var formData = form.serializeArray();
 	var logdata = ConverToJSON(formData);
+	logdata = addAuth(logdata);
 	var logdatajson = JSON.stringify(logdata);
 	
 	$.ajax({
-		url : "http://localhost:8888/newaddress/"+localStorage.getItem("id"),
+		url : "http://localhost:8888/newaddress/",
 		method: 'post',
 		data : logdatajson,
 		contentType: "application/json",
@@ -372,17 +343,85 @@ function addNewAddress(){
 	});
 };
 
-//TODO
-function updateAddress(id){
-	
-};
-
-function removeAddress(index){
+function getAddresses(){
 	$.mobile.loading("show");
 	
+	var data = new Object();
+	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
+	
 	$.ajax({
-		url : "http://localhost:8888/addresses/"+index,
+		url : "http://localhost:8888/addresses/",
+		data : jsondata,
+		method: 'post',
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var addressList = data.addresses;
+			console.log(JSON.stringify(addressList));
+			var list = $("#address-list");
+			list.empty();
+			var address;
+			
+			for (var i=0; i < addressList.length; ++i){
+			address = addressList[i];
+				list.append("<li><a>"
+					+ "<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
+					+ "<p>" + address.aline1 + "<br/>" + address.aline2 + "</p>"
+					+ "<p>" + address.acity + ", " + address.astate + "</p>"
+					+ "<p>" + address.acountry + ", " + address.azipcode
+					+ "</p><a href='#manage-addresses' data-role='button' data-icon='delete' onclick='removeAddress("+ address.aid +")'>Remove address</a></a></li>");
+			}
+			list.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert("You have no addresses :(");			
+		}
+	});	
+};
+
+
+//TODO create #updateaddress-form in index.html
+function updateAddress(aid){
+	$.mobile.loading("show");
+	
+	var form = $("#updatecard-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);
+	logdata = addAuth(logdata);
+	var logdatajson = JSON.stringify(logdata);
+	
+	$.ajax({
+		url : "http://localhost:8888/address/"+aid,
+		method: 'post',
+		data : logdatajson,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			$.mobile.changePage("#manage-credit-cards", {reloadPage : true});
+			alert('Card updated.');
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);
+		}
+	});
+};
+
+function removeAddress(aid){
+	$.mobile.loading("show");
+	
+	var data = new Object();
+	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
+	
+	$.ajax({
+		url : "http://localhost:8888/addresses/"+aid,
 		method: 'delete',
+		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data,textStatus,jqXHR){
