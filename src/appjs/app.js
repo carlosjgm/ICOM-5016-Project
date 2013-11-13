@@ -507,7 +507,8 @@ function addToCart(pid){
 //removes id from cart
 //TODO
 function removeFromCart(pid){
-	alert("Removes item from cart (under construction)");
+	alert("Removes item from cart (under construction)");	
+//	var data;
 };
 
 function loadCart(){	

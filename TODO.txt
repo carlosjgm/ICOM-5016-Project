@@ -51,4 +51,4 @@ STUFF TO THINK ABOUT...
     completely from products table?
 
 4. [Ratings] Will ratings be anonymous? Users shouldn't be able to rate seller more than once, but can edit the rating 
-    if they change their mind.
+    if they change their mind. Only ratings from verified purchases can be accepted.

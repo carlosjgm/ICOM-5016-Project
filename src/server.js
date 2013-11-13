@@ -918,6 +918,7 @@ app.post("/addtocart", function(req,res){
 
 //TODO
 //add.del("/removefromcart", function(req,res){
+//	console.log("Remove from cart request received from user "+req.body.username);	
 //});
 
 //places order
