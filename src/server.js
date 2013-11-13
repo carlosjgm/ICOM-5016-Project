@@ -63,7 +63,7 @@ app.post("/newcard/", function(req, res){
 				
 				else{
 					var query2 = client.query("INSERT INTO creditcards (userid,ccholdername,ccnum,ccv,ccexpmonth,ccexpyear)" + 
-												"VALUES("+req.body.id+", '"+req.body['card-holder-name']+"', '"+req.body['card-num']+"', "+req.body.ccv+", '"+req.body['select-choice-month']+"', '"+req.body['select-choice-month']+"');");
+												"VALUES("+req.body.id+", '"+req.body['card-holder-name']+"', '"+req.body['card-num']+"', "+req.body.ccv+", '"+req.body['select-choice-month']+"', '"+req.body['select-choice-year']+"');");
 					
 					query2.on("row", function (row, result){
 							result.addRow(row);
@@ -84,7 +84,7 @@ app.post("/newcard/", function(req, res){
 //Get all cards associated with one user id, from creditCard-users relationship table, where id is primary key ----------------------------------------------------
 app.post('/cards/', function(req, res){
 	
-	console.log("Get the credit cards for user " + req.body.id + " request received.");
+	console.log("Get " + req.body.username + "'s credit cards request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
@@ -924,6 +924,7 @@ app.post("/addtocart", function(req,res){
 //TODO : remove item from cart if not found
 //TODO : SQL
 //TODO : check that qty in cart is not greater than available of product
+//TODO : remove cart entry once processed, add entry to sales
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -1151,7 +1152,6 @@ app.post("/catalog", function(req,res){
 			var query2 = client.query("SELECT products.* FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
 			query2.on("row", function(row,result){
 				result.addRow(row);
-				console.log(JSON.stringify(row));
 			});
 			query2.on("end", function(result){
 				client.end();
