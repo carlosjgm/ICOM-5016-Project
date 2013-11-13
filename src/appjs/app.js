@@ -1,3 +1,7 @@
+//******************************************************************************************************//
+//											APP.JS													//
+//******************************************************************************************************//
+
 //load the complete product list to the browse page
 $(document).on('pagebeforeshow', "#browse", function() {
 	browseCategories('all');
@@ -168,7 +172,6 @@ function register(){
 	});
 };
 
-
 function addNewCard(){
 	$.mobile.loading("show");
 	var form = $("#newcard-form");
@@ -196,7 +199,7 @@ function addNewCard(){
 	});
 };
 
-//TODO link with index.html
+//TODO create #updatecard-form in index.html
 function updateCard(ccid){
 	$.mobile.loading("show");
 	
@@ -288,7 +291,7 @@ function getCreditCards(){
 	});	
 };
 
-//TODO
+//TODO ? if implemented, needs setPrimaryAddress too
 function getPrimaryAddress(id){
 	$.mobile.loading("show");
 	$.ajax({
@@ -381,7 +384,6 @@ function getAddresses(){
 		}
 	});	
 };
-
 
 //TODO create #updateaddress-form in index.html
 function updateAddress(aid){
@@ -482,10 +484,10 @@ function updateAvatar(){
 
 //add to shopping cart
 //goes to #cart
-function addToCart(id){
+function addToCart(pid){
 	$.mobile.loading("show");	
 	var qty = document.getElementById("quantity").value;
-	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":id,"qty":qty});
+	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"],"id":localStorage["id"],"pid":pid,"qty":qty});
 	$.ajax({
 		url: "http://localhost:8888/addtocart",
 		method: 'post',
@@ -505,13 +507,14 @@ function addToCart(id){
 
 //removes id from cart
 //TODO
-function removeFromCart(id){
-	alert("Removed item from cart (not implemented)");
+function removeFromCart(pid){
+	alert("Removes item from cart (under construction)");
 };
 
 function loadCart(){	
 	$.mobile.loading("show");
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
+	
 	$.ajax({
 		url : "http://localhost:8888/loadcart",
 		method: 'post',
@@ -525,12 +528,12 @@ function loadCart(){
 			var cartItem;
 			for (var i=0; i < cartList.length; ++i){
 				cartItem = cartList[i];
-				content.append("<li><h3>" + cartItem.name + "</h3>"
-				+ "<p>Quantity: " + cartItem.qty
-				+ "<p>Price: $" + cartItem.instantprice + "</p>"
-				+ "<input type='button' onclick='removeFromCart(" + cartItem.id + ")' value='Delete'></li>");				
+				content.append("<li><h3>" + cartItem.pname + "</h3>"
+				+ "<p>Quantity: " + cartItem.cquantity
+				+ "<p>Price: " + cartItem.pprice + "</p>"
+				+ "<input type='button' onclick='removeFromCart(" + cartItem.pid + ")' value='Delete'></li>");				
 			}
-			content.append("<li data-theme='f'><p><h2>Shipping: $$$$</h2></p><p><h2>Total: $" + data.total + "</h2></p>"
+			content.append("<li data-theme='f'><p><h2>Shipping: $$$$</h2></p><p><h2>Total: " + data.total + "</h2></p>"
 						+ "<input type='button' onclick='checkout()' value='Checkout'></li>");
 			content.listview("refresh");	
 			$.mobile.loading("hide");
@@ -542,7 +545,7 @@ function loadCart(){
 	});	
 };
 
-
+//TODO Is nextbidprice max current bid?? 
 function loadBids(){	
 	$.mobile.loading("show");
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
@@ -553,16 +556,16 @@ function loadBids(){
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){
-			var bidList = data.bid;
+			var bidList = data.bids;
 			var content = $("#bidding-list");
 			content.empty();
 			var bidItem;
 			for (var i=0; i < bidList.length; ++i){
 				bidItem = bidList[i];
 				
-			content.append("<img src='" + bidItem.photo + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />");
-			content.append("<div style='text-align: left;'><b>" + bidItem.name + "</b></div>");
-			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + bidItem.seller + "</a></div>");
+			content.append("<img src='" + bidItem.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />");
+			content.append("<div style='text-align: left;'><b>" + bidItem.pname + "</b></div>");
+			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a id='gotoSeller' >" + bidItem.sellername + "</a></div>");
 			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Current bid: $" + bidItem.nextbidprice + "</div></div>"); 
 			content.append("<div data-type='vertical' style='float: right; margin-top: -50px;'>"
 				+ "<input type='button' href='#bidpopup' data-theme='e' data-rel='popup' data-position-to='window' data-transition='pop' value='Increase Bid'/></div></li><br/><hr style='margin-left: -41px;'>");			
@@ -578,7 +581,7 @@ function loadBids(){
 	});	
 };
 
-
+//TODO needs a page in index.html
 function loadProductBids(){	
 	$.mobile.loading("show");
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
@@ -613,7 +616,6 @@ function loadProductBids(){
 		}
 	});	
 };
-
 
 //Get Catalog Items
 function getCatalogItems(user){	
@@ -650,8 +652,8 @@ function getCatalogItems(user){
 	});	
 };
 
-
 //checkout
+//TODO
 function checkout(){
 	$.mobile.changePage("#checkout");
 };

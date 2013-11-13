@@ -1,3 +1,7 @@
+//******************************************************************************************************//
+//											SERVER.JS													//
+//******************************************************************************************************//
+
 var express = require('express');
 var app = express();
 var pg = require('pg');
@@ -5,89 +9,8 @@ var pg = require('pg');
 // Database connection string: pg://<username>:<password>@host:port/dbname 
 var conString = "pg://postgres:123@localhost:5432/icom5016";
 
-//Initialize server data****************************************************************************************************
-//products-----------------------------------------------------------------------------------------
-var products = require('./appjs/products');
-var Product = products.Product;
-
-
-//Product(name, category, instantprice, description, model, photo, brand, dimensions, seller, nextbidprice)
-var productList = new Array(
-	new Product("Awesome Toothbrush", "sports-bicycle-parts", 4.00, "A cool toothbrush I don't use anymore", "XF-5000", "http://diyhealth.com/wp-content/uploads/2013/04/used-toothbrush_64.jpg", "Colgate", "0.5'x7'x0.5'","susyspider",0.99),
-	new Product("Some Crappy Cologne", "sports-fishing", 6.00, "I got this for my birthday, but I don't really like how it smells", "My Little Pony for Him", "http://thatgirlything.files.wordpress.com/2011/09/pherlure_pheromone_perfume.jpg", "Avon", "2'x4'x3'", "susyspider", 0.99),
-	new Product("5 Slices of Bread", "shoes-children", 1.00, "I bought these at Walgreens but I'm leaving for New Zealand in two days and I don't want to throw them out", "Integral", "http://us.123rf.com/400wm/400/400/lodka/lodka0908/lodka090800017/5629798-five-slices-of-rye-bread-on-a-white-plate.jpg", "Pan Pepin", "6'x6'x12'", "susyspider", 0.99),
-	new Product("Broken Heart Pinata", "sports-bicycle-frames", 7.00, "A nice heart-shaped pinata that we used for some party. It got hit several times so it's now broken but if you have glue at home you can fix it and it'll be like new", "XF-5000", "http://images.fineartamerica.com/images-medium-large/my-heart-is-a-pinata-amy-s-turner.jpg", "Pinatas R Us", "24'x12'x36'", "susyspider", 0.99),
-	new Product("Muddy Shoes", "shoes-women", 2.00, "A pair of sneakers I wore when hiking at some exotic rainforest in Puerto Rico. They got all muddy and I'm too lazy to clean them so I want to sell them, but they are cool shoes when they are clean", "GPS", "http://www.crossfitwillcounty.biz/files/2013/02/muddy-shoes_132039153.jpg", "Converse", "'x7'x0.5'", "susyspider", 0.99)	
-);
-
-//users---------------------------------------------------------------------------------------------
-var users = require('./appjs/users');
-var User = users.User;
-var addresses = require('./appjs/address');
-var Address = addresses.Address;
-
-//User(username, password, email, avatar, fname, lname)
-var userList = new Array(
-	new User("carlosjgm", "123", "carlosjgm@gmail.com","https://1.gravatar.com/avatar/a233505ac10fa50960aa0ebda04a23de?d=https%3A%2F%2Fidenticons.github.com%2F30ec72c3236786979cfee2cd1c44f026.png&s=420","Carlos", "Gomez"),
-	new User("susyspider", "456", "susy@spider.com", "https://0.gravatar.com/avatar/5cd0cbb1047736241484fcc0c7743c59?d=https%3A%2F%2Fidenticons.github.com%2F2025acdb9222d589321cad8cefaca448.png&s=420","Susana", "Galicia"),
-	new User("randaniel", "789", "randaniel@me.com", "https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png", "Randy", "Soto"),
-	new User("user", "user", "user@icom5016.com", "http://th05.deviantart.net/fs71/PRE/f/2012/191/6/0/no_face_wants_a_hug_by_shiriisy-d56qc10.png", "No", "Face"),
-	new User("admin", "admin", "admin@icom5016.com", "http://th05.deviantart.net/fs71/PRE/f/2012/191/6/0/no_face_wants_a_hug_by_shiriisy-d56qc10.png", "Noh", "Face")
-);
-
-var userNextId = 0;
-for (var i=0; i < userList.length; ++i){
-	userList[i].id = userNextId++;
-}
-
-var productNextId = 0;
-for (var i=0; i < productList.length; ++i){
-	productList[i].id = productNextId++;
-	userList[1].selling.push(i);
-}
-
-//credit card users----------------------------------------------------------------------------------------
-
-var cards = require('./appjs/creditcards');
-var creditCards = cards.creditCards; 
-
-//cCardUsers(id, holdername, carnum, ccv, expday, expmonth, expyear) relationship table
-var cCardUsers = new Array(
-	new creditCards("0", "Carlos J. Gomez", "1234123412341234", "123","1","2014"),
-	new creditCards("1", "Susana C. Galicia", "4567456745674567", "456", "4", "2014"),
-	new creditCards("1", "Susana C. Galicia", "4567456745674568", "456", "4", "2014"),
-	new creditCards("2", "Randy Soto", "7890789078907890", "789", "7", "2014")
-);
-
-//users with addresses----------------------------------------------------------------------------------------
-var allAddresses = require('./appjs/address');
-var Address = allAddresses.Address; 
-
-//Address(id,line1,line2,city,country,zipcode,state)
-var addresses = new Array(
-	new Address("0", "Some street 1", "Some street 2", "Cabo Rojo", "Puerto Rico", "00680", "Puerto Rico"),
-	new Address("1", "Some street 1", "Some street 2", "San German", "Puerto Rico", "00683", "Puerto Rico"),
-	new Address("2", "Some street 1", "Some street 2", "Mayaguez", "Puerto Rico", "00682", "Puerto Rico")
-);
-
-//sales----------------------------------------------------------------------------------------
-var sales = require('./appjs/sales');
-var Sale = sales.Sale;
-
-//Sale(name, category, revenue, seller, buyer, date, photo)
-var salesList = new Array(
-	new Sale("Alice in Wonderland", "books-children", 15, "carlosjgm", "user", new Date(), 'http://g-ecx.images-amazon.com/images/G/01/ciu/3a/67/ba0d90b809a064d76bbc6110.L._SY300_.jpg', 1),
-	new Sale("pokemon tshirt", "clothing-children", 90, "carlosjgm", "susyspider", new Date(2003,5,17), 'http://ecx.images-amazon.com/images/I/41X39Cf26rL._SL246_SX190_CR0,0,190,246_.jpg', 10)
-);
-
-var saleNextId = 0;
-for (var i=0; i < salesList.length; ++i){
-	salesList[i].id = saleNextId++;
-	userList[1].sales.push(i);
-}
-
 //server configuration----------------------------------------------------------------------------------
-//app.use(require('connect').bodyParser());
+
 app.use(express.bodyParser());
 
 app.use(function(req, res, next){
@@ -97,9 +20,7 @@ app.use(function(req, res, next){
 	next();
 });
 
-/*
- * REST API for credit cards*********************************************************************************************************************
- */
+//REST API for credit cards*********************************************************************************************************************
 
 //Create new credit card
 app.post("/newcard/", function(req, res){
@@ -190,7 +111,6 @@ app.post('/cards/', function(req, res){
 //remove card by ccid-------------------------------------------------------
 app.del('/cards/:ccid', function(req, res) {
 	console.log("Delete card " + req.params.ccid + " request received.");
-	console.log(JSON.stringify(req.params));
 	
 	var client = new pg.Client(conString);
 	client.connect();
@@ -254,9 +174,7 @@ app.post("/cards/:ccid", function(req,res){
 	});
 });
 
-/*
- * REST API for addresses*********************************************************************************************************************
- */
+//REST API for addresses*********************************************************************************************************************
 
 //Create new address
 app.post("/newaddress/", function(req, res){
@@ -579,7 +497,7 @@ app.post('/product/:pid', function(req, res) {
 });
 
 //delete product by id-------------------------------------------------------
-//TODO authorize admins (if user.type == admin)
+//TODO authorize admins to delete products (if utype == admin)
 app.del('/products/:pid', function(req, res) {
 	console.log("Delete product " + req.params.pid + "request received.");
 	
@@ -628,8 +546,8 @@ app.del('/products/:pid', function(req, res) {
 	});
 });
 
-
 //REST API for users**************************************************************************************************************************
+
 //user login-------------------------------------------------
 app.post("/login", function(req, res){
 	console.log("Login request from " + req.body.username + " received.");
@@ -799,15 +717,13 @@ app.post("/avatar", function(req,res){
 	}
 });
 
-
 //user product methods****************************************************************************
 
 //bid on item-------------------------------------------------------------
-app.post("/bid/:pid", function(req, res){
+app.post("/bid/:pid", function(req, res){	
 	console.log("Bid on item " + req.params.pid + " of $" + req.body.bid);
 	
 	if(req.body.bid == undefined || isNaN(req.body.bid)){
-		client.end();
 		res.send(400, "Please enter a valid bid value.");
 	}
 	
@@ -926,7 +842,7 @@ app.post("/addtocart", function(req,res){
 		res.json("Please specify a quantity");
 	}
 	
-	console.log("Add item " + req.body.id + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
+	console.log("Add item " + req.body.pid + "(" + req.body.qty + ") to " + req.body.username + "'s cart request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
@@ -946,7 +862,7 @@ app.post("/addtocart", function(req,res){
 		
 		else{
 			//search for product
-			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.id);
+			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.body.pid);
 					
 			query2.on("row", function (row, result) {
 				result.addRow(row);
@@ -955,7 +871,7 @@ app.post("/addtocart", function(req,res){
 			query2.on("end", function (result) {
 				//product was found
 				if(result.rows.length > 0){
-					var query3 = client.query("SELECT * FROM carts WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+					var query3 = client.query("SELECT * FROM carts WHERE pid = "+req.body.pid+" AND userid ="+req.body.id);
 			
 					query3.on("row", function (row, result) {
 						result.addRow(row);
@@ -964,7 +880,7 @@ app.post("/addtocart", function(req,res){
 					query3.on("end", function (result) {
 						//item already in cart
 						if(result.rows.length > 0){
-							var query4 = client.query("UPDATE carts SET cquantity = cquantity + "+req.body.qty+" WHERE pid = "+req.body.id+" AND userid ="+req.params.id);
+							var query4 = client.query("UPDATE carts SET cquantity = cquantity + "+req.body.qty+" WHERE pid = "+req.body.pid+" AND userid ="+req.body.id);
 							
 							query4.on("row", function (row, result) {
 								result.addRow(row);
@@ -977,7 +893,7 @@ app.post("/addtocart", function(req,res){
 						}
 						//new item
 						else{
-							var query4 = client.query("INSERT INTO carts VALUES("+req.params.id+","+req.body.id+","+req.body.qty+");");
+							var query4 = client.query("INSERT INTO carts VALUES("+req.body.id+","+req.body.pid+","+req.body.qty+");");
 							
 							query4.on("row", function (row, result) {
 								result.addRow(row);
@@ -1000,9 +916,14 @@ app.post("/addtocart", function(req,res){
 	});
 });
 
+//TODO
+//add.del("/removefromcart", function(req,res){
+//});
+
 //places order
-//TODO remove item from cart if not found
-//TODO SQL
+//TODO : remove item from cart if not found
+//TODO : SQL
+//TODO : check that qty in cart is not greater than available of product
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -1046,7 +967,7 @@ app.post("/placeorder", function(req,res){
 });
 
 //returns items in user cart
-//TODO remove item from cart if not found
+//TODO: remove item from cart if not found in products
 app.post("/loadcart", function(req,res){
 	console.log("Get " + req.body.username + "'s cart request received.");
 	
@@ -1066,7 +987,7 @@ app.post("/loadcart", function(req,res){
 		}
 		
 		else{
-			var query2 = client.query("SELECT * FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
+			var query2 = client.query("SELECT products.*, carts.cquantity FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
 			
 			query2.on("row", function (row, result) {
 				result.addRow(row);
@@ -1074,18 +995,20 @@ app.post("/loadcart", function(req,res){
 			
 			query2.on("end", function (result) {
 				if(result.rows.length > 0){
-					var productList = result.rows;
-					var query3 = client.query("SELECT SUM(pprice) FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
+					var productList = result;
+					
+					//calculate total
+					var query3 = client.query("SELECT SUM(pprice*cquantity) FROM users, carts, products WHERE carts.pid = products.pid AND users.uid = carts.userid AND users.username ='"+req.body.username+"'");
 					
 					query3.on("row", function (row, result) {
 						result.addRow(row);
 					});
 					
 					query3.on("end", function (result) {
-						var totalPrice = result.rows[0];
+						var totalPrice = result.rows[0].sum;
 						client.end();
 						res.statusCode = 200;
-						res.json({"cart":productList,"total":totalPrice});
+						res.json({"cart":productList.rows,"total":totalPrice});
 					});
 				}
 				
@@ -1138,9 +1061,7 @@ app.post("/sales", function(req,res){
 	});	
 });
 
-
 //user bidding list
-//TODO some things are shady in here... Is this function supposed to get the products bidded on by the current user? If so, search should be by uid (req.params.id)
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
 
@@ -1160,15 +1081,14 @@ app.post("/loadbids", function(req,res){
 			res.json("Invalid username/password.");
 		}
 		else{
-			//select columns
-			var query2 = client.query("SELECT * FROM users, bids, products WHERE (users.uid = bids.bidderid) AND (bids.pid = products.pid) AND username = '"+req.body.username+
-										"' AND upassword ='"+req.body.password+"'");
-			
+			var query2 = client.query("SELECT products.*, sellers.username AS sellername FROM users, users as sellers, bids, products "+
+										"WHERE (users.uid = bids.bidderid) AND (bids.pid = products.pid) AND users.username = '"+req.body.username+"' AND sellers.uid = products.psellerid ");
+
 			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
-			query.on("end", function (result) {
+			query2.on("end", function (result) {
 				client.end();
 				res.statusCode=200;
 				res.json({"bids" : result.rows});
@@ -1215,7 +1135,6 @@ app.post("/loadproductbids", function(req,res){
 	
 });
 
-
 //Seller Catalog
 app.post("/catalog", function(req,res){
 	console.log("Get " + req.body.sellername + "'s catalog request received.");
@@ -1247,6 +1166,8 @@ app.post("/catalog", function(req,res){
 	
 });
 
+//TODO
+//REST API for rating system********************************************************************
 
 console.log("Server started. Listening on port 8888.");
 app.listen(8888);
