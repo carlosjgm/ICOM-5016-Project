@@ -22,13 +22,12 @@ WE ARE MISSING...
     back D:"). It will be an on-steroids version of placeOrder() without the step-by-step process. Actually, it WILL be 
     placeOrder() WITHOUT the checkout sequence.
 
-8. If a product is not in auction, info like starting bid, next bid, should not be shown. Instead, ONLY instant price 
-    should be shown.
-
 9. A way for users to see sellers' catalogs. (Basically catalogpage but with buy/bid-on buttons instead of update and 
     remove ones);
     
 10. List of user bids should probably show both your bid and the highest current bid.
+
+11. Sorting and searching of browse page.
 
 
 KNOWN ISSUES...

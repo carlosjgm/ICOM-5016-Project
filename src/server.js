@@ -302,7 +302,6 @@ app.post("/address/:aid", function(req,res){
 //REST API for products**************************************************************************************************************************
 
 //browse product by category------------------------------------------------------
-//TODO add auction information
 app.get('/browse/:category', function(req, res){
 	console.log("Get " + req.params.category + " products request received.");
 	
@@ -1150,7 +1149,7 @@ app.post("/catalog", function(req,res){
 	});
 	query.on("end", function(result){
 		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT products.* FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
+			var query2 = client.query("SELECT products.*,users.username FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
 			query2.on("row", function(row,result){
 				result.addRow(row);
 			});

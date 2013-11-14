@@ -28,10 +28,9 @@ $(document).on('pagebeforeshow', "#bidding", function() {
 });
 
 //load items in catalog
-/*
-$(document).on('pagebeforeshow', "#catalogpage", function() {
-	getCatalogItems(localStorage["username"]);
-});*/
+$(document).on('pagebeforeshow', "#sellercatalogpage", function() {
+	getSellerCatalogItems(localStorage["seller"]);
+});
 
 $(document).on('pagebeforeshow', "#product", function() {
 	$("#product").trigger("create");
@@ -606,7 +605,6 @@ function loadProductBids(){
 			content.append("<div data-type='vertical' style='float: right; margin-top: -50px;'>"
 				+ "<input type='button' href='#bidpopup' data-theme='e' data-rel='popup' data-position-to='window' data-transition='pop' value='Increase Bid'/></div></li><br/><hr style='margin-left: -41px;'>");			
 			}
-			
 			content.listview("refresh");	
 			$.mobile.loading("hide");
 		},
@@ -652,8 +650,8 @@ function loadProductBids(){
 });
 */
 
-//Get Catalog Items
-function getCatalogItems(user){	
+//Get Seller Catalog Items
+function getSellerCatalogItems(user){	
 	$.mobile.loading("show");
 	var data = new Object();
 	data = addAuth(data);
@@ -682,6 +680,49 @@ function getCatalogItems(user){
 							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
 							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
 			}
+			var seller = $("#sellerinfo");
+			seller.empty();
+			seller.append(product.username);
+			
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
+//Get User Catalog Items
+//TODO add update/delete product functions
+function getUserCatalogItems(){	
+	$.mobile.loading("show");
+	var data = new Object();
+	data = addAuth(data);
+	data.sellername = localStorage["username"];
+	
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/catalog",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var itemList = data.products;
+			var content = $("#usercatalog");
+			content.empty();
+			var product;
+			for (var i=0; i < itemList.length; ++i){
+				product = itemList[i];		
+				content.append("<a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
+							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
+							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
+			}
+			var seller = $("#userinfo");
+			seller.empty();
+			seller.append(product.username);
 			
 			content.listview("refresh");	
 			$.mobile.loading("hide");
@@ -863,10 +904,10 @@ function loadProductPage(id){
 			var product = data.product;
 			var content = $("#product-content");
 			content.empty();
-			content.append("<img src='" + product.pphoto + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />");
-			content.append("<div style='text-align: left;'>" + product.pname + "</div>");
-			content.append("<div style='text-align: left;'>Price: " + product.pprice + "</div>");
-			content.append("<div id='item-seller' style='text-align: left;'>Seller: <a href='#catalogpage' onclick='getCatalogItems("+product.username+")'>" + product.username + "</a></div>");
+			content.append("<img src='" + product.pphoto + "' style='float: left; clear: left; padding:10px 20px 0px 0px' width='65' height='65' border='0px' />"
+				+ "<div style='text-align: left;'>" + product.pname + "</div>"
+				+ "<div style='text-align: left;'>Price: " + product.pprice + "</div>"
+				+ "<div item-seller' style='text-align: left;'>Seller: " + product.username + "</div>");
 			if(product.forbid){
 				content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Starting bid: " + product.aucstartbid + "</div></div>"); 
 			}
@@ -885,6 +926,10 @@ function loadProductPage(id){
 					+ "<a data-role='button' href='#checkout' data-theme='e' data-icon='arrow-r' data-mini='true' data-iconpos='right' onclick='addToCart(" + product.pid + ")'>Buy now</a>"
 					+ "<a data-role='button' href='#qtypopup' data-theme='b' data-icon='plus' data-mini='true' data-iconpos='right' data-rel='popup' data-position-to='window' data-transition='pop'>Add to cart</a>");
 			}
+			var seller = $("#visit-seller");
+			seller.empty();
+			seller.append("<a href='#sellercatalogpage' data-role='button'>Visit "+product.username+"'s page</a>");			
+			localStorage["seller"] = product.username;
 			var qtypopup = $("#my-quantity");
 			qtypopup.empty();
 			qtypopup.append("<input type='number' id='quantity' name='quantity' data-mini='true' placeholder='0' value='1'/>");
@@ -1046,7 +1091,7 @@ function browseCategories(category){
 				list.append("<li><a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' />"
 					+ "<h3>" + product.pname + "</h3>"
 					+ "<p> <strong>Brand:</strong> " + product.pbrand + "</p>"
-					+ "<p><strong>Instant Price: </strong>" + product.pprice + "</p><p><strong>Bid Price: </strong>" + product.pbidprice
+					+ "<p><strong>Instant Price: </strong>" + product.pprice + "</strong>"
 					+ "</p></a></li>");
 					
 			}
