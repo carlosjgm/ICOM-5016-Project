@@ -348,6 +348,7 @@ app.get('/product/:id', function(req, res){
 			    	result.addRow(row);
 			    });
 				query2.on("end", function (result) {
+					result.rows[0].forbid = true;
 					var response = {"product" : result.rows[0]};
 					client.end();
 			  		res.json(200,response);
@@ -362,7 +363,7 @@ app.get('/product/:id', function(req, res){
 		    	result.addRow(row);
 		    });
 			query2.on("end", function (result) {
-				result.rows[0].aucstartbid = "N/A";
+				result.rows[0].forbid = false;
 				var response = {"product" : result.rows[0]};
 				client.end();
 		  		res.json(200,response);
@@ -917,7 +918,7 @@ app.post("/addtocart", function(req,res){
 });
 
 //TODO
-//add.del("/removefromcart", function(req,res){
+//app.del("/removefromcart", function(req,res){
 //});
 
 //places order
