@@ -341,7 +341,7 @@ app.get('/product/:id', function(req, res){
 	query.on("end", function (result) {
 		//product is in auction
 		if(result.rows.length > 0){
-			var query2 = client.query("SELECT products.*, users.username, auction.aucstartbid FROM products,users,auction WHERE "+
+			var query2 = client.query("SELECT products.*, users.username AS sellername, auction.aucstartbid FROM products,users,auction WHERE "+
 										"products.pid = $1 AND products.psellerid=users.uid AND auction.aucitemid = products.pid",[req.params.id]);
 		
 			query2.on("row", function (row, result) {
@@ -1137,6 +1137,7 @@ app.post("/loadproductbids", function(req,res){
 	
 });
 
+//TODO Get seller's rating?
 //Seller Catalog
 app.post("/catalog", function(req,res){
 	console.log("Get " + req.body.sellername + "'s catalog request received.");
@@ -1198,12 +1199,13 @@ app.post("/ratings", function(req,res){
 	
 });
 
-
+//TODO: check that sid != id in order to continue
+//TODO: Verify purchase
 //add rating
 app.post("/addrating", function(req,res){
-	if(req.body.qty == 0 || req.body.qty == ""){
+	if(req.body.rvalue == 0 || req.body.rvalue == ""){
 		res.statusCode = 400;
-		res.json("Please specify a quantity");
+		res.json("Please select the rating.");
 	}
 	
 	console.log("Add rating for seller " + req.body.sid + " from user " + req.body.id +  " request received.");
@@ -1224,20 +1226,26 @@ app.post("/addrating", function(req,res){
 		}
 		
 		else{
-			var query2 = client.query("SELECT * FROM ratings WHERE raterid ="+req.body.uid);
+			var query2 = client.query("SELECT * FROM ratings WHERE raterid ="+req.body.id+" AND sellerid = "+req.body.sid);
 					
 			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
 			query2.on("end", function (result) {
-				//user has already rated once
-				if(result.rows.length == 1){
-					//TODO ??
+				//user has already rated the seller once
+				if(result.rows.length > 0){
+					client.end();
+					res.json(401,'You have already rated this seller.');
 				}
 				
 				else{
-					client.query("INSERT INTO ratings (sellerid, raterid, rvalue) VALUES (" + req.body.sid + ", " + req.body.uid + ", " + req.body.rating + ") ");
+					var query3 = client.query("INSERT INTO ratings (sellerid, raterid, rvalue, rcomment) VALUES (" + req.body.sid + ", " + req.body.id + ", " + req.body.rvalue + ", '"+ req.body.rcomment+")");
+					
+					query2.on("end", function (result) {
+						client.end();
+						res.json(200,'You have already rated this seller.');
+					});
 				}
 					
 			});	
