@@ -302,7 +302,6 @@ app.post("/address/:aid", function(req,res){
 //REST API for products**************************************************************************************************************************
 
 //browse product by category------------------------------------------------------
-//TODO add auction information
 app.get('/browse/:category', function(req, res){
 	console.log("Get " + req.params.category + " products request received.");
 	
@@ -348,6 +347,7 @@ app.get('/product/:id', function(req, res){
 			    	result.addRow(row);
 			    });
 				query2.on("end", function (result) {
+					result.rows[0].forbid = true;
 					var response = {"product" : result.rows[0]};
 					client.end();
 			  		res.json(200,response);
@@ -362,7 +362,7 @@ app.get('/product/:id', function(req, res){
 		    	result.addRow(row);
 		    });
 			query2.on("end", function (result) {
-				result.rows[0].aucstartbid = "N/A";
+				result.rows[0].forbid = false;
 				var response = {"product" : result.rows[0]};
 				client.end();
 		  		res.json(200,response);
@@ -1151,7 +1151,7 @@ app.post("/catalog", function(req,res){
 	});
 	query.on("end", function(result){
 		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT products.* FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
+			var query2 = client.query("SELECT products.*,users.username FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
 			query2.on("row", function(row,result){
 				result.addRow(row);
 			});

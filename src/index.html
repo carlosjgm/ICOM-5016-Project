@@ -2,7 +2,7 @@
 <html> 
 	
 <head> 
-	<title>Ebay-like App</title> 
+	<title>Tap'n Buy</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="css/jquery.mobile-1.3.1.css" />
 	<script src="js/jquery-1.10.2.js"></script>
@@ -128,14 +128,11 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#catalogpage" >Catalog</a></li>
+					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
-				</ul>
-			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: black;">Ratings</a></h4>
-				<ul data-role="listview"><li><a href="#rating"></a></li></ul>
-			</div>
+				</ul>				
+			</div>			
+			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
 		</div>
 			
 		<div data-role="controlgroup">
@@ -547,17 +544,13 @@
 	<!-- right Panel -->
 	<div data-role="panel" id="product-account-panel" data-position="right" data-display="reveal" data-theme="a">
 		<div data-role="collapsible-set">	
-			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
-				<script>document.write(localStorage.getItem("username"))</script><br/>
-				Mike Wazouski<br/>
-				Rating %
+			<div id="profile" class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+					<h4><script>
+					document.write('<img src="'+localStorage.getItem("avatar")+'" style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />')
+					</script>
+					<script>document.write(localStorage.getItem("username"))</script><br/>
+					<script>document.write(localStorage.getItem("fname")) + document.write(" ") + document.write(localStorage.getItem("lname"))</script><br/>
 				</h4>
-				<ul data-role="listview">
-					<li id="primary-address"></li>
-					<li id="primary-card"></li>
-				</ul>
 			</div>
 		</div>
 		
@@ -565,13 +558,11 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#catalogpage" onclick="getCatalogItems()">Catalog</a></li>
+					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: black;">Ratings</a></h4>
-			</div>
+			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
 		</div>
 			
 		<div data-role="controlgroup">
@@ -613,6 +604,7 @@
 		</div>
 				
 		<ul id="product-description" data-role="listview" data-inset="true"></ul>
+		<a id="visit-seller"></a>
 			
 	</div>
 </div>
@@ -844,17 +836,13 @@
 	<!-- right Panel -->
 	<div data-role="panel" id="seller-account-panel" data-position="right" data-display="reveal" data-theme="a">
 		<div data-role="collapsible-set">	
-			<div class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><img src="https://1.gravatar.com/avatar/fb1d5443d879248bedfe1487ccfb6f49?d=https%3A%2F%2Fidenticons.github.com%2F9b3e1ccb2bef33b4a015f82068291a75.png" 
-				style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />
-				<script>document.write(localStorage.getItem("username"))</script><br/>
-				<br/>
-				<!--rating-->
+			<div id="profile" class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+					<h4><script>
+					document.write('<img src="'+localStorage.getItem("avatar")+'" style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />')
+					</script>
+					<script>document.write(localStorage.getItem("username"))</script><br/>
+					<script>document.write(localStorage.getItem("fname")) + document.write(" ") + document.write(localStorage.getItem("lname"))</script><br/>
 				</h4>
-				<ul data-role="listview">
-					<li id="primary-address"></li>
-					<li id="primary-card"></li>
-				</ul>
 			</div>
 		</div>
 		
@@ -862,13 +850,11 @@
 			<div data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="d" data-inset="true">
 				<h4>My Sales</h4>
 				<ul data-role="listview">
-					<li><a href="#catalogpage" onclick="getCatalogItems()">Catalog</a></li>
+					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
 				</ul>
 			</div>
-			<div data-role="collapsible" data-collapsed-icon="star" data-expanded-icon="star" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
-				<h4><a href="#rating" style="color: black;">Ratings</a></h4>
-			</div>
+			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
 		</div>
 			
 		<div data-role="controlgroup">
@@ -892,12 +878,13 @@
 	</div>
 	
 	<div data-role="content">
-		<div data-role="button" data-theme="a">
-			<img src="http://ih3.redbubble.net/image.13485822.8405/fc,550x550,black.jpg" 
-			style="float: left; clear: left; padding:10px 20px 0px 0px" width="65" height="65" border="0px" />
-			<p style="text-align: left;"><script>document.write(localStorage.getItem("username"))</script><br/>
-			Mike Wazouski<br/>
-			Rating %</p>
+		<div id="profile" class="listItemNoIcon" data-role="collapsible" data-collapsed-icon="alert" data-expanded-icon="alert" data-collapsed="true" data-theme="a" data-content-theme="a" data-inset="true">
+			<h4><script>
+				document.write('<img src="'+localStorage.getItem("avatar")+'" style="float: left; clear: left; padding: 10px; margin-left:-40px;" width="65" height="65" border="0px" />')
+				</script>
+				<script>document.write(localStorage.getItem("username"))</script><br/>
+				<script>document.write(localStorage.getItem("fname")) + document.write(" ") + document.write(localStorage.getItem("lname"))</script><br/>
+			</h4>
 		</div>
 	</div>
 </div>
@@ -1163,34 +1150,7 @@
 	</div>
 	
 	<ul id="cart-content" data-role="listview" data-inset="true"></ul>
-	
-	<!--<!-- dummy product 1 --	
-	
-	<div data-role="content" data-theme="c" data-inline="true" data-inset="true">
-		Product_Name_1
-		<div style="float:right;"><table><tr><td><div style="width: 70px; text-align: right;"> Qty </div></td> <td><div style="width: 70px; text-align: right;"> Price </td></div>
-			<td><div style="width: 70px; text-align: right;"> <a href="">Delete</a> </div></td> </tr>
-			<tr> <td><div style="text-align: right;">#</div></td> <td><div style="text-align: right;">$$$$</div></td> </tr></table>
-		</div>
-	</div>
-	<!-- --- --		
-	<!-- dummy product 2 --
-	
-	<div data-role="content" data-theme="c" data-inline="true" data-inset="true">
-		Product_Name_2
-		<div style="float:right;"><table><tr><td><div style="width: 70px; text-align: right;"> Qty </div></td> <td><div style="width: 70px; text-align: right;"> Price </td></div>
-			 <td><div style="width: 70px; text-align: right;"> <a href="">Delete</a> </div></td> </tr>
-			<tr> <td><div style="text-align: right;">#</div></td> <td><div style="text-align: right;">$$$$</div></td> </tr></table>
-		</div>
-	</div>
-		
-	
-	
-	<div style="float:right; padding-right:15px;"><table><tr><td><div style="width: 80px; text-align: right;"> Shipping:<br/> Total: </div></td>
-		<td><div style="width: 70px; text-align: right;"> $$$$</br> $$$$ </div></td>
-		<td><div style="width: 70px; text-align: right;"> </div></td></table></tr>
-		<div data-role="button" data-theme="e" style="width: 200px; margin-top: 15px;"><a href="#checkout">Checkout</a></div>
-	</div> -->
+
 </div>	
 <!-- End Shopping Cart -->	
 
@@ -1226,19 +1186,44 @@
 
 <!-- end checkout -->
 
+<!-- user Catalog -->
+
+<div id="usercatalogpage" data-role="page" data-theme="c">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>User Page</h2>    	
+	</div>
+	
+	<div style="float: left; margin-left: 10px; margin-top:10px; "><b style="font-size: 2em;">
+		<a id="userinfo"></a>
+		</b><br/>current rating: <a id='usercatrating'>76%</a>
+	</div> 
+		
+	<div data-role="controlgroup">
+		<div style="width:100%; margin-top:80px; text-align: center;">
+			<b>Products Catalog</b>
+		</div>			
+		<div data-role="listview">
+			<ul id="usercatalog"></ul>
+		</div>
+	</div>
+	
+</div>
+<!-- end user catalog -->
+
 <!-- Seller Catalog -->
 
-<div id="catalogpage" data-role="page" data-theme="c">
+<div id="sellercatalogpage" data-role="page" data-theme="c">
 	<div data-role="header" data-theme="a" data-position="fixed">
 		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Seller Page</h2>    	
 	</div>
-	
-	<!--div style="float: left; margin-left: 10px; margin-top:10px; "><b style="font-size: 2em;">
-		<script>document.write(localStorage.getItem("username"))</script></b>
-		<br/>current rating: 76%</div> 
-	<div id="#ratings" style="float: left; width: 100px; margin-top: 15px;"><a href="#ratingpopup" data-rel="popup" data-role="button" data-mini="true" data-theme="b">Rate User</a></div-->
-	
+
+	<div style="float: left; margin-left: 10px; margin-top:10px; "><b style="font-size: 2em;">
+		<a id="sellerinfo"></a>
+		</b><br/>current rating: <a id='catrating'>76%</a>
+	</div> 
+	<div style="float: left; width: 100px; margin-top: 15px;"><a href="#ratingpopup" data-rel="popup" data-role="button" data-mini="true" data-theme="b">Rate User</a></div>
 	
 <!-- Rating Pop-up -->
 <div data-role="popup" id="ratingpopup">
@@ -1280,7 +1265,7 @@
 	</div>
 	
 </div>
-<!-- end catalog -->
+<!-- end seller catalog -->
 
 <!-- Ratings -->
 <div id="ratings" data-role="page" data-theme="c">
