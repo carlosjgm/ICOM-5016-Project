@@ -57,6 +57,7 @@ function addAuth(data){
 	data.username = localStorage["username"];
 	data.password = localStorage["password"];
 	data.id = localStorage["id"];
+	data.utype = localStorage["utype"];
 	return data;
 }
 
@@ -82,6 +83,7 @@ function login(){
 			localStorage.setItem("fname", user.ufname);
 			localStorage.setItem("lname", user.ulname);
 			localStorage.setItem("avatar", user.uavatar);
+			localStorage.setItem("utype", user.utype);
 			$.mobile.loading("hide");
 			$.mobile.changePage("#browse", {reloadPage : true});
 			$.mobile.changePage("#browse", {reloadPage : true});
@@ -504,11 +506,31 @@ function addToCart(pid){
 	});	
 };
 
-//removes id from cart
-//TODO
+//TO FIX: refresh issue on chrome
 function removeFromCart(pid){
-	alert("Removes item from cart (under construction)");	
-//	var data;
+	$.mobile.loading("show");
+	
+	var data = new Object();
+	data = addAuth(data);
+	data.pid = pid;
+	var jsondata = JSON.stringify(data);
+	
+	$.ajax({
+		url : "http://localhost:8888/removefromcart/",
+		method: 'delete',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert("Item was succesfully removed from cart.");
+			$.mobile.changePage("#cart", {reloadPage : true});
+		},
+		error : function(data,textStatus,jqXHR){
+			$.mobile.loading("hide");
+			alert(data.responseText);			
+		}
+	});
 };
 
 function loadCart(){	
@@ -545,7 +567,7 @@ function loadCart(){
 	});	
 };
 
-//TODO Is nextbidprice max current bid?? 
+//Next bid price: Max bid + some offset
 function loadBids(){	
 	$.mobile.loading("show");
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
@@ -616,41 +638,6 @@ function loadProductBids(){
 	});	
 };
 
-//TODO needs checking
-/*function showRating(user){
-	$.mobile.loading("show");
-	var data = new Object();
-	data = addAuth(data);
-	data.sellername = user;
-	var jsondata = JSON.stringify(data);
-	$.ajax({
-		url : "http://localhost:8888/ratings",
-		method: 'post',
-		data : jsondata,
-		contentType: "application/json",
-		dataType: "json",
-		success : function(data, textStatus, jqXHR){
-			var ratingList = data.rating;
-			var content = $("#ratings");
-			content.empty();
-			
-			for (var i=0; i < ratingList.length; ++i){
-				
-			content.append("<div id='item-bid' data-mini='true' style='text-align: left;'>Current bid: $" + ratingList[i].rvalue + "</div>"); 	
-			}
-			
-			
-		content.listview("refresh");	
-			$.mobile.loading("hide");
-		},
-		
-		error: function(data, textStatus, jqXHR){
-			$.mobile.loading("hide");
-			alert(data.textResponse);			
-		}
-});
-*/
-
 //Get Seller Catalog Items
 function getSellerCatalogItems(user){	
 	//var seller = localStorage.setItem["seller",user];
@@ -686,7 +673,12 @@ function getSellerCatalogItems(user){
 			seller.empty();
 			seller.append(product.username);
 			
-			content.listview("refresh");	
+			var rateButton = $("#rateseller");
+			rateButton.empty();
+			rateButton.append("<a onclick='submitRating("+product.sid+")'>Submit</a>");
+			
+			content.listview("refresh");
+			rateButton.listview("refresh");
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
@@ -788,21 +780,51 @@ function placebid(pid){
 };
 
 
-//sumbit rating
+//TODO: Needs SERIOUS fixing. Sometimes it's not even entering here when you click on the form submit button
 function submitRating(sid){
 	$.mobile.loading("show");
-	var ratings = document.getElementsByName("rating");
-	var rcomment = document.getElementById("rcomment");
-	var rvalue;
 	
-	for(var i=0; i<ratings.length; i++){
-		if(ratings[i].checked){
-			rvalue = ratings[i];
-			break;
+	//var rvalue;
+	
+	//var form = $("#rating-form");
+	//var formData = form.serializeArray();
+	//var logdata = ConverToJSON(formData);	
+	//logdata = addAuth(logdata);	
+	
+	var ratings = JSON.stringify(document.getElementsByName("rating").value);
+	//var rcomment = document.getElementById("rcomment").value;
+	
+	//for(var i=0; i<ratings.length; i++){
+	//	if(ratings[i].checked){
+	//		rvalue = ratings[i];
+	//		break;
+	//}
+	alert(JSON.stringify(ratings));
+	
+	//alert(JSON.stringify(document.getElementById('rating-1').value));
+	/*
+	if(document.getElementById('rating-5').checked > 0){
+			rvalue = document.getElementById('rating-5').value;
+		} else if(document.getElementById('rating-4').checked > 0){
+			rvalue = document.getElementById('rating-4').value;
+		} else if(document.getElementById('rating-3').checked > 0){
+			rvalue = document.getElementById('rating-3').value;
+		} else if(document.getElementById('rating-2').checked > 0){
+			rvalue = document.getElementById('rating-2').value;
+		} else {
+			rvalue = document.getElementById('rating-1').value;
 		}
-	}
-	var jsondata = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"], "id":localStorage["id"],"sid": sid, "rcomment": rcomment, "rvalue": rvalue});
+		*/
+	
+	//var array = document.getElementsByName('rating');
+	//var data = array.serializeArray();
+	//var rvalue = document.getElementsByName('rating').checked.value;
 
+	var logdata = addAuth(logdata);
+	//logdata.rcomment = rcomment;
+	logdata.rvalue = rvalue;
+	var jsondata = JSON.stringify(logdata);
+	
 	$.ajax({
 			url : "http://localhost:8888/addrating/",
 			method: 'post',
@@ -820,6 +842,31 @@ function submitRating(sid){
 			}
 		});	
 };
+
+//TODO
+/*function showRating(user){
+	$.mobile.loading("show");
+	var data = new Object();
+	data = addAuth(data);
+	data.sellername = user;
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/ratings",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			//
+			$.mobile.loading("hide");
+		},
+		
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+});
+*/
 
 //adds new product
 function newProduct(){

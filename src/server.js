@@ -323,6 +323,7 @@ app.get('/browse/:category', function(req, res){
  	});
 });
 
+//loadProductPage(id)
 //get product by id-----------------------------------------------------
 app.get('/product/:id', function(req, res){
 	console.log("Get product " + req.params.id + " request received.");
@@ -340,7 +341,7 @@ app.get('/product/:id', function(req, res){
 	query.on("end", function (result) {
 		//product is in auction
 		if(result.rows.length > 0){
-			var query2 = client.query("SELECT products.*, users.username AS sellername, auction.aucstartbid FROM products,users,auction WHERE "+
+			var query2 = client.query("SELECT products.*, users.username, auction.aucstartbid FROM products,users,auction WHERE "+
 										"products.pid = $1 AND products.psellerid=users.uid AND auction.aucitemid = products.pid",[req.params.id]);
 		
 			query2.on("row", function (row, result) {
@@ -497,9 +498,8 @@ app.post('/product/:pid', function(req, res) {
 });
 
 //delete product by id-------------------------------------------------------
-//TODO authorize admins to delete products (if utype == admin)
 app.del('/products/:pid', function(req, res) {
-	console.log("Delete product " + req.params.pid + "request received.");
+	console.log("Delete product " + req.params.pid + " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
@@ -518,31 +518,32 @@ app.del('/products/:pid', function(req, res) {
 			res.statusCode = 404;
 			res.send('No such product found.');
 		}
-		else{
-			//if found, check that user is authorized (either seller or admin)
-			var query2 = client.query("SELECT * FROM products WHERE pid ="+req.params.pid+" AND psellerid = "+req.body.id);
-			query2.on("row", function (row, result) {
-				result.addRow(row);
-			});
+		
+		//if found, check user
+		var query2 = client.query("SELECT * FROM products WHERE pid ="+req.params.pid+" AND psellerid = "+req.body.id);
+
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query2.on("end", function (result) {
+			if(result.rows.length == 0 && req.body.utype != 'admin'){
+				//user is neither the seller or an admin
+				client.end();
+				res.send(401,"Unable to delete product, user is not authorized");
+			}
+			//if user is seller of the product or an admin, proceed to delete product from EVERYWHERE. This can probably done in a single query...
+			var query3 = client.query("DELETE FROM products WHERE pid ="+req.params.pid+";"+
+									  "DELETE FROM carts WHERE pid ="+req.params.pid+";"+
+									  "DELETE FROM bids WHERE pid ="+req.params.pid+";"+
+									  "DELETE FROM auction WHERE aucitemid ="+req.params.pid);
 			
-			query2.on("end", function (result) {
-				if(result.rows.length == 0){
-					//user is a normal user but not the seller
-					client.end();
-					res.send(401,"Unable to delete product, user is not authorized");
-				}
-				else{
-					//if user is seller, proceed to delete product
-					var query3 = client.query("DELETE FROM products WHERE pid ="+req.params.pid);
-					
-					query3.on("end", function (result) {
-						client.end();
-						console.log("Product deleted.");
-						res.send(200,true);
-					});
-				}
-			});	
-		}
+			query3.on("end", function (result) {
+				client.end();
+				console.log("Product deleted from system.");
+				res.send(200,true);
+			});
+		});	
 	});
 });
 
@@ -916,10 +917,50 @@ app.post("/addtocart", function(req,res){
 	});
 });
 
-//TODO
-//add.del("/removefromcart", function(req,res){
-//	console.log("Remove from cart request received from user "+req.body.username);	
-//});
+app.del("/removefromcart", function(req,res){
+	console.log("Remove item "+ req.body.pid +" from cart request received from user "+req.body.username);
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check user
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in.');
+		}
+		
+		//check that item is in cart
+		var query2 = client.query("SELECT * FROM carts WHERE userid ="+req.body.id +" AND pid = "+req.body.pid);
+	
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query2.on("end", function (result) {
+			if(result.rows.length == 0){
+				client.end();
+				res.json(404,'No product of this kind was found on your cart.');
+			}
+			
+			var query3 = client.query("DELETE FROM carts WHERE userid ="+req.body.id +" AND pid = "+req.body.pid);
+			
+			query3.on("end", function (result) {
+				client.end();
+				res.json(200,true);
+			});
+			
+		});
+		
+	});
+	
+});
 
 //places order
 //TODO : remove item from cart if not found
@@ -969,7 +1010,6 @@ app.post("/placeorder", function(req,res){
 });
 
 //returns items in user cart
-//TODO: remove item from cart if not found in products
 app.post("/loadcart", function(req,res){
 	console.log("Get " + req.body.username + "'s cart request received.");
 	
@@ -1137,8 +1177,9 @@ app.post("/loadproductbids", function(req,res){
 	
 });
 
-//TODO Get seller's rating?
-//Seller Catalog
+//TODO Show seller's rating %
+//Does the user really have to be logged in to see seller catalogs? C'mon it's a free country
+//getSellerCatalogItems(user)
 app.post("/catalog", function(req,res){
 	console.log("Get " + req.body.sellername + "'s catalog request received.");
 	
@@ -1151,7 +1192,7 @@ app.post("/catalog", function(req,res){
 	});
 	query.on("end", function(result){
 		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT products.*,users.username FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
+			var query2 = client.query("SELECT products.*,users.username, products.psellerid AS sid FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
 			query2.on("row", function(row,result){
 				result.addRow(row);
 			});
@@ -1168,6 +1209,10 @@ app.post("/catalog", function(req,res){
 	
 });
 
+//REST API for rating system********************************************************************
+
+//TODO: Calculate rating %
+//Do users really have to be logged in to see a seller's rating?
 //get ratings
 app.post("/ratings", function(req,res){
 	console.log("Get " + req.body.sellername + "'s ratings request received.");
@@ -1181,14 +1226,14 @@ app.post("/ratings", function(req,res){
 	});
 	query.on("end", function(result){
 		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT username, rvalue FROM ratings,users WHERE users.username = '" + req.body.sellername + "' AND ratings.sellerid = users.uid");
+			var query2 = client.query("SELECT username, rvalue, rcomment FROM ratings,users WHERE users.username = '" + req.body.sellername + "' AND ratings.sellerid = users.uid");
 			query2.on("row", function(row,result){
 				result.addRow(row);
 				console.log(JSON.stringify(row));
 			});
 			query2.on("end", function(result){
 				client.end();
-				res.json(200,{"products":result.rows});
+				res.json(200,{"ratings":result.rows});
 			});
 		}
 		else{
@@ -1199,20 +1244,24 @@ app.post("/ratings", function(req,res){
 	
 });
 
-//TODO: check that sid != id in order to continue
-//TODO: Verify purchase
-//add rating
+//submitRating(sid)
 app.post("/addrating", function(req,res){
 	if(req.body.rvalue == 0 || req.body.rvalue == ""){
 		res.statusCode = 400;
 		res.json("Please select the rating.");
 	}
 	
+	if(req.body.sid == req.body.id){
+		res.statusCode = 400;
+		res.json("Oops! You can't rate yourself!");
+	}
+	
 	console.log("Add rating for seller " + req.body.sid + " from user " + req.body.id +  " request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
-
+	
+	//check that user is logged in
 	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
 	
 	query.on("row", function (row, result) {
@@ -1224,38 +1273,43 @@ app.post("/addrating", function(req,res){
 			client.end();
 			res.json(404,'Please log in or register.');
 		}
+		//check if user has bought from seller in the past
+		var query2 = client.query("SELECT * FROM invoices WHERE ibuyerid ="+req.body.id+" AND isellerid = "+req.body.sid);
+				
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
 		
-		else{
-			var query2 = client.query("SELECT * FROM ratings WHERE raterid ="+req.body.id+" AND sellerid = "+req.body.sid);
-					
-			query2.on("row", function (row, result) {
+		query2.on("end", function (result) {
+			if (result.rows.length == 0){
+				client.end();
+				res.json(401,"You can't rate a seller you have never interacted with.");
+			}
+			
+			//check if user has already rated the seller
+			var query3 = client.query("SELECT * FROM ratings WHERE raterid ="+req.body.id+" AND sellerid = "+req.body.sid);
+				
+			query3.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
-			query2.on("end", function (result) {
+			query3.on("end", function (result) {
 				//user has already rated the seller once
 				if(result.rows.length > 0){
 					client.end();
 					res.json(401,'You have already rated this seller.');
 				}
 				
-				else{
-					var query3 = client.query("INSERT INTO ratings (sellerid, raterid, rvalue, rcomment) VALUES (" + req.body.sid + ", " + req.body.id + ", " + req.body.rvalue + ", '"+ req.body.rcomment+")");
-					
-					query2.on("end", function (result) {
-						client.end();
-						res.json(200,'You have already rated this seller.');
-					});
-				}
-					
-			});	
-		}
+				var query4 = client.query("INSERT INTO ratings (sellerid, raterid, rvalue, rcomment) VALUES (" + req.body.sid + ", " + req.body.id + ", " + req.body.rvalue + ", '"+ req.body.rcomment+"')");
+				
+				query4.on("end", function (result) {
+					client.end();
+					res.json(200,true);
+				});	
+			});			
+		});
 	});
 });
-
-
-//TODO
-//REST API for rating system********************************************************************
 
 console.log("Server started. Listening on port 8888.");
 app.listen(8888);
