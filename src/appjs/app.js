@@ -677,6 +677,10 @@ function getSellerCatalogItems(user){
 			rateButton.empty();
 			rateButton.append("<a onclick='submitRating("+product.sid+")'>Submit</a>");
 			
+			var ratPercent = $("#sellercatrating");
+			ratPercent.empty();
+			ratPercent.append(data.percent);
+			
 			content.listview("refresh");
 			rateButton.listview("refresh");
 			$.mobile.loading("hide");
@@ -689,7 +693,6 @@ function getSellerCatalogItems(user){
 };
 
 //Get User Catalog Items
-//TODO add update/delete product functions
 function getUserCatalogItems(){	
 	$.mobile.loading("show");
 	var data = new Object();
@@ -712,11 +715,17 @@ function getUserCatalogItems(){
 				product = itemList[i];		
 				content.append("<a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
 							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
-							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
+							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div>"
+							+"<input type='button' onclick='removeProduct("+product.pid+")' value='Delete Product'>"
+							+"<input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></div></a><br/><hr style='margin-left: -41px;'></a>");			
 			}
 			var seller = $("#userinfo");
 			seller.empty();
 			seller.append(product.username);
+			
+			var ratPercent = $("#usercatrating");
+			ratPercent.empty();
+			ratPercent.append(data.percent);
 			
 			content.listview("refresh");	
 			$.mobile.loading("hide");
@@ -778,7 +787,6 @@ function placebid(pid){
 			}
 		});	
 };
-
 
 //TODO: Needs SERIOUS fixing. Sometimes it's not even entering here when you click on the form submit button
 function submitRating(sid){
@@ -843,16 +851,16 @@ function submitRating(sid){
 		});	
 };
 
-//TODO
-/*function showRating(user){
+//TODO: gets user comments and ratings of a seller, needs a page in index.html
+/*function getRatings(user){
 	$.mobile.loading("show");
 	var data = new Object();
-	data = addAuth(data);
+	//data = addAuth(data);
 	data.sellername = user;
 	var jsondata = JSON.stringify(data);
 	$.ajax({
 		url : "http://localhost:8888/ratings",
-		method: 'post',
+		method: 'get',
 		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
@@ -865,8 +873,7 @@ function submitRating(sid){
 			$.mobile.loading("hide");
 			alert(data.textResponse);			
 		}
-});
-*/
+}; */
 
 //adds new product
 function newProduct(){
@@ -918,6 +925,7 @@ function updateProduct(pid){
 			localStorage.setItem("", document.getElementById("").value);
 			$.mobile.loading("hide");
 			alert("Product updated.");
+			$.mobile.changePage("#", {reloadPage : true});
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
@@ -926,7 +934,7 @@ function updateProduct(pid){
 	});
 };
 
-//TODO from which page can sellers remove their products?
+//Add: Ask user if he really REALLY wants to delete the product from the system.
 function removeProduct(pid){
 	$.mobile.loading("show");
 	
@@ -951,7 +959,6 @@ function removeProduct(pid){
 	});
 };
 
-//TODO gotoseller
 //loads product page
 //fills #product-content and goes to #product
 function loadProductPage(id){
@@ -1011,51 +1018,6 @@ function loadProductPage(id){
 		}
 	});
 };
-
-//loads seller page
-//TODO rate seller, buy product, bid on product
-/*
-function loadSellerPage(user){
-	$.mobile.loading("show");
-	var data = new Object();
-	data = addAuth(data);
-	data.sellername = user;
-	var jsondata = JSON.stringify(data);
-
-	$.ajax({
-		url : "http://localhost:8888/catalog",
-		method: 'post',
-		data : jsondata,
-		contentType: "application/json",
-		dataType: "json",
-		success : function(data, textStatus, jqXHR){
-			var itemList = data.products;
-			var content = $("#seller-page");
-			content.empty();
-			var product;
-			
-			content.append('<div style="float: left; margin-left: 10px; margin-top:10px;">');
-			content.append("<b style='font-size: 2em;'>"+product.sellername+"</b>");
-			content.append("<br/>Current rating:"++"</div>"); 
-			content.append('<div id="#ratings" style="float: left; width: 100px; margin-top: 15px;"><a href="#ratingpopup" data-rel="popup" data-role="button" data-mini="true" data-theme="b">Rate User</a></div>');
-			content.append('</div>');
-			
-			for (var i=0; i < itemList.length; ++i){
-				product = itemList[i];		
-				content.append("<a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
-							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
-							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
-			}
-			
-			content.listview("refresh");	
-			$.mobile.loading("hide");
-		},
-		error: function(data, textStatus, jqXHR){
-			$.mobile.loading("hide");
-			alert(data.textResponse);			
-		}	
-};*/
-
 
 //shows sales report
 //submits sales-form and lists the summary on #sales-summary

@@ -718,9 +718,9 @@ app.post("/avatar", function(req,res){
 	}
 });
 
-//user product methods****************************************************************************
+//REST API for user products ****************************************************************************
 
-//bid on item-------------------------------------------------------------
+//placebid(pid)-------------------------------------------------------------
 app.post("/bid/:pid", function(req, res){	
 	console.log("Bid on item " + req.params.pid + " of $" + req.body.bid);
 	
@@ -731,26 +731,47 @@ app.post("/bid/:pid", function(req, res){
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	//check if bidding on item is possible
-	var date = new Date();
-	var datejson = date.toJSON();
-	var today = datejson.substring(0,10);
+	//check user
+	var aquery = client.query("SELECT * FROM users WHERE username = '"+req.body.username+"' AND upassword ='"+req.body.password+"'");
 	
-	var query = client.query("SELECT products.pid, products.pprice, auction.* FROM products, auction WHERE pid = aucitemid AND aucitemid ="+req.params.pid+" AND aucstart <= '"+today+"' AND aucend > '"+today+"'");
-	
-	query.on("row", function (row, result) {
+	aquery.on("row", function (row, result) {
 		result.addRow(row);
 	});
 	
-	query.on("end", function (result) {
-		//product is not currently in auction
+	aquery.on("end", function (result) {
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
-			res.send('This product is not in auction.');
+			res.send('Please log in or register.');
 		}
 		
-		else{
+		//check if item is currently in auction
+		var date = new Date();
+		var datejson = date.toJSON();
+		var today = datejson.substring(0,10);
+		
+		var query = client.query("SELECT products.pid, products.pprice, products.psellerid, auction.* FROM products, auction WHERE "+
+								 "pid = aucitemid AND aucitemid ="+req.params.pid+" AND aucstart <= '"+today+"' "+
+								 "AND aucend > '"+today+"'");
+		
+		query.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query.on("end", function (result) {
+			//product is not currently in auction
+			if(result.rows.length == 0){
+				client.end();
+				res.statusCode = 404;
+				res.send('This product is not in auction.');
+			}
+			
+			if(req.body.id == result.rows[0].psellerid){
+				client.end();
+				res.statusCode = 401;
+				res.send('You cannot bid on your own items!');
+			}
+			
 			//if product is on auction, check current bids on item
 			//save the item's instant price for future reference
 			
@@ -776,63 +797,57 @@ app.post("/bid/:pid", function(req, res){
 						res.send(400, 'Bid price must be lower than the instant price ' + instantPrice);
 					}
 					//check that bid is at least the starting bid
-					else if(req.body.bid < startingBid){
+					if(req.body.bid < startingBid){
 						client.end();
 						res.send(400, 'Bid price must be greater than the starting bid ' + result.rows[0].aucstartbid);
 					}
-					//bid value is a-okay, add to bids
-					else{
-						var query3 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
-								
-						query3.on("end", function (result) {
-							client.end();
-							res.statusCode = 200;
-							res.send('Bid accepted.');
-						});
-					}
-				}
-				else{
-					//product already has bids
 					
-					//bid entered is too high
-					if(instaPrice <= req.body.bid){
+					//bid value is a-okay, add to bids
+					var query3 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", " + req.body.bid + ");");
+							
+					query3.on("end", function (result) {
 						client.end();
-						res.send(400, 'Bid price must be lower than the instant price ' + instantPrice);
-					}
-				
-					else{
-						//bid is lower than instant price, now check that bid is higher than the current max bid
-						var query3 = client.query("SELECT MAX(bvalue) FROM bids WHERE pid = "+req.params.pid);
-						
-						query3.on("row", function (row, result) {
-							result.addRow(row);
-						});
-						
-						query3.on("end", function (result){
-							//bid entered not high enough
-							
-							//removing '$' character from monetary values
-							var maxCurrentBid = (result.rows[0].max).substring(1);
-							
-							if(maxCurrentBid >= req.body.bid){
-								client.end();
-								res.statusCode = 400;
-								res.send('Bid price must be higher than the current maximum bid ' + result.rows[0].max+ '.');
-							}
-							else{
-								//bid value is OK, create new entry in bids
-								var query4 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", '" + req.body.bid + "');");
-								
-								query4.on("end", function (result) {
-									res.statusCode = 200;
-									res.send('Bid accepted.');
-								});
-							}
-						});
-					}
+						res.statusCode = 200;
+						res.send('Bid accepted.');
+					});
 				}
+				//product already has bids
+				
+				//bid entered is too high
+				if(instaPrice <= req.body.bid){
+					client.end();
+					res.send(400, 'Bid price must be lower than the instant price ' + instantPrice);
+				}
+			
+				//bid is lower than instant price, now check that bid is higher than the current max bid
+				var query3 = client.query("SELECT MAX(bvalue) FROM bids WHERE pid = "+req.params.pid);
+				
+				query3.on("row", function (row, result) {
+					result.addRow(row);
+				});
+				
+				query3.on("end", function (result){
+					//bid entered not high enough
+					
+					//removing '$' character from monetary values
+					var maxCurrentBid = (result.rows[0].max).substring(1);
+					
+					if(maxCurrentBid >= req.body.bid){
+						client.end();
+						res.statusCode = 400;
+						res.send('Bid price must be higher than the current maximum bid ' + result.rows[0].max+ '.');
+					}
+					
+					//bid value is OK, create new entry in bids
+					var query4 = client.query("INSERT INTO bids(bidderid, pid, bvalue) VALUES("+req.body.id +", " + req.params.pid +", '" + req.body.bid + "');");
+					
+					query4.on("end", function (result) {
+						res.statusCode = 200;
+						res.send('Bid accepted.');
+					});
+				});
 			});
-		}
+		});
 	});
 });
 
@@ -955,11 +970,8 @@ app.del("/removefromcart", function(req,res){
 				client.end();
 				res.json(200,true);
 			});
-			
 		});
-		
 	});
-	
 });
 
 //places order
@@ -1177,8 +1189,6 @@ app.post("/loadproductbids", function(req,res){
 	
 });
 
-//TODO Show seller's rating %
-//Does the user really have to be logged in to see seller catalogs? C'mon it's a free country
 //getSellerCatalogItems(user)
 app.post("/catalog", function(req,res){
 	console.log("Get " + req.body.sellername + "'s catalog request received.");
@@ -1186,35 +1196,59 @@ app.post("/catalog", function(req,res){
 	var client = new pg.Client(conString);
 	client.connect();
 	
-	var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+	var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "' AND upassword = '"+req.body.password+"'");
+	
 	query.on("row", function(row,result){
 		result.addRow(row);
 	});
+	
 	query.on("end", function(result){
-		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT products.*,users.username, products.psellerid AS sid FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
-			query2.on("row", function(row,result){
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
+		}
+		
+		var query2 = client.query("SELECT products.*,users.username, products.psellerid AS sid FROM products,users WHERE username = '" + req.body.sellername + "' AND psellerid = uid");
+			
+		query2.on("row", function(row,result){
+			result.addRow(row);
+		});
+		
+		query2.on("end", function(result){
+			var products = result.rows;
+			
+			//calculate user rating	
+			var query3 = client.query("SELECT SUM(ratings.rvalue) AS starsobtained, (5*COUNT(ratings.rvalue)) AS starstotal FROM ratings, users WHERE users.username = '"+req.body.sellername+"' "+
+										"AND ratings.sellerid = users.uid");
+			
+			query3.on("row", function(row,result){
 				result.addRow(row);
 			});
-			query2.on("end", function(result){
+
+			query3.on("end", function(result){
+				var starsObtained = parseInt(result.rows[0].starsobtained);
+				var starsTotal = parseInt(result.rows[0].starstotal);
+				
+				if(starsTotal < 5){
+					client.end();
+					res.json(200,{"products":products,"percent":"N/A"});
+				}
+				
+				var percent = (starsObtained/starsTotal)*100;
 				client.end();
-				res.json(200,{"products":result.rows});
+				res.json(200,{"products":products, "percent":percent.toFixed(2)+" %"});
 			});
-		}
-		else{
-			client.end();
-			res.json(401,false);
-		}
+		});
+		
 	});
 	
 });
 
 //REST API for rating system********************************************************************
 
-//TODO: Calculate rating %
 //Do users really have to be logged in to see a seller's rating?
 //get ratings
-app.post("/ratings", function(req,res){
+app.get("/ratings", function(req,res){
 	console.log("Get " + req.body.sellername + "'s ratings request received.");
 	
 	var client = new pg.Client(conString);
