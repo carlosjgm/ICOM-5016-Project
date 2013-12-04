@@ -2,7 +2,7 @@ Legend:
 [SQL] - add/edit server-side implementation
 [C] - add/edit client-side implementation
 [H] - add/edit html
-[O] - other
+[B] - bonus other
 [W] - Word of God (pointed out by Prof. Manuel Rodriguez)
 
 WE ARE MISSING...
@@ -35,9 +35,9 @@ WE ARE MISSING...
 
 - [H] Update address, update ccard, update product forms.
 
-- [O] Use Heroku to run app directly from the web
+- [B] Use Heroku to run app directly from the web
 
-- [O] Export app to Android
+- [B] Export app to Android
 
 
 KNOWN MINOR ISSUES
@@ -66,6 +66,6 @@ REMINDERS/DETAILS
 
 -Sales page should only show your sales as a seller, unless you're an admin (and so you can see everything).
 
--[W] Currently the ER diagram is not consistent with out database
+-[W] Currently the ER diagram is not consistent with our database
 
 
