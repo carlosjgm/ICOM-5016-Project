@@ -7,37 +7,37 @@ Legend:
 
 WE ARE MISSING...
 
-- [SQL][C][H] A way to announce winner of an auction once the auction ends. (Express mailer). Interrupt/There should be some 
+-[SQL][C][H] A way to announce winner of an auction once the auction ends. (Express mailer). Interrupt/There should be some 
 	kind of function constantly comparing current time with auction end for all items? Though this sounds like this 
 	could take some time to process for large DBs...
 
-- [SQL][C][H] Implement 'Checkout'. Should ask user for ccard to be used, and address where items are to be shipped to (get/set 
+-[SQL][C][H] Implement 'Checkout'. Should ask user for ccard to be used, and address where items are to be shipped to (get/set 
     primary address and ccard?)
 
-- [SQL][C][H] Implement 'PlaceOrder'. Create sale, invoice, invoicecontent entries, empty cart, decrement product quantity by 
+-[SQL][C][H] Implement 'PlaceOrder'. Create sale, invoice, invoicecontent entries, empty cart, decrement product quantity by 
     the quantity just bought (products table). Do not allow buying more than is available.
 
-- [C] Fix issues with 'Rate user' (I think this is a form data parsing issue)
+-[C] Fix issues with 'Rate user' (I think this is a form data parsing issue)
 
-- [H] Ratings page.
+-[H] Ratings page.
 
-- [SQL][C][H] Implement 'ViewItemBids', which will show current bids on a particular item. Should probably be a button in the 
+-[SQL][C][H] Implement 'ViewItemBids', which will show current bids on a particular item. Should probably be a button in the 
 	item's product page. Hide button if product is not in auction.
 
-- [SQL][C][H] Implement one-click buy (I guess this DOES require a primary address and ccard). Should at least show an alert ("Are you 
+-[SQL][C][H] Implement one-click buy (I guess this DOES require a primary address and ccard). Should at least show an alert ("Are you 
     ABSOLUTELY sure you want to buy this product? Quick summary: [Item][Total][primAddress][primCard] There is no going 
     back D:"). It will be an on-steroids version of placeOrder() without the step-by-step process. Actually, it WILL be 
     placeOrder() WITHOUT the checkout sequence.
 
-- [SQL][C][H] Implement sorting and searching in browse.
+-[SQL][C][H] Implement sorting and searching in browse.
 
-- [SQL][C][H] Implement 'ViewPurchaseHistory' to view history of your purchases.
+-[SQL][C][H] Implement 'ViewPurchaseHistory' to view history of your purchases.
 
-- [H] Update address, update ccard, update product forms.
+-[H] Update address, update ccard, update product forms.
 
-- [B] Use Heroku to run app directly from the web
+-[B] Use Heroku to run app directly from the web
 
-- [B] Export app to Android
+-[B] Export app to Android
 
 
 KNOWN MINOR ISSUES
@@ -68,4 +68,5 @@ REMINDERS/DETAILS
 
 -[W] Currently the ER diagram is not consistent with our database
 
-
+-[W] Look into jQuery/Q.Js promises for parallel(asynchronous) queries/ajax requests (THEY DON'T CALL IT JQUERY FOR 
+ NUTHIN' {just kidding [no, not really]})
