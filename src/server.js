@@ -1280,11 +1280,7 @@ app.get("/ratings", function(req,res){
 
 //submitRating(sid)
 app.post("/addrating", function(req,res){
-	if(req.body.rvalue == 0 || req.body.rvalue == ""){
-		res.statusCode = 400;
-		res.json("Please select the rating.");
-	}
-	
+
 	if(req.body.sid == req.body.id){
 		res.statusCode = 400;
 		res.json("Oops! You can't rate yourself!");
@@ -1334,7 +1330,7 @@ app.post("/addrating", function(req,res){
 					res.json(401,'You have already rated this seller.');
 				}
 				
-				var query4 = client.query("INSERT INTO ratings (sellerid, raterid, rvalue, rcomment) VALUES (" + req.body.sid + ", " + req.body.id + ", " + req.body.rvalue + ", '"+ req.body.rcomment+"')");
+				var query4 = client.query("INSERT INTO ratings (sellerid, raterid, rvalue, rcomment) VALUES (" + req.body.sid + ", " + req.body.id + ", " + req.body.rating + ", '"+ req.body.rcomment+"')");
 				
 				query4.on("end", function (result) {
 					client.end();

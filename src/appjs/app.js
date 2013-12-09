@@ -792,47 +792,15 @@ function placebid(pid){
 function submitRating(sid){
 	$.mobile.loading("show");
 	
-	//var rvalue;
-	
-	//var form = $("#rating-form");
-	//var formData = form.serializeArray();
-	//var logdata = ConverToJSON(formData);	
-	//logdata = addAuth(logdata);	
-	
-	var ratings = JSON.stringify(document.getElementsByName("rating").value);
-	//var rcomment = document.getElementById("rcomment").value;
-	
-	//for(var i=0; i<ratings.length; i++){
-	//	if(ratings[i].checked){
-	//		rvalue = ratings[i];
-	//		break;
-	//}
-	alert(JSON.stringify(ratings));
-	
-	//alert(JSON.stringify(document.getElementById('rating-1').value));
-	/*
-	if(document.getElementById('rating-5').checked > 0){
-			rvalue = document.getElementById('rating-5').value;
-		} else if(document.getElementById('rating-4').checked > 0){
-			rvalue = document.getElementById('rating-4').value;
-		} else if(document.getElementById('rating-3').checked > 0){
-			rvalue = document.getElementById('rating-3').value;
-		} else if(document.getElementById('rating-2').checked > 0){
-			rvalue = document.getElementById('rating-2').value;
-		} else {
-			rvalue = document.getElementById('rating-1').value;
-		}
-		*/
-	
-	//var array = document.getElementsByName('rating');
-	//var data = array.serializeArray();
-	//var rvalue = document.getElementsByName('rating').checked.value;
-
-	var logdata = addAuth(logdata);
-	//logdata.rcomment = rcomment;
-	logdata.rvalue = rvalue;
-	var jsondata = JSON.stringify(logdata);
-	
+	var form = $("#rating-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);	
+	logdata = addAuth(logdata);	
+	logdata.sid = sid;
+	var jsondata = JSON.stringify(logdata);	
+		
+		alert(jsondata);
+		
 	$.ajax({
 			url : "http://localhost:8888/addrating/",
 			method: 'post',
@@ -841,14 +809,15 @@ function submitRating(sid){
 			dataType: "json",
 			success : function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
-				alert("Thank you for your feedback.");				
-				loadProductPage(pid);
+				alert("Thank you for your feedback.");	
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
 				alert(data.responseText);
 			}
 		});	
+	
+	
 };
 
 //TODO: gets user comments and ratings of a seller, needs a page in index.html
