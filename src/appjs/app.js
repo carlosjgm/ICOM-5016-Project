@@ -276,7 +276,8 @@ function getCreditCards(){
 			
 			for (var i=0; i < cardList.length; ++i){
 			card = cardList[i];
-				list.append("<li><a>"
+				list.append("<li>"
+					+ "<a href='#edit-card' data-role='button' data-rel='popup' data-transition='pop'>"
 					+ "<h3>Card Holder Name: " + card.ccholdername + "</h3>"
 					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.ccnum[12]+card.ccnum[13]+card.ccnum[14]+card.ccnum[15]+ "</p>"
 					+ "<p>Expiration Date: " + card.ccexpmonth + "/" + card.ccexpyear
@@ -369,7 +370,7 @@ function getAddresses(){
 			
 			for (var i=0; i < addressList.length; ++i){
 			address = addressList[i];
-				list.append("<li><a>"
+				list.append('<li><a href="#edit-address" data-role="button" data-theme="b" data-icon="plus" data-iconpos="right" data-rel="popup" data-position-to="window" data-transition="pop">'
 					+ "<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
 					+ "<p>" + address.aline1 + "<br/>" + address.aline2 + "</p>"
 					+ "<p>" + address.acity + ", " + address.astate + "</p>"
