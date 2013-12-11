@@ -975,50 +975,115 @@ app.del("/removefromcart", function(req,res){
 });
 
 //places order
-//TODO : remove item from cart if not found
-//TODO : SQL
-//TODO : check that qty in cart is not greater than available of product
-//TODO : remove cart entry once processed, add entry to sales
+//TODO incomplete
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
-	var target=-1;
-	//search for user
-	for (var i=0; i < userList.length; ++i){
-		if (userList[i].username == req.body.username){
-			if(userList[i].password == req.body.password){
-				target = i;
-			}
-		}	
-	}
-	if(target==-1){
-			//TODO send to login page
-			res.statusCode = 404;
-			res.json("Invalid username/password.");
-	}	
-	else{	
-		var cart = userList[target].cart;
-		console.log("Items in cart: " + JSON.stringify(cart));
-		var solditem, sale;
-		//for each item in the cart
-		var cartlength = cart.length;
-		for(var j=0; j < cartlength; j++){	
-			solditem = cart.pop();	
-			//search for item in product list
-			for (var i=0; i < productList.length; ++i){
-				if (productList[i].id == solditem.id){
-					sale = new Sale(productList[i].name, productList[i].category, solditem.qty*productList[i].instantprice, 
-							productList[i].seller, req.body.username, new Date(), productList[i].photo, solditem.qty);
-					sale.id = saleNextId++;
-					salesList.push(sale);
-					userList[target].sales.push(saleNextId - 1);
-				}				
-			}
-			console.log("Sold: " + JSON.stringify(solditem));
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check that user is logged in
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
 		}
-		res.statusCode = 200;
-		res.json(true);
-	}	
+		
+		//get items in preliminary cart
+		var query2 = client.query("SELECT * FROM carts WHERE userid ="+req.body.id);
+		
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query2.on("end", function (result) {
+			if(result.rows.length == 0){
+				client.end();
+				res.json(404,'Cart is empty.');
+			}
+			
+			var cartItems = result.rows;
+			var newcart;
+			//Check that items are available, get some other useful attributes
+			var query3 = client.query("SELECT products.*, bankid, carts.* FROM products,bankaccounts,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND buserid = products.psellerid");
+			
+			query3.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query3.on("end", function (newcart) {
+				newcart = result.rows;
+				//not all items were found or not enough instances of a product available
+				if(cartItems.length != newcart.length){
+					//alert('Not all products were found. Do you wish to proceed with the order? Cart will be updated.');
+					//if 'no', end client, if 'yes', update cart and proceed with order
+					client.end();
+					res.json(404,'Well lad, it seems today is not yer lucky day, for many an item on your cart is not available.');
+				}
+				
+				//found all items, now check that user has both a primary address and primary ccard
+				var query4 = client.query("SELECT * FROM users WHERE uid ="+req.body.id+" AND upaid IS NOT NULL AND upccid IS NOT NULL");
+				
+				query4.on("row", function (row, result) {
+					result.addRow(row);
+				});
+				
+				query4.on("end", function (result) {
+					if(result.rows.length == 0){
+						client.end();
+						res.json(404,'You have not selected a primary address or credit card. Please do so under Account Settings and try again.');
+					}
+					
+					var date = new Date();
+					var datejson = date.toJSON();
+					var today = datejson.substring(0,10);
+					var fulltime = date.toTimeString();
+					var time = fulltime.substring(0,8);
+							
+					//create invoices (can this be done en masse? [rather than using a loop])
+					var query5 = client.query("INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid, "+
+													"idate, itime) VALUES "+
+													
+													for(i=0; i<newcart.length; i++){
+														"("+req.body.id+", "+newcart[i].psellerid+", "+
+														newcart[i].bankid+", "+result.rows.upccid+", '"+today+"', '"+time+"')"+
+														
+														if(i != newcart.length - 1){
+															", "+
+														}
+													}
+													";");
+					
+					query5.on("end", function (result) {
+						//create sales
+						var query6 = client.query("INSERT INTO sales (squantity, sprice, sname, scategory)"+
+													"VALUES "+
+													
+													for(i=0; i<newcart.length; i++){
+														"("+newcart[i].cquantity+", '"+newcart[i].pprice+"', '"+
+														newcart[i].pname+"', "+newcart[i].pcategoryid+", '')"+
+														
+														if(i != newcart.length - 1){
+															", "+
+														}
+													}
+													";");
+													
+						query6.on("end", function (result) {
+							//create invoicecontent
+							//remove cart entries
+						});
+					});
+				});
+			});
+		});
+	});
 });
 
 //returns items in user cart

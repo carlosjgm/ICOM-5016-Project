@@ -555,7 +555,7 @@ function loadCart(){
 				+ "<p>Price: " + cartItem.pprice + "</p>"
 				+ "<input type='button' onclick='removeFromCart(" + cartItem.pid + ")' value='Delete'></li>");				
 			}
-			content.append("<li data-theme='f'><p><h2>Shipping: $$$$</h2></p><p><h2>Total: " + data.total + "</h2></p>"
+			content.append("<li data-theme='f'><p><h2>Shipping: Free Shipping!</h2></p><p><h2>Total: " + data.total + "</h2></p>"
 						+ "<input type='button' onclick='checkout()' value='Checkout'></li>");
 			content.listview("refresh");	
 			$.mobile.loading("hide");

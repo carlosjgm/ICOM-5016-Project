@@ -66,7 +66,12 @@ REMINDERS/DETAILS
 
 -Sales page should only show your sales as a seller, unless you're an admin (and so you can see everything).
 
--[W] Currently the ER diagram is not consistent with our database
+-[W] Currently the ER diagram is not consistent with our database (Fix foreign key issues)
 
 -[W] Look into jQuery/Q.Js promises for parallel(asynchronous) queries/ajax requests (THEY DON'T CALL IT JQUERY FOR 
  NUTHIN' {just kidding [no, not really]})
+ 
+-I strongly believe, since there is one invoice per sale, that sales and invoices should be merged into a single table;
+ this would make inserts a lot easier when orders are processed
+ 
+ 
