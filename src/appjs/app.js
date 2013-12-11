@@ -845,6 +845,45 @@ function submitRating(sid){
 		}
 }; */
 
+
+function getRatings(user){	
+	//var seller = localStorage.setItem["seller",user];
+	$.mobile.loading("show");
+	var data = new Object();
+	
+	if(user == undefined){
+		data.sellername = localStorage["username"];
+	}
+	else{		
+		data.sellername = user;
+	}
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/ratings",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var ratingList = data.ratings;
+			var content = $("#ratings");
+			content.empty();
+			var rating;
+			for (var i=0; i < ratingList.length; ++i){
+				rating = ratingList[i];		
+				content.append("<li><b>" + rating.raterid + "</b></li>"
+							+"<li>rated <a href=>" + rating.sellerid + "</a> with " + rating.rvalue + " Stars</li>"
+							+"<li>" + rating.rcomment + "</li>"
+							+"<hr style='margin-left: -41px;'><br>");			
+			}
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
 //adds new product
 function newProduct(){
 	$.mobile.loading("show");

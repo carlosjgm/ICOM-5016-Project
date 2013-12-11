@@ -1400,8 +1400,23 @@
 <div id="ratings" data-role="page" data-theme="c">
 	<div data-role="header" data-theme="a" data-position="fixed">
 		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
-		<h2>Ratings</h2>    	
-	</div>
+		<h2>Ratings</h2> </div>
+		<ul style="list-style-type: none;">
+			
+		<!--<script>document.write(localStorage.getRatings("uid"))</script>	<!--???-->
+		
+		<!--sample of what it should look like-->
+			<li><b> raterWho </b></li>
+			<li>rated sellerWho with 5 stars</li>
+			<li>"sellerWho was a good anonymous seller"</li>
+			<hr style='margin-left: -41px;'><br>
+			<li><b> raterWhat? </b></li>
+			<li>rated sellerWho with 2 stars</li>
+			<li>"I did't know what was going on, sellerWho is a bad seller"</li>
+			<hr style='margin-left: -41px;'><br>
+		<!--end sample-->
+		
+		</ul>
 </div>
 <!-- end ratings -->
 
