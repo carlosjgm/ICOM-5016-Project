@@ -10,6 +10,9 @@ WE ARE MISSING...
 -[SQL][C][H] A way to announce winner of an auction once the auction ends. (Express mailer). Interrupt/There should be some 
 	kind of function constantly comparing current time with auction end for all items? Though this sounds like this 
 	could take some time to process for large DBs...
+	
+	Check out this link: http://railscasts.com/episodes/206-action-mailer-in-rails-3
+	Though it needs Ruby on Rails (and Heroku needs it too)
 
 -[SQL][C][H] Implement 'Checkout'. Should ask user for ccard to be used, and address where items are to be shipped to (get/set 
     primary address and ccard?)
@@ -73,5 +76,3 @@ REMINDERS/DETAILS
  
 -I strongly believe, since there is one invoice per sale, that sales and invoices should be merged into a single table;
  this would make inserts a lot easier when orders are processed
- 
- 

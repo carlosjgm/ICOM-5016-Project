@@ -276,7 +276,8 @@ function getCreditCards(){
 			
 			for (var i=0; i < cardList.length; ++i){
 			card = cardList[i];
-				list.append("<li><a>"
+				list.append("<li>"
+					+ "<a href='#edit-card' data-role='button' data-rel='popup' data-transition='pop'>"
 					+ "<h3>Card Holder Name: " + card.ccholdername + "</h3>"
 					+ "<p> Card Num: " + "XXXX-XXXX-XXXX-"+card.ccnum[12]+card.ccnum[13]+card.ccnum[14]+card.ccnum[15]+ "</p>"
 					+ "<p>Expiration Date: " + card.ccexpmonth + "/" + card.ccexpyear
@@ -369,7 +370,7 @@ function getAddresses(){
 			
 			for (var i=0; i < addressList.length; ++i){
 			address = addressList[i];
-				list.append("<li><a>"
+				list.append('<li><a href="#edit-address" data-role="button" data-theme="b" data-icon="plus" data-iconpos="right" data-rel="popup" data-position-to="window" data-transition="pop">'
 					+ "<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
 					+ "<p>" + address.aline1 + "<br/>" + address.aline2 + "</p>"
 					+ "<p>" + address.acity + ", " + address.astate + "</p>"
@@ -717,7 +718,7 @@ function getUserCatalogItems(){
 							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
 							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div>"
 							+"<input type='button' onclick='removeProduct("+product.pid+")' value='Delete Product'>"
-							+"<input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></div></a><br/><hr style='margin-left: -41px;'></a>");			
+							+"<a href='#update-product'><input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></a></div></a><br/><hr style='margin-left: -41px;'></a>");			
 			}
 			var seller = $("#userinfo");
 			seller.empty();
@@ -792,47 +793,15 @@ function placebid(pid){
 function submitRating(sid){
 	$.mobile.loading("show");
 	
-	//var rvalue;
-	
-	//var form = $("#rating-form");
-	//var formData = form.serializeArray();
-	//var logdata = ConverToJSON(formData);	
-	//logdata = addAuth(logdata);	
-	
-	var ratings = JSON.stringify(document.getElementsByName("rating").value);
-	//var rcomment = document.getElementById("rcomment").value;
-	
-	//for(var i=0; i<ratings.length; i++){
-	//	if(ratings[i].checked){
-	//		rvalue = ratings[i];
-	//		break;
-	//}
-	alert(JSON.stringify(ratings));
-	
-	//alert(JSON.stringify(document.getElementById('rating-1').value));
-	/*
-	if(document.getElementById('rating-5').checked > 0){
-			rvalue = document.getElementById('rating-5').value;
-		} else if(document.getElementById('rating-4').checked > 0){
-			rvalue = document.getElementById('rating-4').value;
-		} else if(document.getElementById('rating-3').checked > 0){
-			rvalue = document.getElementById('rating-3').value;
-		} else if(document.getElementById('rating-2').checked > 0){
-			rvalue = document.getElementById('rating-2').value;
-		} else {
-			rvalue = document.getElementById('rating-1').value;
-		}
-		*/
-	
-	//var array = document.getElementsByName('rating');
-	//var data = array.serializeArray();
-	//var rvalue = document.getElementsByName('rating').checked.value;
-
-	var logdata = addAuth(logdata);
-	//logdata.rcomment = rcomment;
-	logdata.rvalue = rvalue;
-	var jsondata = JSON.stringify(logdata);
-	
+	var form = $("#rating-form");
+	var formData = form.serializeArray();
+	var logdata = ConverToJSON(formData);	
+	logdata = addAuth(logdata);	
+	logdata.sid = sid;
+	var jsondata = JSON.stringify(logdata);	
+		
+		alert(jsondata);
+		
 	$.ajax({
 			url : "http://localhost:8888/addrating/",
 			method: 'post',
@@ -841,14 +810,15 @@ function submitRating(sid){
 			dataType: "json",
 			success : function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
-				alert("Thank you for your feedback.");				
-				loadProductPage(pid);
+				alert("Thank you for your feedback.");	
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
 				alert(data.responseText);
 			}
 		});	
+	
+	
 };
 
 //TODO: gets user comments and ratings of a seller, needs a page in index.html
@@ -874,6 +844,45 @@ function submitRating(sid){
 			alert(data.textResponse);			
 		}
 }; */
+
+
+function getRatings(user){	
+	//var seller = localStorage.setItem["seller",user];
+	$.mobile.loading("show");
+	var data = new Object();
+	
+	if(user == undefined){
+		data.sellername = localStorage["username"];
+	}
+	else{		
+		data.sellername = user;
+	}
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/ratings",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var ratingList = data.ratings;
+			var content = $("#ratings");
+			content.empty();
+			var rating;
+			for (var i=0; i < ratingList.length; ++i){
+				rating = ratingList[i];		
+				content.append("<li><b>" + rating.raterid + "</b></li>"
+							+"<li>rated <a href=>" + rating.sellerid + "</a> with " + rating.rvalue + " Stars</li>"
+							+"<li>" + rating.rcomment + "</li>"
+							+"<hr style='margin-left: -41px;'><br>");			
+			}
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
 
 //adds new product
 function newProduct(){
