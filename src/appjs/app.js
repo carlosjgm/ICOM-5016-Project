@@ -718,7 +718,7 @@ function getUserCatalogItems(){
 							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
 							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div>"
 							+"<input type='button' onclick='removeProduct("+product.pid+")' value='Delete Product'>"
-							+"<input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></div></a><br/><hr style='margin-left: -41px;'></a>");			
+							+"<a href='#update-product'><input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></a></div></a><br/><hr style='margin-left: -41px;'></a>");			
 			}
 			var seller = $("#userinfo");
 			seller.empty();
