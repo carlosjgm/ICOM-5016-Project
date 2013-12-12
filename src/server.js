@@ -280,7 +280,7 @@ app.post("/address/:aid", function(req,res){
     	result.addRow(row);
    	});
 	
-	query.on("end", function (result) {
+	query.on("end", function (result){
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
