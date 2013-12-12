@@ -604,9 +604,16 @@ function loadBids(){
 	});	
 };
 
-//TODO needs a page in index.html
-function loadProductBids(){	
+//TODO needs a page in index.html, namely #product-bidding-list
+function loadProductBids(pid){	
 	$.mobile.loading("show");
+	
+	var data = new Object();
+	data = addAuth(data);
+	data.pid = pid;
+	var jsondata = JSON.stringify(data);
+	
+	
 	var data = JSON.stringify({"username":localStorage["username"],"password":localStorage["password"]});
 	$.ajax({
 		url : "http://localhost:8888/loadproductbids",
@@ -800,11 +807,12 @@ function placeOrder(){
 	$.mobile.loading("show");
 	var data = new Object();
 	data = addAuth(data);
+	var jsondata = JSON.stringify(data);
 	
 	$.ajax({
 		url : "http://localhost:8888/placeorder",
 		method: 'post',
-		data : data,
+		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){

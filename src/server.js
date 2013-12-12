@@ -975,7 +975,7 @@ app.del("/removefromcart", function(req,res){
 });
 
 //places order
-//TODO incomplete
+//TODO exploding
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -994,7 +994,7 @@ app.post("/placeorder", function(req,res){
 			client.end();
 			res.json(404,'Please log in or register.');
 		}
-		
+		console.log("DEBUG: User is logged in");
 		//get items in preliminary cart
 		var query2 = client.query("SELECT * FROM carts WHERE userid ="+req.body.id);
 		
@@ -1007,7 +1007,7 @@ app.post("/placeorder", function(req,res){
 				client.end();
 				res.json(404,'Cart is empty.');
 			}
-			
+			console.log("DEBUG: Cart is not empty");
 			var cartItems = result.rows;
 			var newcart;
 			//Check that items are available, 
@@ -1017,9 +1017,8 @@ app.post("/placeorder", function(req,res){
 				result.addRow(row);
 			});
 			
-			query3.on("end", function (newcart) {
+			query3.on("end", function (result) {
 				newcart = result.rows;
-				//not all items were found or not enough instances of a product available
 				if(cartItems.length != newcart.length){
 					//alert('Not all products were found. Do you wish to proceed with the order? Cart will be updated.');
 					//if 'no', end client, if 'yes', update cart and proceed with order
@@ -1039,7 +1038,7 @@ app.post("/placeorder", function(req,res){
 						client.end();
 						res.json(404,'You have not selected a primary address or credit card. Please do so under Account Settings and try again.');
 					}
-					
+					console.log("DEBUG: User has primary address and ccard");
 					var date = new Date();
 					var datejson = date.toJSON();
 					var today = datejson.substring(0,10);
@@ -1064,7 +1063,7 @@ app.post("/placeorder", function(req,res){
 					});
 					
 					query5.on("end", function (result) {
-													
+						console.log("Invoices and sales created");							
 						//deposit money on sellers' accounts
 						var query6 = client.query("UPDATE bankaccounts,carts,products SET bankaccounts.bamount = bamount + (cquantity*pprice) WHERE carts.userid = "+req.body.id+" "+
 												  "AND carts.pid = products.pid AND psellerid = buserid");
@@ -1075,7 +1074,10 @@ app.post("/placeorder", function(req,res){
 						
 						query6.on("end", function (result) {
 							//remove cart entries
+							console.log("Updated sellers' accounts");
 							var query7 = client.query("DELETE FROM carts WHERE userid = "+req.body.id);
+							
+							//decrement pquantity by cquantity
 							
 							query7.on("end", function (row, result) {
 								client.end();
@@ -1220,9 +1222,10 @@ app.post("/loadbids", function(req,res){
 	
 });
 
+//TODO: Do users have to be logged in to see product bids?
 //product bids list
 app.post("/loadproductbids", function(req,res){
-	console.log("Get bids for product "+ req.params.id +"request received.");
+	console.log("Get bids for product "+ req.body.pid +"request received.");
 
 	var client = new pg.Client(conString);
 	client.connect();
@@ -1237,17 +1240,17 @@ app.post("/loadproductbids", function(req,res){
 		if(result.rows.length == 0){
 			client.end();
 			res.statusCode = 404;
-			res.json("Invalid username/password.");
+			res.json("Please log in or register.");
 		}
 		else{
 			//select columns
-			var query = client.query("SELECT * FROM product, bids WHERE (bids.pid = products.pid) AND (product.pid = " + req.body.pid + ")");
+			var query2 = client.query("SELECT * FROM product, bids WHERE (bids.pid = products.pid) AND (product.pid = " + req.body.pid + ")");
 			
-			query.on("row", function (row, result) {
+			query2.on("row", function (row, result) {
 				result.addRow(row);
 			});
 			
-			query.on("end", function (result) {
+			query2.on("end", function (result) {
 				client.end();
 				res.statusCode=200;
 				res.json({"bids" : result.rows});
