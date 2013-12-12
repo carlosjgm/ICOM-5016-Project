@@ -1285,31 +1285,40 @@
 
 
 <!-- Checkout -->
-
+<!--TODO: Fix UI. This looks ugly as fudge O_O (my bad)-->
 <div id="checkout" data-role="page" data-theme="c">
 	<div data-role="header" data-theme="a" data-position="fixed">
 		<a href="#browse" data-icon="back" data-mini="true" data-inline="true">Back</a>
 		<h2>Checkout</h2>    	
 	</div>
 	
-	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false">
-		<div data-role="button">Order Total: $$$$</div>
-	</div><br/>
-	
-	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" style="margin-top: -15px;"><div data-role="button" style="text-align:left;">
-		<div style="float:left;">Ships to:</div>  <div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
-			<a href='#manageaddress' style="color:black;">Change Address</a></div><br/>
-		P. Sherman 42 Wallaby Way, <br/>Sydney</div>
+	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" style="margin-top: -15px;">
+		<div data-role="button" style="text-align:left;">
+			<div style="float:left;">Ships to:</div>
+			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
+				<a href='#manage-addresses' style="color:black;">Change Primary Address</a>
+			</div><ul id="checkout-address"></ul>
+		</div>
+			
+		<div style="float:left;">Payment:</div>
+			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
+				<a href='#manage-credit-cards' style="color:black;">Change Primary Credit Card</a>
+			</div><ul id="checkout-ccard"></ul>
+		</div>
+			
+		<div style="float:left;">Items:</div>
+		<ul id="checkout-items"></ul>
 		
-	</div>
-	
-	<div style="float: right;">
-	<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
-		<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
-	<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
-
-		<a href="#browse" onclick="placeOrder()" style="color: white;">Place Order</a></div>
-	</div>
+		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false">
+			<div id="checkout-total" data-role="button"></div>
+		</div><br/>
+		
+		<div style="float: right;">
+		<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
+			<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>
+		<div data-role="button" data-theme="b" data-inline="true" data-inset="true">
+			<a href="#browse" onclick="placeOrder()" style="color: white;">Place Order</a></div>
+		</div>
 	
 </div>
 

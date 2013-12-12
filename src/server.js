@@ -1010,8 +1010,8 @@ app.post("/placeorder", function(req,res){
 			
 			var cartItems = result.rows;
 			var newcart;
-			//Check that items are available, get some other useful attributes
-			var query3 = client.query("SELECT products.*, bankid, carts.* FROM products,bankaccounts,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND buserid = products.psellerid");
+			//Check that items are available, 
+			var query3 = client.query("SELECT pprice,pname,pcategoryid,cquantity FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id);
 			
 			query3.on("row", function (row, result) {
 				result.addRow(row);
@@ -1043,41 +1043,44 @@ app.post("/placeorder", function(req,res){
 					var date = new Date();
 					var datejson = date.toJSON();
 					var today = datejson.substring(0,10);
-					var fulltime = date.toTimeString();
-					var time = fulltime.substring(0,8);
-							
-					//create invoices (can this be done en masse? [rather than using a loop])
-					var query5 = client.query("INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid, "+
-													"idate, itime) VALUES "+
-													
-													for(i=0; i<newcart.length; i++){
-														"("+req.body.id+", "+newcart[i].psellerid+", "+
-														newcart[i].bankid+", "+result.rows.upccid+", '"+today+"', '"+time+"')"+
-														
-														if(i != newcart.length - 1){
-															", "+
-														}
-													}
-													";");
+					var time = date.toTimeString();
+					var now = time.substring(0,8);
+					
+					//create invoice content and insert sales,invoices
+					var query5 = client.query("UPDATE invoices SET idate = '"+today+"', itime = '"+now+"' WHERE iid IN "+
+											  "(INSERT INTO invoicecontent (saleid,invoiceid) "+
+											  "(INSERT INTO sales (squantity, sprice, sname, scategory) "+
+											  "SELECT cquantity,pprice,pname,pcategoryid FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id+" "+
+											  "RETURNING sid "+
+											  "UNION "+
+											  "INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid) "+
+											  "SELECT uid,psellerid,bankid,upccid FROM products,carts,bankaccounts,users WHERE products.pid = carts.pid "+
+										  	  "AND products.pquantity >= carts.cquantity AND buserid = psellerid AND userid ="+req.body.id+" GROUP BY psellerid,bankid,upccid,uid "+							
+											  "RETURNING iid) "+
+											  "RETURNING invoiceid);");
+
+					query5.on("row", function (row, result) {
+						result.addRow(row);
+					});
 					
 					query5.on("end", function (result) {
-						//create sales
-						var query6 = client.query("INSERT INTO sales (squantity, sprice, sname, scategory)"+
-													"VALUES "+
 													
-													for(i=0; i<newcart.length; i++){
-														"("+newcart[i].cquantity+", '"+newcart[i].pprice+"', '"+
-														newcart[i].pname+"', "+newcart[i].pcategoryid+", '')"+
-														
-														if(i != newcart.length - 1){
-															", "+
-														}
-													}
-													";");
-													
+						//deposit money on sellers' accounts
+						var query6 = client.query("UPDATE bankaccounts,carts,products SET bankaccounts.bamount = bamount + (cquantity*pprice) WHERE carts.userid = "+req.body.id+" "+
+												  "AND carts.pid = products.pid AND psellerid = buserid");
+							
+						query6.on("row", function (row, result) {
+							result.addRow(row);
+						});
+						
 						query6.on("end", function (result) {
-							//create invoicecontent
 							//remove cart entries
+							var query7 = client.query("DELETE FROM carts WHERE userid = "+req.body.id);
+							
+							query7.on("end", function (row, result) {
+								client.end();
+								res.json(200,true);
+							});
 						});
 					});
 				});
@@ -1402,6 +1405,67 @@ app.post("/addrating", function(req,res){
 					res.json(200,true);
 				});	
 			});			
+		});
+	});
+});
+
+//loads stuff used in checkout
+app.post("/checkitout", function(req,res){
+	console.log("Checkout request from user " + req.body.username +" received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	//check that user is logged in
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(401,'Please log in or register.');
+		}
+		
+		var query2 = client.query("SELECT * FROM carts,products WHERE carts.pid = products.pid AND userid = "+req.body.id);
+		
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query2.on("end", function (result) {
+			if(result.rows.length == 0){
+				client.end();
+				res.json(404,'Cart is empty.');
+			}
+			
+			var products = result.rows;
+			
+			var query3 = client.query("SELECT sum(subtotal) FROM (SELECT sum(pprice)*cquantity AS subtotal FROM carts,products WHERE carts.pid = products.pid AND userid ="+
+									   req.body.id+" GROUP BY cquantity) AS mimi");
+			
+			query3.on("row", function (row, result) {
+				result.addRow(row);
+			});
+			
+			query3.on("end", function (result) {
+				var total = result.rows[0].sum;
+				
+				var query4 = client.query("SELECT addresses.*,creditcards.* FROM users,addresses,creditcards WHERE upaid = aid AND upccid = ccid AND uid = "+req.body.id);
+				
+				query4.on("row", function (row, result) {
+					result.addRow(row);
+				});
+				
+				query4.on("end", function (result) {
+					var userdata = result.rows[0];
+					
+					client.end();
+					res.json(200,{"products":products,"total":total,"userdata":userdata});
+				});
+			});
 		});
 	});
 });
