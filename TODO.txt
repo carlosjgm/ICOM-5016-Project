@@ -13,7 +13,7 @@ WE ARE MISSING...
 	Check out this link: http://railscasts.com/episodes/206-action-mailer-in-rails-3
 	Though it needs Ruby on Rails (and Heroku needs it too)
 	
--[SQL][C][H] Implement sorting and searching in browse.
+-[SQL][C][H] Implement sorting in browse.
 
 -[C][H] Implement 'ViewPurchaseHistory' to view history of your purchases.
 

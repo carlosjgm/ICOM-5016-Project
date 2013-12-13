@@ -662,55 +662,59 @@ function getSellerCatalogItems(user){
 	var data = new Object();
 	data = addAuth(data);
 	
-	if(user == undefined){
-		data.sellername = localStorage["username"];
+	if(user == undefined || user == localStorage["username"]){
+		$.mobile.changePage("#usercatalogpage");
+		getUserCatalogItems();	
 	}
 	else{		
 		data.sellername = user;
-	}
-	var jsondata = JSON.stringify(data);
-	$.ajax({
-		url : "http://localhost:8888/catalog",
-		method: 'post',
-		data : jsondata,
-		contentType: "application/json",
-		dataType: "json",
-		success : function(data, textStatus, jqXHR){
-			var itemList = data.products;
-			var content = $("#catalog");
-			content.empty();
-			var product;
-			for (var i=0; i < itemList.length; ++i){
-				product = itemList[i];		
-				content.append("<a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
-							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
-							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
+	
+		var jsondata = JSON.stringify(data);
+		$.ajax({
+			url : "http://localhost:8888/catalog",
+			method: 'post',
+			data : jsondata,
+			contentType: "application/json",
+			dataType: "json",
+			success : function(data, textStatus, jqXHR){
+				var itemList = data.products;
+				var content = $("#catalog");
+				content.empty();
+				var product;
+				for (var i=0; i < itemList.length; ++i){
+					product = itemList[i];		
+					content.append("<a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' style='float: left; clear: left; margin-top: 5px; margin-right: 15px; margin-left: -30px' width='65' height='65' border='0px' />"
+								+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
+								+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div></div></a><br/><hr style='margin-left: -41px;'></a>");			
+				}
+				var seller = $("#sellerinfo");
+				seller.empty();
+				seller.append(product.username);
+				
+				var rateButton = $("#rateseller");
+				rateButton.empty();
+				rateButton.append("<a onclick='submitRating("+product.sid+")'>Submit</a>");
+				
+				var ratPercent = $("#sellercatrating");
+				ratPercent.empty();
+				ratPercent.append(data.percent);
+				
+				
+				var viewratings = $("#view-ratings");
+								viewratings.empty();
+								viewratings.append("<a onclick='getRatings("+product.sid+")'>View Ratings</a>");
+				
+				
+				content.listview("refresh");
+				rateButton.listview("refresh");
+				$.mobile.loading("hide");
+			},
+			error: function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert(data.textResponse);			
 			}
-			var seller = $("#sellerinfo");
-			seller.empty();
-			seller.append(product.username);
-			
-			var rateButton = $("#rateseller");
-			rateButton.empty();
-			rateButton.append("<a onclick='submitRating("+product.sid+")'>Submit</a>");
-			
-			var ratPercent = $("#sellercatrating");
-			ratPercent.empty();
-			ratPercent.append(data.percent);
-			
-			var viewratings = $("#view-ratings");
-			viewratings.empty();
-			viewratings.append("<a onclick='getRatings("+product.sid+")'>View Ratings</a>");
-			
-			content.listview("refresh");
-			rateButton.listview("refresh");
-			$.mobile.loading("hide");
-		},
-		error: function(data, textStatus, jqXHR){
-			$.mobile.loading("hide");
-			alert(data.textResponse);			
-		}
-	});	
+		});	
+	}
 };
 
 //Get User Catalog Items
@@ -738,7 +742,8 @@ function getUserCatalogItems(){
 							+"<div style='text-align: left;'><b>" + product.pname + "</b></div>"
 							+"<div id='item-bid' data-mini='true' style='text-align: left;'>Price: " + product.pprice + "<br/></div>"
 							+"<input type='button' onclick='removeProduct("+product.pid+")' value='Delete Product'>"
-							+"<a href='#update-product'><input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></a></div></a><br/><hr style='margin-left: -41px;'></a>");			
+							//+"<a href='#update-product'><input type='button' onclick='updateProduct("+product.pid+")' style='margin-left: 10px;' value='Update'></a></div></a><br/><hr style='margin-left: -41px;'>
+							+ "</a>");			
 			}
 			var seller = $("#userinfo");
 			seller.empty();
@@ -748,7 +753,8 @@ function getUserCatalogItems(){
 			ratPercent.empty();
 			ratPercent.append(data.percent);
 			
-			content.listview("refresh");	
+			content.listview("refresh");
+
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
@@ -863,7 +869,6 @@ function placebid(pid){
 		});	
 };
 
-//TODO: Needs SERIOUS fixing. Sometimes it's not even entering here when you click on the form submit button
 function submitRating(sid){
 	$.mobile.loading("show");
 	
@@ -873,9 +878,7 @@ function submitRating(sid){
 	logdata = addAuth(logdata);	
 	logdata.sid = sid;
 	var jsondata = JSON.stringify(logdata);	
-		
-		alert(jsondata);
-		
+			
 	$.ajax({
 			url : "http://localhost:8888/addrating/",
 			method: 'post',
@@ -891,12 +894,10 @@ function submitRating(sid){
 				alert(data.responseText);
 			}
 		});	
-	
-	
 };
 
 //TODO: gets user comments and ratings of a seller, needs a page in index.html
-/*function getRatings(user){
+function getRatings(user){
 	$.mobile.loading("show");
 	var data = new Object();
 	//data = addAuth(data);
@@ -917,7 +918,8 @@ function submitRating(sid){
 			$.mobile.loading("hide");
 			alert(data.textResponse);			
 		}
-}; */
+});
+}
 
 //TODO: For some reason, it gets stuck once SQL is done. Data is arriving undefined to ajax success even though SQL executes successfully.
 function getRatings(sid){	
