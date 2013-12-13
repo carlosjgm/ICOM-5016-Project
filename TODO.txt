@@ -13,6 +13,8 @@ WE ARE MISSING...
 	Check out this link: http://railscasts.com/episodes/206-action-mailer-in-rails-3
 	Though it needs Ruby on Rails (and Heroku needs it too)
 	I found this: http://stackoverflow.com/questions/17888268/javascript-countdown-timer-for-auction-site
+	
+-[SQL][C][H] Implement sorting in browse.
 
 -[C] Fix getRatings()
 -[C][H] Generate list of products for 'ViewPurchaseHistory'
