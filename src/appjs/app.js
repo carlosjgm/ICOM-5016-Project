@@ -889,7 +889,6 @@ function submitRating(sid){
 		});	
 };
 
-
 function getRatings(sid){	
 	//var seller = localStorage.setItem["seller",user];
 	$.mobile.loading("show");
@@ -904,7 +903,6 @@ function getRatings(sid){
 	}
 	
 	var jsondata = JSON.stringify(data);
-	console.log(data);
 	
 	$.ajax({
 		url : "http://localhost:8888/ratings",

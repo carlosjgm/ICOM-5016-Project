@@ -12,18 +12,16 @@ WE ARE MISSING...
 	could take some time to process for large DBs...
 	Check out this link: http://railscasts.com/episodes/206-action-mailer-in-rails-3
 	Though it needs Ruby on Rails (and Heroku needs it too)
-
+	I found this: http://stackoverflow.com/questions/17888268/javascript-countdown-timer-for-auction-site
 	
 -[SQL][C][H] Implement sorting in browse.
-=======
-	I found this: http://stackoverflow.com/questions/17888268/javascript-countdown-timer-for-auction-site
 
-
+-[C] Fix getRatings()
 -[C][H] Generate list of products for 'ViewPurchaseHistory'
 -[C] Implement a way to set primary addresses and primary ccards
 -[H] Generate list of ratings for ratings page. (app.js)
 -[C] Update address, update ccard, update product, app.js for form parsing
--[H] Generate lis of product bids on content divider #product-bidding-list
+-[H] Generate list of product bids on content divider #product-bidding-list
 
 -[B] Use Heroku to run app directly from the web
 -[B] Export app to Android
