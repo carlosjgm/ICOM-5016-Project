@@ -40,6 +40,10 @@ $(document).on('pagebeforeshow', '#cart', function(){
 	loadCart();
 });
 
+$(document).on('pagebeforeshow', '#ratings', function(){
+	getRatings(localStorage["seller"]);
+});
+
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
@@ -689,6 +693,10 @@ function getSellerCatalogItems(user){
 			ratPercent.empty();
 			ratPercent.append(data.percent);
 			
+			var viewratings = $("#view-ratings");
+			viewratings.empty();
+			viewratings.append("<a onclick='getRatings("+product.sid+")'>View Ratings</a>");
+			
 			content.listview("refresh");
 			rateButton.listview("refresh");
 			$.mobile.loading("hide");
@@ -906,19 +914,22 @@ function submitRating(sid){
 		}
 }; */
 
-
-function getRatings(user){	
+//TODO: For some reason, it gets stuck once SQL is done. Data is arriving undefined to ajax success even though SQL executes successfully.
+function getRatings(sid){	
 	//var seller = localStorage.setItem["seller",user];
 	$.mobile.loading("show");
 	var data = new Object();
+	data = addAuth(data);
 	
-	if(user == undefined){
-		data.sellername = localStorage["username"];
+	if(sid == undefined){
+		data.sid = data.id;
 	}
 	else{		
-		data.sellername = user;
+		data.sid = sid;
 	}
+	
 	var jsondata = JSON.stringify(data);
+	
 	$.ajax({
 		url : "http://localhost:8888/ratings",
 		method: 'post',
@@ -927,16 +938,18 @@ function getRatings(user){
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){
 			var ratingList = data.ratings;
-			var content = $("#ratings");
+			var content = $("#rating-list");
 			content.empty();
-			var rating;
-			for (var i=0; i < ratingList.length; ++i){
-				rating = ratingList[i];		
-				content.append("<li><b>" + rating.raterid + "</b></li>"
-							+"<li>rated <a href=>" + rating.sellerid + "</a> with " + rating.rvalue + " Stars</li>"
-							+"<li>" + rating.rcomment + "</li>"
+
+			for (var i=0; i < ratingList.length; i++){		
+				content.append("<li><b>" + ratingList[i].ratername + "</b></li>"
+							+"<li>rated <a href=>" + ratingList[i].sellername + "</a> with " + ratingList[i].rvalue + " Stars</li>"
+							+"<li>" + ratingList[i].rcomment + "</li>"
 							+"<hr style='margin-left: -41px;'><br>");			
 			}
+			
+			content.listview("refresh");	
+			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
