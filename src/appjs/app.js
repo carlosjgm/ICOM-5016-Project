@@ -12,6 +12,11 @@ $(document).on('pagebeforeshow', "#browse", function() {
 	browseCategories('all');
 });
 
+//load the purchases history
+$(document).on('pagebeforeshow', "#purchases", function() {
+	getPurchaseHistory();
+});
+
 //load today's sales list
 $(document).on('pagebeforeshow', "#sales", function() {
 	salesCategories('all');
@@ -1278,9 +1283,9 @@ function getPurchaseHistory(){
 		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
-		success : function(data, textStatus, jqXHR){
+		success : function(data, textStatus, jqXHR){			
 			var productList = data.products;
-			var content = $("#purchases");
+			var content = $("#purchases-list");
 			content.empty();
 			var product;
 			for (var i=0; i < productList.length; ++i){
@@ -1291,7 +1296,8 @@ function getPurchaseHistory(){
 					+ "</p></a></li><hr>");			
 			}
 					
-			content.listview("refresh");	
+			content.listview("refresh");
+				
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
