@@ -892,7 +892,7 @@ function submitRating(sid){
 };
 
 //TODO: For some reason, it gets stuck once SQL is done. Data is arriving undefined to ajax success even though SQL executes successfully.
-/*function getRatings(sid){	
+function getRatings(sid){	
 	//var seller = localStorage.setItem["seller",user];
 	$.mobile.loading("show");
 	var data = new Object();
@@ -906,7 +906,6 @@ function submitRating(sid){
 	}
 	
 	var jsondata = JSON.stringify(data);
-	console.log(data);
 	
 	$.ajax({
 		url : "http://localhost:8888/ratings",
@@ -934,7 +933,7 @@ function submitRating(sid){
 			alert(data.textResponse);			
 		}
 	});	
-};*/
+};
 
 //adds new product
 function newProduct(){
