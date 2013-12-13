@@ -1185,6 +1185,44 @@ app.post("/sales", function(req,res){
 	});	
 });
 
+//TODO: html for this, can be a duplicate of sales ^
+app.post("/purchases", function(req,res){
+	console.log("View past purchases request from user "+req.body.username+" received");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var query = client.query("SELECT * FROM users WHERE username ='"+req.body.username +"' AND upassword = '"+req.body.password+"'");
+	
+	query.on("row", function (row, result) {
+		result.addRow(row);
+	});
+	
+	query.on("end", function (result) {
+		if(result.rows.length == 0){
+			client.end();
+			res.json(404,'Please log in or register.');
+		}
+	
+		var query2 = client.query("SELECT itime,idate,sales.*,username AS sellername FROM invoices,invoicecontent,sales,users WHERE iid = invoiceid AND saleid = sid AND isellerid = uid AND ibuyerid = "+req.body.id);
+		
+		query2.on("row", function (row, result) {
+			result.addRow(row);
+		});
+		
+		query2.on("end", function (result) {
+			if(result.rows.length == 0){
+				client.end();
+				res.json(404,'You have not purchased anything yet.');
+			}
+			var products = result.rows;
+			client.end();
+			res.statusCode = 200;
+	  		res.json({"products": products});
+		});
+	});
+});
+
 //user bidding list
 app.post("/loadbids", function(req,res){
 	console.log("Get " + req.body.username + "'s bids request received.");
