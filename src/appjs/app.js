@@ -573,7 +573,7 @@ function loadCart(){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };
@@ -609,7 +609,7 @@ function loadBids(){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };
@@ -644,7 +644,7 @@ function loadProductBids(pid){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };
@@ -705,7 +705,7 @@ function getSellerCatalogItems(user){
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
-				alert(data.textResponse);			
+				alert(data.responseText);			
 			}
 		});	
 	}
@@ -753,7 +753,7 @@ function getUserCatalogItems(){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };
@@ -807,7 +807,7 @@ function checkout(){
 		},
 		error : function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);
+			alert(data.responseText);
 		}
 	});
 };
@@ -831,7 +831,7 @@ function placeOrder(){
 		},
 		error : function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);
+			alert(data.responseText);
 		}
 	});
 };
@@ -929,7 +929,7 @@ function getRatings(sid){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };
@@ -1228,7 +1228,7 @@ function search(){
 			},
 			error: function(data, textStatus, jqXHR){
 				$.mobile.loading("hide");
-				alert(data.textResponse);			
+				alert(data.responseText);			
 			}
 		});
 	}
@@ -1302,7 +1302,7 @@ function getPurchaseHistory(){
 		},
 		error: function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert(data.textResponse);			
+			alert(data.responseText);			
 		}
 	});	
 };

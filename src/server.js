@@ -311,7 +311,7 @@ app.get('/browse/:category', function(req, res){
 	if(req.params.category == 'all')
 		var query = client.query("SELECT * FROM products");
 	else
-		var query = client.query("SELECT products.* FROM products,categories WHERE pcategoryid = catid AND catname = '" + req.params.category + "'");
+		var query = client.query("SELECT products.* FROM products,categories WHERE pcategoryid = catid AND pquantity > 0 AND catname = '" + req.params.category + "'");
 	
 	query.on("row", function (row, result) {
     	result.addRow(row);
