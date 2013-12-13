@@ -749,7 +749,7 @@
 	</form>
 	
 	<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-inline="true">Cancel</a>
-	<a href="#manage-credit-cards" data-role="button" data-theme="b" onclick="addNewCard()" data-transition="fade" data-inline="true">Save</a>
+	<a href="#manage-credit-cards" data-role="button" data-theme="b" onclick="updateCard()" data-transition="fade" data-inline="true">Save</a>
 </div>
 
 </div>
@@ -1299,15 +1299,16 @@
 		<h2>Checkout</h2>    	
 	</div>
 	
-	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" style="margin-top: -15px;">
+	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" style="margin-top:50px;">
 		<div data-role="button" style="text-align:left;">
 			<div style="float:left;">Ships to:</div>
 			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
 				<a href='#manage-addresses' style="color:black;">Change Primary Address</a>
 			</div><ul id="checkout-address"></ul>
 		</div>
-			
-		<div style="float:left;">Payment:</div>
+		
+		<div data-role="button" style="text-align:left;">	
+			<div style="float:left;">Payment:</div>
 			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
 				<a href='#manage-credit-cards' style="color:black;">Change Primary Credit Card</a>
 			</div><ul id="checkout-ccard"></ul>
@@ -1316,9 +1317,9 @@
 		<div style="float:left;">Items:</div>
 		<ul id="checkout-items"></ul>
 		
-		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false">
-			<div id="checkout-total" data-role="button"></div>
-		</div><br/>
+		<br/><br/><hr>
+		<b>Total: $</b>
+		<br/><br/>
 		
 		<div style="float: right;">
 		<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
@@ -1644,6 +1645,14 @@
 			</form>
 		
 	</div>
+</div>
+
+<div id="product-bidding-list" data-role="page" data-theme="c">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Bids for this Product</h2>
+	</div>
+	
 </div>
 
 
