@@ -1239,6 +1239,45 @@ function browseCategories(category){
 	});	
 };
 
+
+//Get Purchase History
+function getPurchaseHistory(){	
+	$.mobile.loading("show");
+	var data = new Object();
+	data = addAuth(data);
+	data.sellername = localStorage["username"];
+	
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/purchases",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var productList = data.products;
+			var content = $("#purchases");
+			content.empty();
+			var product;
+			for (var i=0; i < productList.length; ++i){
+				product = productList[i];			
+				content.append("<li><h3>" + product.sname + "</h3>"
+					+ "<p><strong>Instant Price: </strong>" + product.sprice + "</strong>"
+					+ "<p> <strong>Qty:</strong> " + product.squantity + "</p>"
+					+ "</p></a></li><hr>");			
+			}
+					
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
+
 //convert the form data to json format
 function ConverToJSON(formData){
 	var result = {};

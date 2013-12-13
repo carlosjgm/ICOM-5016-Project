@@ -130,6 +130,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>				
 			</div>			
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -560,6 +561,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>
 			</div>
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -988,6 +990,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>
 			</div>
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -1278,6 +1281,24 @@
 	</div>
 </div>
 
+
+<!-- Purchase History -->
+<div id="purchases" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Purchase History</h2>    	
+	</div>
+	
+	<div data-role="content">
+		<div class="content-primary">
+			
+			<ul id="purchases" data-role="listview" data-filter="true" data-inset="true"></ul>
+		
+		</div>
+	</div>
+</div>
+
+
 <!-- Shopping Cart -->
 <div id="cart" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
@@ -1317,9 +1338,9 @@
 		<div style="float:left;">Items:</div>
 		<ul id="checkout-items"></ul>
 		
-		<br/><br/><hr>
-		<b>Total: $</b>
-		<br/><br/>
+		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false" style="margin-top: 50px;">
+			<div id="checkout-total" data-role="button" style="text-align: left;">Total: </div>
+		</div><br/>
 		
 		<div style="float: right;">
 		<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
