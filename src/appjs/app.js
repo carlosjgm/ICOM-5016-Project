@@ -45,10 +45,6 @@ $(document).on('pagebeforeshow', '#cart', function(){
 	loadCart();
 });
 
-$(document).on('pagebeforeshow', '#ratings', function(){
-	getRatings(localStorage["seller"]);
-});
-
 //show info button: if logged in, shows username and on click goes to profile page; if not logged in, on click goes to login page
 function profilebutton(buttonid,pagepanel){
 	var user = localStorage.getItem("username");
@@ -702,7 +698,7 @@ function getSellerCatalogItems(user){
 				
 				var viewratings = $("#view-ratings");
 								viewratings.empty();
-								viewratings.append("<a onclick='getRatings("+product.sid+")'>View Ratings</a>");
+								viewratings.append("<a href='#ratings' onclick='getRatings("+product.sid+")'>View Ratings</a>");
 				
 				
 				content.listview("refresh");
@@ -894,8 +890,7 @@ function submitRating(sid){
 };
 
 
-//TODO: For some reason, it gets stuck once SQL is done. Data is arriving undefined to ajax success even though SQL executes successfully.
-/*function getRatings(sid){	
+function getRatings(sid){	
 	//var seller = localStorage.setItem["seller",user];
 	$.mobile.loading("show");
 	var data = new Object();
@@ -917,19 +912,23 @@ function submitRating(sid){
 		data : jsondata,
 		contentType: "application/json",
 		dataType: "json",
-		success : function(data, textStatus, jqXHR){
+		success : function(data, textStatus, jqXHR){			
+			
 			var ratingList = data.ratings;
+			
 			var content = $("#rating-list");
 			content.empty();
 
 			for (var i=0; i < ratingList.length; i++){		
 				content.append("<li><b>" + ratingList[i].ratername + "</b></li>"
-							+"<li>rated <a href=>" + ratingList[i].sellername + "</a> with " + ratingList[i].rvalue + " Stars</li>"
+							+"<li>rated " + ratingList[i].sellername + " with " + ratingList[i].rvalue + " Stars</li>"
 							+"<li>" + ratingList[i].rcomment + "</li>"
 							+"<hr style='margin-left: -41px;'><br>");			
 			}
 			
-			content.listview("refresh");	
+			content.listview("refresh");
+			
+				
 			$.mobile.loading("hide");
 		},
 		error: function(data, textStatus, jqXHR){
@@ -937,7 +936,7 @@ function submitRating(sid){
 			alert(data.textResponse);			
 		}
 	});	
-};*/
+};
 
 //adds new product
 function newProduct(){
