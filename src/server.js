@@ -1357,31 +1357,35 @@ app.post("/catalog", function(req,res){
 
 //Do users really have to be logged in to see a seller's rating?
 //get ratings
-app.get("/ratings", function(req,res){
-	console.log("Get " + req.body.sellername + "'s ratings request received.");
+app.post("/ratings", function(req,res){
+	console.log("Get ratings for user with id "+req.body.sid+" request received.");
 	
 	var client = new pg.Client(conString);
 	client.connect();
 	
 	var query = client.query("SELECT * FROM users WHERE username = '" + req.body.username + "'");
+	
 	query.on("row", function(row,result){
 		result.addRow(row);
 	});
+	
 	query.on("end", function(result){
 		if(result.rows[0].upassword == req.body.password){
-			var query2 = client.query("SELECT username, rvalue, rcomment FROM ratings,users WHERE users.username = '" + req.body.sellername + "' AND ratings.sellerid = users.uid");
+			var query2 = client.query("SELECT users.username AS sellername, raters.username AS ratername, rvalue, rcomment FROM ratings,users,users AS raters WHERE sellerid = " + req.body.sid + " AND sellerid = users.uid AND raterid = raters.uid");
+			
 			query2.on("row", function(row,result){
 				result.addRow(row);
-				console.log(JSON.stringify(row));
 			});
+			
 			query2.on("end", function(result){
+				var theratings = result.rows;
 				client.end();
-				res.json(200,{"ratings":result.rows});
+				res.json(200,{"ratings":theratings});
 			});
 		}
 		else{
 			client.end();
-			res.json(401,false);
+			res.json(401,"Please log in or register.");
 		}
 	});
 	
