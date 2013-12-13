@@ -16,12 +16,10 @@ WE ARE MISSING...
 	
 -[SQL][C][H] Implement sorting in browse.
 
--[C] Fix getRatings()
 -[C][H] Generate list of products for 'ViewPurchaseHistory'
 -[C] Implement a way to set primary addresses and primary ccards
 -[H] Generate list of ratings for ratings page. (app.js)
 -[C] Update address, update ccard, update product, app.js for form parsing
--[H] Generate list of product bids on content divider #product-bidding-list
 
 -[B] Use Heroku to run app directly from the web
 -[B] Export app to Android

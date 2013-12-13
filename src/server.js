@@ -1284,7 +1284,7 @@ app.post("/loadbids", function(req,res){
 //TODO: Do users have to be logged in to see product bids?
 //product bids list
 app.post("/loadproductbids", function(req,res){
-	console.log("Get bids for product "+ req.body.pid +"request received.");
+	console.log("Get bids for product "+ req.body.pid +" request received.");
 
 	var client = new pg.Client(conString);
 	client.connect();
@@ -1303,7 +1303,7 @@ app.post("/loadproductbids", function(req,res){
 		}
 		else{
 			//select columns
-			var query2 = client.query("SELECT * FROM product, bids WHERE (bids.pid = products.pid) AND (product.pid = " + req.body.pid + ")");
+			var query2 = client.query("SELECT * FROM users, bids WHERE (users.uid = bids.bidderid) AND (bids.pid = " + req.body.pid + ")");
 			
 			query2.on("row", function (row, result) {
 				result.addRow(row);
