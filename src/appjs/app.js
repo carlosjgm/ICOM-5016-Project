@@ -787,24 +787,21 @@ function checkout(){
 			
 			var content = $("#checkout-address");
 			content.empty();
-			content.append("<h3>" + localStorage.getItem("fname") + " " + localStorage.getItem("lname") + "</h3>"
-						 + "<p>" + userdata.aline1 + "<br/>" + userdata.aline2 + "</p>"
-						 + "<p>" + userdata.acity + ", " + userdata.astate + "</p>"
-						 + "<p>" + userdata.acountry + ", " + userdata.azipcode);
+			content.append("<br />" + localStorage.getItem("fname") + " " + localStorage.getItem("lname")
+						 + "<br />" + userdata.aline1 + "<br/>" + userdata.aline2
+						 + "<br />" + userdata.acity + ", " + userdata.astate
+						 + "<br />" + userdata.acountry + ", " + userdata.azipcode);
 						 
 			content = $("#checkout-ccard");
 			content.empty();
-			content.append("<a data-role='button' data-rel='popup' data-transition='pop'>"
-						 + "<h3>Card Holder Name: " + userdata.ccholdername + "</h3>"
-						 + "<p> Card Num: " + "XXXX-XXXX-XXXX-"+userdata.ccnum[12]+userdata.ccnum[13]+userdata.ccnum[14]+userdata.ccnum[15]+ "</p>"
-						 + "<p>Expiration Date: " + userdata.ccexpmonth + "/" + userdata.ccexpyear + "</a>");
+			content.append("<br />Card Holder Name: " + userdata.ccholdername
+						 + "<br /> Card Num: " + "XXXX-XXXX-XXXX-"+userdata.ccnum[12]+userdata.ccnum[13]+userdata.ccnum[14]+userdata.ccnum[15]
+						 + "<br />Expiration Date: " + userdata.ccexpmonth + "/" + userdata.ccexpyear);
 			
 			content = $("#checkout-items");
 			content.empty();
 			for (var i=0; i < cart.length; ++i){
-				content.append("<li><h3>" + cart[i].pname + "</h3>"
-				+ "<p>Quantity: " + cart[i].cquantity
-				+ "<p>Price: " + cart[i].pprice + "</p>");				
+				content.append("<br />- " + cart[i].pname + " x "+cart[i].cquantity+" @ " + cart[i].pprice + " each");				
 			}
 			
 			content = $("#checkout-total");
@@ -836,7 +833,7 @@ function placeOrder(){
 		dataType: "json",
 		success : function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
-			alert("Order placed.");
+			alert("Order placed succesfully.");
 		},
 		error : function(data, textStatus, jqXHR){
 			$.mobile.loading("hide");
@@ -896,33 +893,9 @@ function submitRating(sid){
 		});	
 };
 
-//TODO: gets user comments and ratings of a seller, needs a page in index.html
-function getRatings(user){
-	$.mobile.loading("show");
-	var data = new Object();
-	//data = addAuth(data);
-	data.sellername = user;
-	var jsondata = JSON.stringify(data);
-	$.ajax({
-		url : "http://localhost:8888/ratings",
-		method: 'get',
-		data : jsondata,
-		contentType: "application/json",
-		dataType: "json",
-		success : function(data, textStatus, jqXHR){
-			//
-			$.mobile.loading("hide");
-		},
-		
-		error: function(data, textStatus, jqXHR){
-			$.mobile.loading("hide");
-			alert(data.textResponse);			
-		}
-});
-}
 
 //TODO: For some reason, it gets stuck once SQL is done. Data is arriving undefined to ajax success even though SQL executes successfully.
-function getRatings(sid){	
+/*function getRatings(sid){	
 	//var seller = localStorage.setItem["seller",user];
 	$.mobile.loading("show");
 	var data = new Object();
@@ -936,6 +909,7 @@ function getRatings(sid){
 	}
 	
 	var jsondata = JSON.stringify(data);
+	console.log(data);
 	
 	$.ajax({
 		url : "http://localhost:8888/ratings",
@@ -963,7 +937,7 @@ function getRatings(sid){
 			alert(data.textResponse);			
 		}
 	});	
-};
+};*/
 
 //adds new product
 function newProduct(){

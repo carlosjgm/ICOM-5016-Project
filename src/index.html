@@ -1327,25 +1327,32 @@
 	<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" style="margin-top:50px;">
 		<div data-role="button" style="text-align:left;">
 			<div style="float:left;">Ships to:</div>
-			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
+			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right; margin-right: -10px;">
 				<a href='#manage-addresses' style="color:black;">Change Primary Address</a>
 			</div><ul id="checkout-address"></ul>
 		</div>
 		
 		<div data-role="button" style="text-align:left;">	
 			<div style="float:left;">Payment:</div>
-			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right;">
+			<div data-role="button" data-theme="e" data-inline="true" data-mini="true" data-inset="true" style="float:right; margin-right: -10px;">
 				<a href='#manage-credit-cards' style="color:black;">Change Primary Credit Card</a>
 			</div><ul id="checkout-ccard"></ul>
 		</div>
-			
+		
+		<div data-role="button" style="text-align:left;">	
 		<div style="float:left;">Items:</div>
 		<ul id="checkout-items"></ul>
-		
-		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false" style="margin-top: 50px;">
-			<div id="checkout-total" data-role="button" style="text-align: left;">Total: </div>
+		</div>
+
+		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false">
+		<div id="checkout-total" data-role="button"></div>
 		</div><br/>
-		
+
+
+		<!--div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false" style="margin-top: 50px;">
+			<div id="checkout-total" data-role="button" style="text-align: left;">Total: </div>
+		</div><br/-->
+
 		<div style="float: right;">
 		<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
 			<img src="https://securepics.ebaystatic.com/aw/pics/checkout/payments/paypal/logoPaypalCYP.gif" border="0px";></a></div>

@@ -999,7 +999,7 @@ app.del("/removefromcart", function(req,res){
 });
 
 //places order
-//TODO exploding
+//TODO still needs a bit of work
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -1033,7 +1033,7 @@ app.post("/placeorder", function(req,res){
 			}
 			console.log("DEBUG: Cart is not empty");
 			var cartItems = result.rows;
-			var newcart;
+			var newcart = new Object();
 			//Check that items are available, 
 			var query3 = client.query("SELECT pprice,pname,pcategoryid,cquantity FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id);
 			
@@ -1063,46 +1063,52 @@ app.post("/placeorder", function(req,res){
 						res.json(404,'You have not selected a primary address or credit card. Please do so under Account Settings and try again.');
 					}
 					console.log("DEBUG: User has primary address and ccard");
-					var date = new Date();
-					var datejson = date.toJSON();
-					var today = datejson.substring(0,10);
-					var time = date.toTimeString();
-					var now = time.substring(0,8);
 					
-					//create invoice content and insert sales,invoices
-					var query5 = client.query("UPDATE invoices SET idate = '"+today+"', itime = '"+now+"' WHERE iid IN "+
-											  "(INSERT INTO invoicecontent (saleid,invoiceid) "+
-											  "(INSERT INTO sales (squantity, sprice, sname, scategory) "+
-											  "SELECT cquantity,pprice,pname,pcategoryid FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id+" "+
-											  "RETURNING sid "+
-											  "UNION "+
-											  "INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid) "+
-											  "SELECT uid,psellerid,bankid,upccid FROM products,carts,bankaccounts,users WHERE products.pid = carts.pid "+
-										  	  "AND products.pquantity >= carts.cquantity AND buserid = psellerid AND userid ="+req.body.id+" GROUP BY psellerid,bankid,upccid,uid "+							
-											  "RETURNING iid) "+
-											  "RETURNING invoiceid);");
-
+					//create sales,invoices TODO link both into invoicecontent... how?
+					var query5 = client.query("INSERT INTO sales (squantity, sprice, sname, scategory) SELECT cquantity,pprice,pname,pcategoryid "+
+											  "FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id+"; "+
+											  "INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid) SELECT uid,psellerid,bankid,"+
+											  "upccid FROM products,carts,bankaccounts,users WHERE products.pid = carts.pid AND products.pquantity >= "+
+											  "carts.cquantity AND buserid = psellerid AND userid ="+req.body.id+" AND userid = uid GROUP BY psellerid,bankid,upccid,uid RETURNING iid");
+					
 					query5.on("row", function (row, result) {
 						result.addRow(row);
 					});
 					
-					query5.on("end", function (result) {
-						console.log("Invoices and sales created");							
+					query5.on("end", function (result) {				
 						//deposit money on sellers' accounts
-						var query6 = client.query("UPDATE bankaccounts,carts,products SET bankaccounts.bamount = bamount + (cquantity*pprice) WHERE carts.userid = "+req.body.id+" "+
-												  "AND carts.pid = products.pid AND psellerid = buserid");
+						console.log("DEBUG: inserted sales");
+						var iids = result.rows;
+						var date = new Date();
+						var datejson = date.toJSON();
+						var today = datejson.substring(0,10);
+						var time = date.toTimeString();
+						var now = time.substring(0,8);			
+						
+						var string = "(";
+						for(var i=0; i < iids.length; i++){
+							string = string + iids[i].iid;
 							
-						query6.on("row", function (row, result) {
-							result.addRow(row);
-						});
+							if(i < iids.length - 1){
+								string = string + ",";
+							} else {string = string + ")";}
+						}
+						
+						var query6 = client.query("UPDATE bankaccounts SET bamount = bamount + (SELECT sum(pprice*cquantity) FROM bankaccounts AS banks,carts,products "+
+												  "WHERE carts.userid = "+req.body.id+" AND carts.pid = products.pid AND psellerid = buserid AND bankaccounts.buserid = "+
+												  "banks.buserid GROUP BY buserid) WHERE buserid IN (SELECT psellerid FROM products,carts WHERE userid =2 AND carts.pid = "+
+												  "products.pid); "+
+												  "UPDATE invoices SET idate = '"+today+"', itime = '"+now+"' WHERE iid IN "+string);
 						
 						query6.on("end", function (result) {
 							//remove cart entries
-							console.log("Updated sellers' accounts");
-							var query7 = client.query("DELETE FROM carts WHERE userid = "+req.body.id);
+							console.log("DEBUG: Updated sellers' accounts");
 							
-							//decrement pquantity by cquantity
-							
+							var query7 = client.query("UPDATE products SET pquantity = pquantity - (SELECT cquantity FROM products AS theproducts,carts WHERE products.pid = "+
+													  "carts.pid AND userid = "+req.body.id+" AND theproducts.pid = products.pid) WHERE pid IN (SELECT carts.pid FROM carts WHERE "+
+													  "userid = "+req.body.id+"); "+
+													  "DELETE FROM carts WHERE userid = "+req.body.id); 
+
 							query7.on("end", function (row, result) {
 								client.end();
 								res.json(200,true);
