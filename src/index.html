@@ -160,7 +160,11 @@
 	<div data-role="content">
 		<div class="content-primary">
 			<div style="width: 250px; margin: 0 auto; margin-top:-10px; margin-bottom: 10px;"><img src ="https://dl.dropboxusercontent.com/u/41426869/tapnbuy%20logo.png" width='250px' height='60px'></div>
-			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+			<form>
+			<label for="search-basic"></label>
+			<input type="search" name="search" id="search-basic" value="" placeholder="Search Tap'nBuy" />
+			</form>
+			<ul id="product-list" data-role="listview" data-filter="false" data-inset="true"></ul>
 		</div>
 	
 		<!-- login popup -->
