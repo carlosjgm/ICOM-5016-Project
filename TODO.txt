@@ -12,32 +12,33 @@ WE ARE MISSING...
 	could take some time to process for large DBs...
 	Check out this link: http://railscasts.com/episodes/206-action-mailer-in-rails-3
 	Though it needs Ruby on Rails (and Heroku needs it too)
+
 	
 -[SQL][C][H] Implement sorting in browse.
+=======
+	I found this: http://stackoverflow.com/questions/17888268/javascript-countdown-timer-for-auction-site
 
--[C][H] Implement 'ViewPurchaseHistory' to view history of your purchases.
 
--[H] Ratings page. (sync with app.js)
--[H] One-click buy button in item page.
--[H] Update address, update ccard, update product forms. (sync with app.js)
--[H] UI for product bids with content divider #product-bidding-list. Button for view product bids. Hidden if product not in auction. 
+-[C][H] Generate list of products for 'ViewPurchaseHistory'
+-[C] Implement a way to set primary addresses and primary ccards
+-[H] Generate list of ratings for ratings page. (app.js)
+-[C] Update address, update ccard, update product, app.js for form parsing
+-[H] Generate lis of product bids on content divider #product-bidding-list
 
 -[B] Use Heroku to run app directly from the web
 -[B] Export app to Android
 
+KNOWN MAJOR ISSUES
+-Fix RES JSON alerts during errors (for some reason they say 'undefined' instead of showing the correct message!!)
 
-KNOWN MINOR ISSUES
-
+MINOR ISSUES
+-Sorting is not implemented
 -Sometimes clicking back will leave you in limbo (particularly when managing ccards and addresses)
-
 -Sometimes user avatar will be briefly shown between pages (linked to the previous one)
-
 -Login button doesn't always show the login popup
 
 
 REMINDERS/DETAILS
-
--Delete product should delete the product from all possible tables where a product could be.
 
 -A distinction should be made between deleting a product and running out of a product; the delete-a-product option
  will be used when the seller will no longer sell instances of said product; if available quantity of a product
@@ -53,6 +54,3 @@ REMINDERS/DETAILS
 -Sales page should only show your sales as a seller, unless you're an admin (and so you can see everything).
 
 -[W] Currently the ER diagram is not consistent with our database (Fix foreign key issues)
-
--[W] Look into jQuery/Q.Js promises for parallel(asynchronous) queries/ajax requests (THEY DON'T CALL IT JQUERY FOR 
- NUTHIN' {just kidding [no, not really]})

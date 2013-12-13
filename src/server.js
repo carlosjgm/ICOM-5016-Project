@@ -999,7 +999,6 @@ app.del("/removefromcart", function(req,res){
 });
 
 //places order
-//TODO still needs a bit of work
 app.post("/placeorder", function(req,res){
 	console.log("Place " + req.body.username + "'s order request received.");
 	
@@ -1018,7 +1017,6 @@ app.post("/placeorder", function(req,res){
 			client.end();
 			res.json(404,'Please log in or register.');
 		}
-		console.log("DEBUG: User is logged in");
 		//get items in preliminary cart
 		var query2 = client.query("SELECT * FROM carts WHERE userid ="+req.body.id);
 		
@@ -1031,7 +1029,6 @@ app.post("/placeorder", function(req,res){
 				client.end();
 				res.json(404,'Cart is empty.');
 			}
-			console.log("DEBUG: Cart is not empty");
 			var cartItems = result.rows;
 			var newcart = new Object();
 			//Check that items are available, 
@@ -1062,9 +1059,7 @@ app.post("/placeorder", function(req,res){
 						client.end();
 						res.json(404,'You have not selected a primary address or credit card. Please do so under Account Settings and try again.');
 					}
-					console.log("DEBUG: User has primary address and ccard");
-					
-					//create sales,invoices TODO link both into invoicecontent... how?
+
 					var query5 = client.query("INSERT INTO sales (squantity, sprice, sname, scategory) SELECT cquantity,pprice,pname,pcategoryid "+
 											  "FROM products,carts WHERE products.pid = carts.pid AND products.pquantity >= carts.cquantity AND userid ="+req.body.id+"; "+
 											  "INSERT INTO invoices (ibuyerid, isellerid, isellerbankid, ibuyerccid) SELECT uid,psellerid,bankid,"+
@@ -1075,9 +1070,8 @@ app.post("/placeorder", function(req,res){
 						result.addRow(row);
 					});
 					
-					query5.on("end", function (result) {				
-						//deposit money on sellers' accounts
-						console.log("DEBUG: inserted sales");
+					//deposit money on sellers' accounts
+					query5.on("end", function (result) {
 						var iids = result.rows;
 						var date = new Date();
 						var datejson = date.toJSON();
@@ -1099,11 +1093,8 @@ app.post("/placeorder", function(req,res){
 												  "banks.buserid GROUP BY buserid) WHERE buserid IN (SELECT psellerid FROM products,carts WHERE userid =2 AND carts.pid = "+
 												  "products.pid); "+
 												  "UPDATE invoices SET idate = '"+today+"', itime = '"+now+"' WHERE iid IN "+string);
-						
+						//remove cart entries, update product quantities
 						query6.on("end", function (result) {
-							//remove cart entries
-							console.log("DEBUG: Updated sellers' accounts");
-							
 							var query7 = client.query("UPDATE products SET pquantity = pquantity - (SELECT cquantity FROM products AS theproducts,carts WHERE products.pid = "+
 													  "carts.pid AND userid = "+req.body.id+" AND theproducts.pid = products.pid) WHERE pid IN (SELECT carts.pid FROM carts WHERE "+
 													  "userid = "+req.body.id+"); "+
