@@ -2,6 +2,11 @@
 //											APP.JS													//
 //******************************************************************************************************//
 
+//search the database
+$(document).on('keyup','#search-basic', function(){
+	search();
+});
+
 //load the complete product list to the browse page
 $(document).on('pagebeforeshow', "#browse", function() {
 	browseCategories('all');
@@ -1190,7 +1195,47 @@ function salesCategories(category){
 
 function closePanel(id){
   $("#"+id).panel("close");
-};
+}
+
+function search(){
+	$.mobile.loading("show");
+	var form = $("#search-basic");
+	var formData = form.serializeArray();	
+	var logdata = ConverToJSON(formData);
+
+	if(logdata.search == ""){
+		browseCategories("all");
+	}
+	
+	else{
+		$.ajax({
+			url : "http://localhost:8888/search/" + logdata.search ,
+			method: 'get',
+			success : function(data, textStatus, jqXHR){
+				var productList = data.products;
+				var list = $("#product-list");
+				list.empty();
+				var product;
+				for (var i=0; i < productList.length; ++i){
+					product = productList[i];
+					list.append("<li><a onclick='loadProductPage(" + product.pid + ")'><img src='" + product.pphoto + "' />"
+						+ "<h3>" + product.pname + "</h3>"
+						+ "<p> <strong>Brand:</strong> " + product.pbrand + "</p>"
+						+ "<p><strong>Instant Price: </strong>" + product.pprice + "</strong>"
+						+ "</p></a></li>");					
+				}
+				list.listview("refresh");
+				$.mobile.loading("hide");
+				
+			},
+			error: function(data, textStatus, jqXHR){
+				$.mobile.loading("hide");
+				alert(data.textResponse);			
+			}
+		});
+	}
+		
+}
 
 //replaces #product-list with a list of products from category
 //stores category in localvariable
@@ -1224,6 +1269,45 @@ function browseCategories(category){
 		}
 	});	
 };
+
+
+//Get Purchase History
+function getPurchaseHistory(){	
+	$.mobile.loading("show");
+	var data = new Object();
+	data = addAuth(data);
+	data.sellername = localStorage["username"];
+	
+	var jsondata = JSON.stringify(data);
+	$.ajax({
+		url : "http://localhost:8888/purchases",
+		method: 'post',
+		data : jsondata,
+		contentType: "application/json",
+		dataType: "json",
+		success : function(data, textStatus, jqXHR){
+			var productList = data.products;
+			var content = $("#purchases");
+			content.empty();
+			var product;
+			for (var i=0; i < productList.length; ++i){
+				product = productList[i];			
+				content.append("<li><h3>" + product.sname + "</h3>"
+					+ "<p><strong>Instant Price: </strong>" + product.sprice + "</strong>"
+					+ "<p> <strong>Qty:</strong> " + product.squantity + "</p>"
+					+ "</p></a></li><hr>");			
+			}
+					
+			content.listview("refresh");	
+			$.mobile.loading("hide");
+		},
+		error: function(data, textStatus, jqXHR){
+			$.mobile.loading("hide");
+			alert(data.textResponse);			
+		}
+	});	
+};
+
 
 //convert the form data to json format
 function ConverToJSON(formData){

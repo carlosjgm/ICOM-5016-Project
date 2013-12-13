@@ -323,6 +323,30 @@ app.get('/browse/:category', function(req, res){
  	});
 });
 
+//search products by keyword------------------------------------------------------
+app.get('/search/:key', function(req, res){
+	console.log("Search for " + req.params.key + " request received.");
+	
+	var client = new pg.Client(conString);
+	client.connect();
+	
+	var key = req.params.key;
+		
+	var query = client.query("SELECT DISTINCT products.* FROM products,users WHERE pname ILIKE '%" + key + "%'"
+					+ "OR pbrand ILIKE '%" + key + "%'"
+					+ "OR username ILIKE '%" + key + "%' AND psellerid=uid"
+					);					
+	
+	query.on("row", function (row, result) {
+    	result.addRow(row);
+    });
+	query.on("end", function (result) {
+		var response = {"products" : result.rows};
+		client.end();
+  		res.json(200,response);
+ 	});
+});
+
 //loadProductPage(id)
 //get product by id-----------------------------------------------------
 app.get('/product/:id', function(req, res){

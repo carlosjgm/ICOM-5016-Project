@@ -130,6 +130,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>				
 			</div>			
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -159,7 +160,11 @@
 	<div data-role="content">
 		<div class="content-primary">
 			<div style="width: 250px; margin: 0 auto; margin-top:-10px; margin-bottom: 10px;"><img src ="https://dl.dropboxusercontent.com/u/41426869/tapnbuy%20logo.png" width='250px' height='60px'></div>
-			<ul id="product-list" data-role="listview" data-filter="true" data-inset="true"></ul>
+			<form>
+			<label for="search-basic"></label>
+			<input type="search" name="search" id="search-basic" value="" placeholder="Search Tap'nBuy" />
+			</form>
+			<ul id="product-list" data-role="listview" data-filter="false" data-inset="true"></ul>
 		</div>
 	
 		<!-- login popup -->
@@ -560,6 +565,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>
 			</div>
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -988,6 +994,7 @@
 				<ul data-role="listview">
 					<li><a href="#usercatalogpage" onclick="getUserCatalogItems()">Catalog</a></li>
 					<li><a href="#sales">Sales Report</a></li>
+					<li><a href="#purchases">Purchase History</a></li>
 				</ul>
 			</div>
 			<a href="#ratings" data-role="button" data-icon="star" data-theme="a" style="text-align: left;">Ratings</a>			
@@ -1278,6 +1285,24 @@
 	</div>
 </div>
 
+
+<!-- Purchase History -->
+<div id="purchases" data-role="page">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a data-rel="back" data-icon="back" data-mini="true" data-inline="true">Back</a>
+		<h2>Purchase History</h2>    	
+	</div>
+	
+	<div data-role="content">
+		<div class="content-primary">
+			
+			<ul id="purchases" data-role="listview" data-filter="true" data-inset="true"></ul>
+		
+		</div>
+	</div>
+</div>
+
+
 <!-- Shopping Cart -->
 <div id="cart" data-role="page">
 	<div data-role="header" data-theme="a" data-position="fixed">
@@ -1318,10 +1343,15 @@
 		<div style="float:left;">Items:</div>
 		<ul id="checkout-items"></ul>
 		</div>
-		
+
 		<div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false">
 		<div id="checkout-total" data-role="button"></div>
 		</div><br/>
+
+
+		<!--div data-role="listview" data-theme="d" data-inline="true" data-inset="true" data-filter="false" style="margin-top: 50px;">
+			<div id="checkout-total" data-role="button" style="text-align: left;">Total: </div>
+		</div><br/-->
 
 		<div style="float: right;">
 		<div data-role="button" data-theme="d" data-inline="true" data-inset="true"><a href="https://www.paypal.com/">
