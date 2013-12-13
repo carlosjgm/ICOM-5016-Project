@@ -3421,3 +3421,21 @@ a:hover, a:visited, a:link, a:active
  	background-color:#39c; 
  	color:#fff;
  }
+ 
+a:active {
+
+color: white;
+
+}
+
+a:visited {
+
+color: white;
+
+}
+
+a:hover {
+
+color: white;
+
+}
