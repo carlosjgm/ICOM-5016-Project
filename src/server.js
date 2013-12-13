@@ -1094,17 +1094,19 @@ app.post("/placeorder", function(req,res){
 							} else {string = string + ")";}
 						}
 						
-						var query6 = client.query("UPDATE bankaccounts SET bamount = bamount + (SELECT sum(pprice*cquantity) FROM bankaccounts,carts,products WHERE "+
-												  "carts.userid = "+req.body.id+" AND carts.pid = products.pid AND psellerid = buserid GROUP BY buserid) WHERE buserid IN (SELECT psellerid "+
-												  "FROM products,carts WHERE userid ="+req.body.id+" AND carts.pid = products.pid); "+
+						var query6 = client.query("UPDATE bankaccounts SET bamount = bamount + (SELECT sum(pprice*cquantity) FROM bankaccounts AS banks,carts,products "+
+												  "WHERE carts.userid = "+req.body.id+" AND carts.pid = products.pid AND psellerid = buserid AND bankaccounts.buserid = "+
+												  "banks.buserid GROUP BY buserid) WHERE buserid IN (SELECT psellerid FROM products,carts WHERE userid =2 AND carts.pid = "+
+												  "products.pid); "+
 												  "UPDATE invoices SET idate = '"+today+"', itime = '"+now+"' WHERE iid IN "+string);
 						
 						query6.on("end", function (result) {
 							//remove cart entries
 							console.log("DEBUG: Updated sellers' accounts");
 							
-							var query7 = client.query("UPDATE products SET pquantity = pquantity - (SELECT cquantity FROM products,carts WHERE products.pid = carts.pid AND userid = "+req.body.id+") "+
-													  "WHERE pid IN (SELECT carts.pid FROM carts WHERE userid = "+req.body.id+"); "+
+							var query7 = client.query("UPDATE products SET pquantity = pquantity - (SELECT cquantity FROM products AS theproducts,carts WHERE products.pid = "+
+													  "carts.pid AND userid = "+req.body.id+" AND theproducts.pid = products.pid) WHERE pid IN (SELECT carts.pid FROM carts WHERE "+
+													  "userid = "+req.body.id+"); "+
 													  "DELETE FROM carts WHERE userid = "+req.body.id); 
 
 							query7.on("end", function (row, result) {
